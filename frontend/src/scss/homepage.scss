@@ -1,0 +1,48 @@
+@use "lib/color";
+
+body {
+  background: repeating-linear-gradient(
+    135deg, 
+    color.$dark-blue 0%,
+    color.$light-blue 50%,
+    color.$dark-blue 100%
+  );
+}
+
+nav {
+  position: sticky;
+
+  div.nav1 {
+    background-color: color.$nav-bg;
+    padding: 1rem 2.5rem;
+    display: flex;
+    flex-direction: row;
+
+    h2 {
+      color: color.$title-color;
+      span {
+        color: color.$title-color2;
+      }
+    }
+  }
+
+  div.nav2 {
+    background-color: color.$nav-subbar-bg;
+    padding: 0.5rem 2.5rem;
+    ul {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      color: color.$title-color;
+
+      li {
+        list-style-type: none;
+
+        &.selected {
+          color: color.$btn-color;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
