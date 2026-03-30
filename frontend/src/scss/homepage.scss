@@ -1,48 +1,174 @@
 @use "lib/color";
 
-body {
-  background: repeating-linear-gradient(
-    135deg, 
-    color.$dark-blue 0%,
-    color.$light-blue 50%,
-    color.$dark-blue 100%
-  );
+.home-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, color.$light-blue, color.$dark-blue 70%);
+  color: white;
+
+  a.login-link {
+    color: white;
+    text-decoration: none;
+  }
 }
 
 nav {
-  position: sticky;
-
-  div.nav1 {
+  .nav1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: color.$nav-bg;
     padding: 1rem 2.5rem;
-    display: flex;
-    flex-direction: row;
 
     h2 {
       color: color.$title-color;
-      span {
-        color: color.$title-color2;
+      span { color: color.$title-color2; }
+    }
+
+    .nav1-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      font-size: 0.9rem;
+
+      .get-started {
+        background-color: color.$title-color2;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        color: color.$dark-blue;
+        font-weight: bold;
+        cursor: pointer;
       }
     }
   }
 
-  div.nav2 {
+  .nav2 {
     background-color: color.$nav-subbar-bg;
     padding: 0.5rem 2.5rem;
     ul {
       display: flex;
-      flex-direction: row;
-      gap: 1rem;
-      color: color.$title-color;
-
+      gap: 1.5rem;
       li {
-        list-style-type: none;
-
+        list-style: none;
+        font-size: 0.8rem;
+        opacity: 0.8;
+        cursor: pointer;
         &.selected {
+          opacity: 1;
           color: color.$btn-color;
           font-weight: bold;
         }
       }
     }
   }
+}
+
+.hero {
+  display: flex;
+  padding: 4rem 2.5rem;
+  justify-content: space-between;
+
+  .hero-content {
+    flex: 1;
+
+    .badge {
+      background: rgba(0, 200, 145, 0.1);
+      border: 1px solid color.$btn-color;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: color.$btn-color;
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin: 1.5rem 0;
+      line-height: 1.1;
+      span { color: color.$title-color2; }
+    }
+
+    p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      button {
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .btn-primary { background: color.$btn-color; border: none; color: color.$dark-blue; }
+      .btn-secondary { background: rgba(255, 255, 255, 0.1); border: 1px solid white; color: white; }
+    }
+  }
+}
+
+.dashboard-preview {
+  flex: 0.8;
+  display: flex;
+  justify-content: flex-end;
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 400px;
+
+    h3 { font-size: 0.8rem; opacity: 0.6; margin-bottom: 1.5rem; }
+
+    .course-item {
+      margin-bottom: 1.5rem;
+      .course-info {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0.5rem;
+        small { opacity: 0.6; font-size: 0.75rem; }
+      }
+      .progress-bar {
+        height: 6px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+        .fill { height: 100%; background: color.$btn-color; border-radius: 3px; }
+      }
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      .next { color: color.$title-color2; }
+    }
+  }
+}
+
+.stats-grid {
+  display: flex;
+  gap: 3rem;
+  margin-top: 4rem;
+  .stat-item {
+    h2 { color: color.$btn-color; font-size: 2rem; }
+    p { font-size: 0.8rem; opacity: 0.7; }
+  }
+}
+
+.trusted-by {
+  background: white;
+  color: #333;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+
+  span:first-child { opacity: 0.5; }
+  .school-name { color: #1e3764; }
 }
