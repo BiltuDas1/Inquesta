@@ -11,7 +11,7 @@ function Home() {
         <div className="nav1">
           <h2>inquesta<span>.org</span></h2>
           <div className="nav1-links">
-            <span>Courses</span>
+            <Link to="/courses" className="courses-link">Courses</Link>
             <span>Programs</span>
             <span>Resources</span>
             <span>Community</span>
