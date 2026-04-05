@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # File
-frontend/src/pages/LoginPage.tsx
+src/pages/LoginPage.tsx
