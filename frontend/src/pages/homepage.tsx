@@ -52,7 +52,7 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="relative">
+            <div className="hidden lg:block relative">
               <div className="glass-card rounded-[2rem] p-4 border border-outline-variant shadow-2xl relative overflow-hidden group">
                 <img alt="Advanced Robotics" className="w-full h-[500px] object-cover rounded-[1.5rem] opacity-80 group-hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800" />
                 
@@ -78,13 +78,14 @@ export default function Home() {
 
         {/* Stats Row */}
         <section className="py-20 bg-surface-container-low/30">
-          <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0">
+          <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-3 gap-12 md:gap-0">
             {[ 
               { val: "50K+", label: "Students" },
               { val: "1200+", label: "Schools Partnered" },
-              { val: "120+", label: "Courses & Kits" }
+              { val: "120+", label: "Courses & Kits" },
+              { val: "4.8", label: "Average Rating" }
             ].map((stat, i) => (
-              <div key={i} className={`text-center px-4 ${i < 2 ? 'md:border-r border-outline-variant' : ''}`}>
+              <div key={i} className={`text-center px-4 ${i < 3 ? 'md:border-r border-outline-variant' : ''} ${i === 2 ? 'lg:border-r-0' : ''} ${stat.label === "Average Rating" ? 'block lg:hidden' : ''}`}>
                 <p className="text-5xl font-headline font-extrabold text-on-surface mb-2 tracking-tighter">{stat.val}</p>
                 <p className="text-on-surface-variant font-medium tracking-wide">{stat.label}</p>
               </div>
@@ -95,7 +96,7 @@ export default function Home() {
         {/* Courses Bento Grid */}
         <section className="py-32 px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
               <div>
                 <h2 className="text-4xl md:text-5xl font-headline font-extrabold tracking-tight mb-4">Latest Architectures</h2>
                 <p className="text-on-surface-variant text-lg">Next-gen technical modules updated this week.</p>
@@ -135,7 +136,7 @@ export default function Home() {
               </div>
 
               {/* Bottom Wide Course */}
-              <div className="md:col-span-12 group cursor-pointer relative h-[300px] rounded-3xl overflow-hidden bg-surface-container border border-outline-variant flex items-center px-12">
+              <div className="md:col-span-12 group cursor-pointer relative h-[450px] md:h-[300px] rounded-3xl overflow-hidden bg-surface-container border border-outline-variant flex items-center px-12">
                 <img className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv4SdMF4Haf_XtQ0yCeyfRnJJ9-SHu99huT6KupQRv3seTPF6L3nL2m-4l5aO1ihXWzgmvjNZBeCEGuzvPpYOTqNxpGbmptfDH5ztz3r-SKVfES2jX-H5M2Z0pKau9hbkmYBPX4JzcXR1F4Y2b9G8JPV58VHqCpNCALssdHhvt0VRSr_icEQuio_7i33C1Bq4pgsqZ9a0pysHfkq-tPjexOAKdXE3zZ_hH6EJMkxExrjryV1aqFTQAhPLRcljCdIZBogDTN8Kg7Afu" alt="" />
                 <div className="relative z-10 w-full flex flex-col md:flex-row md:items-center justify-between gap-8">
                   <div className="max-w-2xl">
