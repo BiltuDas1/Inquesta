@@ -1,11 +1,10 @@
-import {BookOpen, Eye, EyeOff, GraduationCap, Mail, Star} from "lucide-react";
+import {BookOpen, Eye, EyeOff, GraduationCap, LockKeyhole, Mail, Star, User} from "lucide-react";
 import {useState} from "react";
+import InputField from "../components/ui/InputField";
 
 export default function SignupPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const inputBase =
-        "w-full bg-[#0c1c1c] border border-[#1a3030] focus:border-[#00d4aa]/55 focus:outline-none focus:ring-2 focus:ring-[#00d4aa]/10 text-white placeholder-[#2d5050] rounded-[10px] py-2.5 text-[13px] transition-all duration-200";
     return (
         <div className="min-h-screen flex bg-[#0e1a1a] font-sans">
             {/* LEFT PANEL — hidden on mobile */}
@@ -135,80 +134,74 @@ export default function SignupPage() {
                     {/* Name row */}
                     <div className="flex flex-col sm:flex-row gap-4 mb-4">
                         <div className="flex-1">
-                            <label className="block text-[#c5dede] text-sm font-medium mb-1.5">First Name</label>
-                            <input
+                            <InputField
+                                label="First Name"
                                 type="text"
                                 placeholder="John"
-                                className="w-full bg-[#162626] border border-[#1e3535] focus:border-[#00d4aa]/50 focus:outline-none  text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm transition-colors duration-200"
+                                icon={<User size={18} />}
+                                name="email"
                             />
                         </div>
                         <div className="flex-1">
-                            <label className="block text-[#c5dede] text-sm font-medium mb-1.5">Last Name</label>
-                            <input
+                            <InputField
+                                label="Last Name"
                                 type="text"
                                 placeholder="Doe"
-                                className="w-full bg-[#162626] border border-[#1e3535] focus:border-[#00d4aa]/50 focus:outline-none text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm transition-colors duration-200"
+                                icon={<User size={18} />}
+                                name="email"
                             />
                         </div>
                     </div>
 
                     {/* Email */}
-                    {/* <div className="mb-4">
-                        <label className="block text-[#c5dede] text-sm font-medium mb-1.5">Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="john.doe@example.com"
-                            className="w-full bg-[#162626] border border-[#1e3535] focus:border-[#00d4aa]/50 focus:outline-none text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 text-sm transition-colors duration-200"
-                        />
-                    </div> */}
                     <div className="mb-2.5">
-                        <label className="block text-[#7aafaf] text-[10px] font-semibold tracking-widest uppercase mb-1.5">
-                            Email Address
-                        </label>
-                        <div className="relative">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3a6060] pointer-events-none flex">
-                                <Mail size={18} />
-                            </div>
-                            <input type="email" placeholder="you@example.com" className={`${inputBase} pl-9 pr-4`} />
-                        </div>
+                        <InputField
+                            label="Email Address"
+                            type="email"
+                            placeholder="you@example.com"
+                            icon={<Mail size={18} />}
+                            name="email"
+                        />
                     </div>
 
                     {/* Password */}
                     <div className="mb-4">
-                        <label className="block text-[#c5dede] text-sm font-medium mb-1.5">Password</label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Create a strong password"
-                                className="w-full bg-[#162626] border border-[#1e3535] focus:border-[#00d4aa]/50 focus:outline-none text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 pr-11 text-sm transition-colors duration-200"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
-                            >
-                                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                            </button>
-                        </div>
+                        <InputField
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Create a strong password"
+                            name="password"
+                            icon={<LockKeyhole size={18} />}
+                            rightElement={
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
+                                >
+                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                </button>
+                            }
+                        />
                     </div>
 
                     {/* Confirm Password */}
                     <div className="mb-6">
-                        <label className="block text-[#c5dede] text-sm font-medium mb-1.5">Confirm Password</label>
-                        <div className="relative">
-                            <input
-                                type={showConfirm ? "text" : "password"}
-                                placeholder="Re-enter your password"
-                                className="w-full bg-[#162626] border border-[#1e3535] focus:border-[#00d4aa]/50 focus:outline-none text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 pr-11 text-sm transition-colors duration-200"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowConfirm(!showConfirm)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
-                            >
-                                {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
-                            </button>
-                        </div>
+                        <InputField
+                            label="Confirm Password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Re-enter a password"
+                            name="password"
+                            icon={<LockKeyhole size={18} />}
+                            rightElement={
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirm(!showConfirm)}
+                                    className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
+                                >
+                                    {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
+                                </button>
+                            }
+                        />
                     </div>
 
                     {/* CTA */}
