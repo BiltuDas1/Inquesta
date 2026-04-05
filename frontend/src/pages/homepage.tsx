@@ -1,20 +1,23 @@
 import { Link } from "react-router";
 
 export default function Home() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-none shadow-2xl shadow-black/40">
         <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto font-headline tracking-tight">
-          <div className="text-2xl font-bold tracking-tighter text-on-surface">Luminary</div>
+          <div className="text-2xl font-bold tracking-tighter text-on-surface">inquesta<span className="text-gradient">.org</span></div>
           <div className="hidden md:flex items-center space-x-8">
             <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Courses</a>
-            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Resources</a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Programs</a>
+            <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Community</a>
           </div>
           <div className="flex items-center space-x-6">
             <button className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">Login</button>
             <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20">
-              Get Started Free
+              Get Started
             </button>
           </div>
         </div>
@@ -31,21 +34,21 @@ export default function Home() {
             <div className="space-y-8">
               <div className="inline-flex items-center space-x-2 bg-surface-container-low/50 border border-outline-variant px-4 py-2 rounded-full backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-medium tracking-widest uppercase text-on-surface-variant">Enrollment Open for Q4</span>
+                <span className="text-xs font-medium tracking-widest uppercase text-on-surface-variant">INDIA'S #1 STEM EDTECH PLATFORM</span>
               </div>
               <h1 className="text-6xl md:text-7xl font-headline font-extrabold tracking-tighter leading-[1.1]">
-                Master the <span className="text-gradient">Machine</span> & <span className="text-gradient">IoT</span>
+                Learn. <br /> Build. <br/><span className="text-gradient">Innovate.</span>
               </h1>
               <p className="text-lg md:text-xl text-on-surface-variant max-w-xl leading-relaxed">
-                Architecture the future with hands-on industrial IoT and neural network engineering. Move beyond code into the realm of hardware-software synthesis.
+                Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group">
-                  Explore Curriculum
+                  Start Learning
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
                 <button className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all">
-                  View Demo
+                  Explore
                 </button>
               </div>
             </div>
@@ -57,11 +60,11 @@ export default function Home() {
                 <div className="absolute bottom-10 left-10 glass-card p-6 rounded-2xl border border-primary/20 shadow-xl max-w-[240px]">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined">hub</span>
+                      <span className="material-symbols-outlined">kid_star</span>
                     </div>
                     <div>
-                      <p className="text-xs text-on-surface-variant">Live Nodes</p>
-                      <p className="font-bold text-primary">Active</p>
+                      <p className="text-xs text-on-surface-variant">Average Rating</p>
+                      <p className="font-bold text-primary">4.8 / 5</p>
                     </div>
                   </div>
                   <div className="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
@@ -77,9 +80,9 @@ export default function Home() {
         <section className="py-20 bg-surface-container-low/30">
           <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0">
             {[ 
-              { val: "12,482", label: "Active Nodes" },
-              { val: "0.4ms", label: "Latency" },
-              { val: "99.8%", label: "AI Precision" }
+              { val: "50K+", label: "Students" },
+              { val: "1200+", label: "Schools Partnered" },
+              { val: "120+", label: "Courses & Kits" }
             ].map((stat, i) => (
               <div key={i} className={`text-center px-4 ${i < 2 ? 'md:border-r border-outline-variant' : ''}`}>
                 <p className="text-5xl font-headline font-extrabold text-on-surface mb-2 tracking-tighter">{stat.val}</p>
@@ -133,7 +136,7 @@ export default function Home() {
 
               {/* Bottom Wide Course */}
               <div className="md:col-span-12 group cursor-pointer relative h-[300px] rounded-3xl overflow-hidden bg-surface-container border border-outline-variant flex items-center px-12">
-                <img className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700" src="https://images.unsplash.com/photo-1558494949-ef8b56b4728f?auto=format&fit=crop&q=80&w=1200" alt="" />
+                <img className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv4SdMF4Haf_XtQ0yCeyfRnJJ9-SHu99huT6KupQRv3seTPF6L3nL2m-4l5aO1ihXWzgmvjNZBeCEGuzvPpYOTqNxpGbmptfDH5ztz3r-SKVfES2jX-H5M2Z0pKau9hbkmYBPX4JzcXR1F4Y2b9G8JPV58VHqCpNCALssdHhvt0VRSr_icEQuio_7i33C1Bq4pgsqZ9a0pysHfkq-tPjexOAKdXE3zZ_hH6EJMkxExrjryV1aqFTQAhPLRcljCdIZBogDTN8Kg7Afu" alt="" />
                 <div className="relative z-10 w-full flex flex-col md:flex-row md:items-center justify-between gap-8">
                   <div className="max-w-2xl">
                     <h3 className="text-3xl font-headline font-bold mb-4">Next-Gen Edge Computing Platforms</h3>
@@ -198,13 +201,13 @@ export default function Home() {
 
       <footer className="w-full py-12 bg-background border-t border-outline-variant text-sm">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto space-y-8 md:space-y-0">
-          <div className="text-xl font-bold text-on-surface">Luminary</div>
+          <div className="text-xl font-bold text-on-surface">Inquesta</div>
           <div className="flex flex-wrap justify-center gap-8 text-on-surface-variant">
             {["Terms of Service", "Privacy Policy", "Twitter", "LinkedIn", "GitHub"].map(link => (
               <a key={link} className="hover:text-primary transition-colors" href="#">{link}</a>
             ))}
           </div>
-          <p className="text-on-surface-variant">© 2024 Luminary Architect. All rights reserved.</p>
+          <p className="text-on-surface-variant">© {currentYear} Inquesta. All rights reserved.</p>
         </div>
       </footer>
     </div>
