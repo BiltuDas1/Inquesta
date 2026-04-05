@@ -1,0 +1,21 @@
+@use "color" as *;
+
+@mixin glass-card {
+    background: rgba(28, 32, 38, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+// Brand Gradient
+@mixin text-gradient {
+    background: linear-gradient(135deg, $primary 0%, $primary-container 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+// Glow effect for interactive elements
+@mixin glow-hover {
+    &:hover {
+        box-shadow: 0 0 20px rgba($primary, 0.3);
+    }
+}
