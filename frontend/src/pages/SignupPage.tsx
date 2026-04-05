@@ -1,4 +1,4 @@
-import {BookOpen, Eye, EyeOff, GraduationCap, LockKeyhole, Mail, Star, User} from "lucide-react";
+// import {BookOpen, Eye, EyeOff, GraduationCap, LockKeyhole, Mail, Star, User} from "lucide-react";
 import {useState} from "react";
 import InputField from "../components/ui/InputField";
 
@@ -55,15 +55,15 @@ export default function SignupPage() {
                     <div className="flex flex-col gap-3 text-left">
                         {[
                             {
-                                icon: <Star size={18} />,
+                                icon: <span className="material-symbols-outlined">star</span>,
                                 text: "AI-powered personalized learning paths",
                             },
                             {
-                                icon: <GraduationCap size={18} />,
+                                icon: <span className="material-symbols-outlined">school</span>,
                                 text: "Expert-led courses with certifications",
                             },
                             {
-                                icon: <BookOpen size={18} />,
+                                icon: <span className="material-symbols-outlined">menu_book</span>,
                                 text: "Interactive content & real-time collaboration",
                             },
                         ].map((item, i) => (
@@ -138,7 +138,7 @@ export default function SignupPage() {
                                 label="First Name"
                                 type="text"
                                 placeholder="John"
-                                icon={<User size={18} />}
+                                icon={<span className="material-symbols-outlined">account_circle</span>}
                                 name="email"
                             />
                         </div>
@@ -147,7 +147,7 @@ export default function SignupPage() {
                                 label="Last Name"
                                 type="text"
                                 placeholder="Doe"
-                                icon={<User size={18} />}
+                                icon={<span className="material-symbols-outlined">account_circle</span>}
                                 name="email"
                             />
                         </div>
@@ -159,7 +159,7 @@ export default function SignupPage() {
                             label="Email Address"
                             type="email"
                             placeholder="you@example.com"
-                            icon={<Mail size={18} />}
+                            icon={<span className="material-symbols-outlined">mail</span>}
                             name="email"
                         />
                     </div>
@@ -171,14 +171,18 @@ export default function SignupPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Create a strong password"
                             name="password"
-                            icon={<LockKeyhole size={18} />}
+                            icon={<span className="material-symbols-outlined">lock</span>}
                             rightElement={
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
                                 >
-                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                    {showPassword ? (
+                                        <span className="material-symbols-outlined">visibility</span>
+                                    ) : (
+                                        <span className="material-symbols-outlined">visibility_off</span>
+                                    )}
                                 </button>
                             }
                         />
@@ -191,14 +195,18 @@ export default function SignupPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Re-enter a password"
                             name="password"
-                            icon={<LockKeyhole size={18} />}
+                            icon={<span className="material-symbols-outlined">lock</span>}
                             rightElement={
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirm(!showConfirm)}
                                     className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
                                 >
-                                    {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
+                                    {showConfirm ? (
+                                        <span className="material-symbols-outlined">visibility</span>
+                                    ) : (
+                                        <span className="material-symbols-outlined">visibility_off</span>
+                                    )}
                                 </button>
                             }
                         />

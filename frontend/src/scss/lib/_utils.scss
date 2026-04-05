@@ -1,10 +1,9 @@
-// --- Visual Effects & Utilities ---
-// Glassmorphism effect used in the original design
+@use "color" as *;
+
 @mixin glass-card {
     background: rgba(28, 32, 38, 0.6);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba($outline-variant, 0.15);
 }
 
 // Brand Gradient
