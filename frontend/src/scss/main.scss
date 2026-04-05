@@ -1,12 +1,37 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@use "lib/color" as *;
+@use "lib/utils" as *;
+@import "tailwindcss" layer(tailwindcss);
+
+@theme {
+  /* Keep interpolation for CSS variables in the theme block */
+  --color-background: #{ $background };
+  --color-primary: #{ $primary };
+  --color-primary-container: #{ $primary-container };
+  --color-on-primary: #{ $on-primary };
+  --color-secondary: #{ $secondary };
+  --color-surface: #{ $surface };
+  --color-surface-container: #{ $surface-container };
+  --color-surface-container-low: #{ $surface-container-low };
+  --color-surface-container-highest: #{ $surface-container-highest };
+  --color-on-surface: #{ $on-surface };
+  --color-on-surface-variant: #{ $on-surface-variant };
+  --color-outline-variant: #{ $outline-variant };
+
+  /* Font Mappings */
+  --font-headline: #{ $font-headline };
+  --font-body: #{ $font-body };
 }
 
-body {
-  width: 100%;
-  min-height: 100vh;
-  // This ensures gradient fills the screen without gaps
-  overflow-x: hidden; 
+@layer utilities {
+  .glass-card {
+    @include glass-card;
+  }
+  
+  .text-gradient {
+    @include text-gradient;
+  }
+
+  .glow-hover {
+    @include glow-hover;
+  }
 }
