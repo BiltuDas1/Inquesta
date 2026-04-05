@@ -1,31 +1,53 @@
+import { useState } from "react";
 import { Link } from "react-router";
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-none shadow-2xl shadow-black/40">
-        <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto font-headline tracking-tight">
+        <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto font-headline tracking-tight relative">
+          
           <div className="text-2xl font-bold tracking-tighter text-on-surface">inquesta<span className="text-gradient">.org</span></div>
-          <div className="hidden md:flex items-center space-x-8">
+          
+          {/* 2. Hamburger Menu Button (Visible only on mobile) */}
+          <button 
+            className="lg:!hidden text-on-surface material-symbols-outlined"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? 'close' : 'menu'}
+          </button>
+
+          {/* 3. Navigation Links and Action Buttons Container */}
+          {/* Added dynamic classes to handle flex-col on mobile and flex-row on desktop */}
+          <div className={`${isMenuOpen ? 'flex' : 'hidden'} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 backdrop-blur-xl`}>
+            
+            {/* Nav Links */}
             <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Courses</a>
             <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Programs</a>
             <a className="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Community</a>
-          </div>
-          <div className="flex items-center space-x-6">
-            <button className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">Login</button>
-            <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover">
-              Get Started
-            </button>
+            
+            {/* Divider for mobile */}
+            <div className="w-full h-px bg-outline-variant lg:hidden"></div>
+
+            {/* Buttons */}
+            <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
+              <button className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">Login</button>
+              <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
+                Get Started
+              </button>
+            </div>
+            
           </div>
         </div>
       </nav>
 
       <main className="pt-24">
         {/* Hero Section */}
-        <section className="relative min-h-[650px] flex items-center overflow-hidden px-8">
+        <section className="relative min-h-[550px] md:min-h-[650px] flex items-center overflow-hidden px-8">
           {/* <div className="absolute inset-0 z-0">
             <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full" />
             <div className="absolute bottom-[10%] left-[-5%] w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full" />
@@ -43,7 +65,7 @@ export default function Home() {
                 Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group">
+                <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
                   Start Learning
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
@@ -193,8 +215,8 @@ export default function Home() {
             <h2 className="text-4xl md:text-6xl font-headline font-extrabold mb-8 tracking-tight">Ready to build the future?</h2>
             <p className="text-on-surface-variant text-xl mb-12 max-w-2xl mx-auto">Join the next cohort of engineers mastering the intersection of AI and physical systems.</p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all">Start Your Journey</button>
-              <button className="text-on-surface font-bold text-xl px-10 py-5 hover:bg-surface-container rounded-full transition-all">Talk to an Advisor</button>
+              <button className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">Start Your Journey</button>
+              <button className="border border-outline-variant text-on-surface font-bold text-xl px-10 py-5 hover:bg-surface-container rounded-full transition-all">Talk to an Advisor</button>
             </div>
           </div>
         </section>
