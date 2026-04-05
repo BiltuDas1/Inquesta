@@ -16,7 +16,7 @@ export default function Home() {
           </div>
           <div className="flex items-center space-x-6">
             <button className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">Login</button>
-            <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20">
+            <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover">
               Get Started
             </button>
           </div>
@@ -25,7 +25,7 @@ export default function Home() {
 
       <main className="pt-24">
         {/* Hero Section */}
-        <section className="relative min-h-[800px] flex items-center overflow-hidden px-8">
+        <section className="relative min-h-[650px] flex items-center overflow-hidden px-8">
           {/* <div className="absolute inset-0 z-0">
             <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full" />
             <div className="absolute bottom-[10%] left-[-5%] w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full" />
