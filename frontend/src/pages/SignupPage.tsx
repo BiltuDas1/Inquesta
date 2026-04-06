@@ -55,7 +55,7 @@ export default function SignupPage() {
                     <div className="flex flex-col gap-3 text-left">
                         {[
                             {
-                                icon: <span className="material-symbols-outlined">star</span>,
+                                icon: <span className="material-symbols-outlined ">star</span>,
                                 text: "AI-powered personalized learning paths",
                             },
                             {
@@ -138,7 +138,7 @@ export default function SignupPage() {
                                 label="First Name"
                                 type="text"
                                 placeholder="John"
-                                icon={<span className="material-symbols-outlined">account_circle</span>}
+                                icon={<span className="material-symbols-outlined " style={{ fontSize: "22px" }}>account_circle</span>}
                                 name="email"
                             />
                         </div>
@@ -147,7 +147,7 @@ export default function SignupPage() {
                                 label="Last Name"
                                 type="text"
                                 placeholder="Doe"
-                                icon={<span className="material-symbols-outlined">account_circle</span>}
+                                icon={<span className="material-symbols-outlined" style={{ fontSize: "22px" }}>account_circle</span>}
                                 name="email"
                             />
                         </div>
@@ -159,7 +159,7 @@ export default function SignupPage() {
                             label="Email Address"
                             type="email"
                             placeholder="you@example.com"
-                            icon={<span className="material-symbols-outlined">mail</span>}
+                            icon={<span className="material-symbols-outlined" style={{ fontSize: "22px" }}>mail</span>}
                             name="email"
                         />
                     </div>
@@ -171,7 +171,7 @@ export default function SignupPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Create a strong password"
                             name="password"
-                            icon={<span className="material-symbols-outlined">lock</span>}
+                            icon={<span className="material-symbols-outlined" style={{ fontSize: "22px" }}>lock</span>}
                             rightElement={
                                 <button
                                     type="button"
@@ -179,9 +179,9 @@ export default function SignupPage() {
                                     className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
                                 >
                                     {showPassword ? (
-                                        <span className="material-symbols-outlined">visibility</span>
+                                        <span className="material-symbols-outlined" style={{ fontSize: "22px" }}>visibility</span>
                                     ) : (
-                                        <span className="material-symbols-outlined">visibility_off</span>
+                                        <span className="material-symbols-outlined" style={{ fontSize: "22px" }}>visibility_off</span>
                                     )}
                                 </button>
                             }
@@ -192,10 +192,10 @@ export default function SignupPage() {
                     <div className="mb-6">
                         <InputField
                             label="Confirm Password"
-                            type={showPassword ? "text" : "password"}
+                            type={showConfirm ? "text" : "password"}
                             placeholder="Re-enter a password"
                             name="password"
-                            icon={<span className="material-symbols-outlined">lock</span>}
+                            icon={<span className="material-symbols-outlined" style={{ fontSize: "22px" }}>lock</span>}
                             rightElement={
                                 <button
                                     type="button"
@@ -203,9 +203,9 @@ export default function SignupPage() {
                                     className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
                                 >
                                     {showConfirm ? (
-                                        <span className="material-symbols-outlined">visibility</span>
+                                        <span className="material-symbols-outlined" style={{ fontSize: "22px" }}>visibility</span>
                                     ) : (
-                                        <span className="material-symbols-outlined">visibility_off</span>
+                                        <span className="material-symbols-outlined" style={{ fontSize: "22px" }}>visibility_off</span>
                                     )}
                                 </button>
                             }
