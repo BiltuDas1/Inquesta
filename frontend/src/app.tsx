@@ -12,7 +12,7 @@ function App() {
         {/* <Route path="/login" element={<LoginPage/>}/> */}
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App;
