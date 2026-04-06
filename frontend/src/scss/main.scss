@@ -4,29 +4,29 @@
 
 @theme {
   /* Keep interpolation for CSS variables in the theme block */
-  --color-background: #{ $background };
-  --color-primary: #{ $primary };
-  --color-primary-container: #{ $primary-container };
-  --color-on-primary: #{ $on-primary };
-  --color-secondary: #{ $secondary };
-  --color-surface: #{ $surface };
-  --color-surface-container: #{ $surface-container };
-  --color-surface-container-low: #{ $surface-container-low };
-  --color-surface-container-highest: #{ $surface-container-highest };
-  --color-on-surface: #{ $on-surface };
-  --color-on-surface-variant: #{ $on-surface-variant };
-  --color-outline-variant: #{ $outline-variant };
+  --color-background: #{$background};
+  --color-primary: #{$primary};
+  --color-primary-container: #{$primary-container};
+  --color-on-primary: #{$on-primary};
+  --color-secondary: #{$secondary};
+  --color-surface: #{$surface};
+  --color-surface-container: #{$surface-container};
+  --color-surface-container-low: #{$surface-container-low};
+  --color-surface-container-highest: #{$surface-container-highest};
+  --color-on-surface: #{$on-surface};
+  --color-on-surface-variant: #{$on-surface-variant};
+  --color-outline-variant: #{$outline-variant};
 
   /* Font Mappings */
-  --font-headline: #{ $font-headline };
-  --font-body: #{ $font-body };
+  --font-headline: #{$font-headline};
+  --font-body: #{$font-body};
 }
 
 @layer utilities {
   .glass-card {
     @include glass-card;
   }
-  
+
   .text-gradient {
     @include text-gradient;
   }

@@ -5,6 +5,7 @@
   - [How to request a Feature](#how-to-request-a-feature)
   - [Development Workflow](#development-workflow)
     - [Setup Custom Hooks](#setup-custom-hooks)
+    - [Use Prettier Formatter](#use-prettier-formatter)
   - [Commit Message Guidelines](#commit-message-guidelines)
     - [Valid Types](#valid-types)
   - [Coding Standards](#coding-standards)
@@ -38,6 +39,14 @@ Use the following command to apply the custom hook, it blocks the commit if the 
 git config core.hooksPath .githooks
 ```
 
+### Use Prettier Formatter
+
+Always use the prettier formatter for formatting the whole document before commit:
+
+```sh
+npx prettier --write .
+```
+
 ## Commit Message Guidelines
 
 Inquesta enforces **Conventional Commits** to maintain a clean and automated history. Your commit messages must follow this regex-validated format:
@@ -62,6 +71,7 @@ Inquesta enforces **Conventional Commits** to maintain a clean and automated his
 ## Coding Standards
 
 - **React**: Use TypeScript and ensure there are no ESLint errors.
+- **TypeScript**: Use prettier formatter for formatting the code before commit.
 
 ## Licensing
 
