@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InputField from "../components/ui/InputField";
+import InputField from "../components/ui/inputfield";
 
 const stats = [
   { value: "120K+", label: "Active Learners" },
