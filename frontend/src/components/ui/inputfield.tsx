@@ -32,7 +32,7 @@ const InputField: React.FC<InputFieldProps> = ({
       <div className="relative">
         {/* Left Icon */}
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3a6060] pointer-events-none flex">
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 text-[#3a6060] pointer-events-none flex">
             {icon}
           </div>
         )}
