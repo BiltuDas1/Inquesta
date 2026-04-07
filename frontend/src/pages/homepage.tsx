@@ -25,7 +25,7 @@ export default function Home() {
           {/* 3. Navigation Links and Action Buttons Container */}
           {/* Added dynamic classes to handle flex-col on mobile and flex-row on desktop */}
           <div
-            className={`${isMenuOpen ? "flex" : "hidden"} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 backdrop-blur-xl`}
+            className={`${isMenuOpen ? "flex" : "hidden"} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 `}
           >
             {/* Nav Links */}
             <a
