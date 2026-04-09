@@ -9,7 +9,7 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_run: ${{ steps.compare.outputs.should_run }}
+      should_run: ${{ steps.compare.outputs.run_deploy }}
     steps:
       - name: Fetch Remote Hash and Compare
         id: compare
@@ -53,10 +53,20 @@ jobs:
           npm run build
           
           mkdir ../deploy
-          cp -r ./dist/* ../deploy/
+          cp -r ./dist ../deploy/
           cp ./package.json ../deploy/
           cp ./package-lock.json ../deploy/
           echo "${{ github.sha }}" > ../deploy/.deploy_hash
+
+      - name: Clean old dist folder on Server
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            rm -rf /home/u113275674/domains/staging-gql.inquesta.org/nodejs/dist
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
@@ -68,7 +78,6 @@ jobs:
           source: "deploy/*"
           target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
           strip_components: 1
-          rm: true
 
       - name: Finalize Deployment on Server
         uses: appleboy/ssh-action@v1.2.5
