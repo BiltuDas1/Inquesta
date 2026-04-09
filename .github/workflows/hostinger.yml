@@ -21,8 +21,9 @@ jobs:
           npm install
           npm run build
           mkdir ../deploy
-          cp -r ./dist/* ../deploy/
-          cp ./package.json ../deploy/
+          cp -r ./dist ../deploy/
+          mkdir ../deploy/tmp
+          touch ../deploy/tmp/restart.txt
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
