@@ -20,6 +20,9 @@ jobs:
           cd server
           npm install
           npm run build
+          mkdir ../deploy
+          cp -r ./dist/* ../deploy/
+          cp ./package.json ../deploy/
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
@@ -28,6 +31,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "./server/dist,./server/package.json"
+          source: "./deploy/*"
           target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
+          strip_components: 1
 
