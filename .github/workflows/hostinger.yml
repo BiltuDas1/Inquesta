@@ -1,7 +1,6 @@
 name: Hostinger Staging Deployment
 
 on:
-  push:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
@@ -40,10 +39,10 @@ jobs:
     if: needs.check-changes.outputs.should_run != 'false'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6.0.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: '24'
 
