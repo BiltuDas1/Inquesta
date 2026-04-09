@@ -28,6 +28,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "./server/dist/,package.json"
-          target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs"
+          source: "./server/dist,./server/package.json"
+          target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
 
