@@ -1,11 +1,47 @@
 name: Hostinger Nighty Deployment
 on:
   push:
+    branches:
+      - staging
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  build-ts:
+  check-changes:
     runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.compare.outputs.should_run }}
+    steps:
+      - name: Check Remote Hash
+        id: compare
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            HASH_FILE="/home/u113275674/domains/staging-gql.inquesta.org/nodejs/.deploy_hash"
+            if [ -f "$HASH_FILE" ]; then
+              LAST_HASH=$(cat "$HASH_FILE")
+              if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
+                echo "No changes detected."
+                echo "run_deploy=false" >> $GITHUB_OUTPUT
+              else
+                echo "run_deploy=true" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "No hash file found. Fresh deploy needed."
+              echo "run_deploy=true" >> $GITHUB_OUTPUT
+            fi
+        # If the SSH fails for some reason, we default to running the build just in case
+        continue-on-error: true
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.should_run != 'false'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -24,6 +60,7 @@ jobs:
           cp -r ./dist ../deploy/
           mkdir ../deploy/tmp
           touch ../deploy/tmp/restart.txt
+          echo "${{ github.sha }}" > ../deploy/.deploy_hash
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
@@ -32,7 +69,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "./deploy/*"
+          source: "deploy/*"
           target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
           strip_components: 1
-
+          rm: true
