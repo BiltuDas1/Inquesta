@@ -12,29 +12,26 @@ jobs:
     outputs:
       should_run: ${{ steps.compare.outputs.should_run }}
     steps:
-      - name: Check Remote Hash
+      - name: Fetch Remote Hash and Compare
         id: compare
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            HASH_FILE="/home/u113275674/domains/staging-gql.inquesta.org/nodejs/.deploy_hash"
-            if [ -f "$HASH_FILE" ]; then
-              LAST_HASH=$(cat "$HASH_FILE")
-              if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
-                echo "No changes detected. Skipping deployment."
-                echo "run_deploy=false" >> $GITHUB_OUTPUT
-              else
-                echo "run_deploy=true" >> $GITHUB_OUTPUT
-              fi
-            else
-              echo "No hash file found. Fresh deploy needed."
-              echo "run_deploy=true" >> $GITHUB_OUTPUT
-            fi
-        # If the server is momentarily unreachable, we default to running the build just in case
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          HASH_FILE="/home/u113275674/domains/staging-gql.inquesta.org/nodejs/.deploy_hash"
+          LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
+          
+          echo "Hostinger currently has hash: $LAST_HASH"
+          echo "Current GitHub commit hash: ${{ github.sha }}"
+          
+          if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
+            echo "No changes detected. Skipping deployment."
+            echo "run_deploy=false" >> $GITHUB_OUTPUT
+          else
+            echo "Fresh deploy needed."
+            echo "run_deploy=true" >> $GITHUB_OUTPUT
+          fi
         continue-on-error: true
 
   build-and-deploy:
