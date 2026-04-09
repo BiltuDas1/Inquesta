@@ -7,8 +7,27 @@ jobs:
   build-ts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v6
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
-      - run: node -v
+
+      - name: Install and build
+        run: |
+          cd server
+          npm install
+          npm run build
+
+      - name: Copy files to Hostinger
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "./server/dist/,package.json"
+          target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs"
+
