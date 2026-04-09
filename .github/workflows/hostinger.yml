@@ -1,8 +1,6 @@
-name: Hostinger Nighty Deployment
+name: Hostinger Staging Deployment
+
 on:
-  push:
-    branches:
-      - staging
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
@@ -11,31 +9,28 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_run: ${{ steps.compare.outputs.should_run }}
+      should_run: ${{ steps.compare.outputs.run_deploy }}
     steps:
-      - name: Check Remote Hash
+      - name: Fetch Remote Hash and Compare
         id: compare
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            HASH_FILE="/home/u113275674/domains/staging-gql.inquesta.org/nodejs/.deploy_hash"
-            if [ -f "$HASH_FILE" ]; then
-              LAST_HASH=$(cat "$HASH_FILE")
-              if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
-                echo "No changes detected."
-                echo "run_deploy=false" >> $GITHUB_OUTPUT
-              else
-                echo "run_deploy=true" >> $GITHUB_OUTPUT
-              fi
-            else
-              echo "No hash file found. Fresh deploy needed."
-              echo "run_deploy=true" >> $GITHUB_OUTPUT
-            fi
-        # If the SSH fails for some reason, we default to running the build just in case
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          HASH_FILE="/home/u113275674/domains/staging-gql.inquesta.org/nodejs/.deploy_hash"
+          LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
+          
+          echo "Hostinger currently has hash: $LAST_HASH"
+          echo "Current GitHub commit hash: ${{ github.sha }}"
+          
+          if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
+            echo "No changes detected. Skipping deployment."
+            echo "run_deploy=false" >> $GITHUB_OUTPUT
+          else
+            echo "Fresh deploy needed."
+            echo "run_deploy=true" >> $GITHUB_OUTPUT
+          fi
         continue-on-error: true
 
   build-and-deploy:
@@ -44,10 +39,10 @@ jobs:
     if: needs.check-changes.outputs.should_run != 'false'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6.0.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: '24'
 
@@ -56,11 +51,22 @@ jobs:
           cd server
           npm install
           npm run build
+          
           mkdir ../deploy
           cp -r ./dist ../deploy/
-          mkdir ../deploy/tmp
-          touch ../deploy/tmp/restart.txt
+          cp ./package.json ../deploy/
+          cp ./package-lock.json ../deploy/
           echo "${{ github.sha }}" > ../deploy/.deploy_hash
+
+      - name: Clean old dist folder on Server
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            rm -rf /home/u113275674/domains/staging-gql.inquesta.org/nodejs/dist
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
@@ -72,4 +78,19 @@ jobs:
           source: "deploy/*"
           target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
           strip_components: 1
-          rm: true
+
+      - name: Finalize Deployment on Server
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/u113275674/domains/staging-gql.inquesta.org/nodejs
+
+            export PATH="$PATH:/opt/alt/alt-nodejs24/root/bin"
+            npm ci --omit=dev
+
+            mkdir -p tmp
+            touch tmp/restart.txt
