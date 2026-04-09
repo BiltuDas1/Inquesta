@@ -57,7 +57,7 @@ jobs:
           npm run build
           
           mkdir ../deploy
-          cp -r ./dist ../deploy/
+          cp -r ./dist/* ../deploy/
           cp ./package.json ../deploy/
           cp ./package-lock.json ../deploy/
           echo "${{ github.sha }}" > ../deploy/.deploy_hash
@@ -72,6 +72,7 @@ jobs:
           source: "deploy/*"
           target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
           strip_components: 1
+          rm: true
 
       - name: Finalize Deployment on Server
         uses: appleboy/ssh-action@v1.2.5
