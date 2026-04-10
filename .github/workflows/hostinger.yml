@@ -3,7 +3,7 @@ name: Hostinger Staging Deployment
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   check-changes:
@@ -17,13 +17,13 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
-          HASH_FILE="/home/u113275674/domains/staging-gql.inquesta.org/nodejs/.deploy_hash"
+
+          HASH_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/.deploy_hash"
           LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
-          
+
           echo "Hostinger currently has hash: $LAST_HASH"
           echo "Current GitHub commit hash: ${{ github.sha }}"
-          
+
           if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
             echo "No changes detected. Skipping deployment."
             echo "run_deploy=false" >> $GITHUB_OUTPUT
@@ -44,14 +44,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6.3.0
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Install and build
         run: |
           cd server
           npm install
           npm run build
-          
+
           mkdir ../deploy
           cp -r ./dist ../deploy/
           cp ./package.json ../deploy/
@@ -66,7 +66,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            rm -rf /home/u113275674/domains/staging-gql.inquesta.org/nodejs/dist
+            rm -rf /home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/dist
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
@@ -76,7 +76,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "deploy/*"
-          target: "/home/u113275674/domains/staging-gql.inquesta.org/nodejs/"
+          target: "/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/"
           strip_components: 1
 
       - name: Finalize Deployment on Server
@@ -87,7 +87,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd /home/u113275674/domains/staging-gql.inquesta.org/nodejs
+            cd /home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs
 
             export PATH="$PATH:/opt/alt/alt-nodejs24/root/bin"
             npm ci --omit=dev
