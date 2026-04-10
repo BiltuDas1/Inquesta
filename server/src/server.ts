@@ -1,12 +1,12 @@
 import Fastify from "fastify";
 import { createYoga } from "graphql-yoga";
-import { type FastifyContext, schema } from "./schemas/schema.ts";
+import { schema } from "./schemas/schema.ts";
+import { isProduction, serverConfig } from "./config.ts";
+import type { FastifyContext } from "./types/fastify.ts";
 
-// Checking if it's production
-const isProduction = process.env.PRODUCTION !== undefined;
 const yoga = createYoga<FastifyContext>({
   schema,
-  graphqlEndpoint: "/",
+  graphqlEndpoint: serverConfig.endpoint,
   graphiql: !isProduction,
 });
 
@@ -30,7 +30,7 @@ server.addContentTypeParser("multipart/form-data", {}, (req, payload, done) => {
 
 // Connect Yoga to Fastify
 server.route({
-  url: "/",
+  url: serverConfig.endpoint,
   method: ["GET", "POST", "OPTIONS"],
   handler: async (req, reply) => {
     return yoga.handleNodeRequestAndResponse(req, reply, { req, reply });
@@ -38,8 +38,7 @@ server.route({
 });
 
 // Start the Server
-const host = isProduction ? "0.0.0.0" : "127.0.0.1";
-server.listen({ port: 4000, host: host }, (err) => {
+server.listen({ port: serverConfig.port, host: serverConfig.host }, (err) => {
   if (err) {
     server.log.error(err);
     process.exit(1);
