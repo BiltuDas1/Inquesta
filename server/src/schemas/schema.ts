@@ -1,20 +1,6 @@
-import { createSchema } from "graphql-yoga";
-import { type FastifyRequest, type FastifyReply } from "fastify";
+import { builder } from "../libraries/builder.ts";
 
-export type FastifyContext = {
-  req: FastifyRequest;
-  reply: FastifyReply;
-};
+import "./health.ts";
+import "./register.ts";
 
-export const schema = createSchema<FastifyContext>({
-  typeDefs: `
-    type Query {
-      hello: String
-    }
-  `,
-  resolvers: {
-    Query: {
-      hello: () => "Hello from Fastify + Yoga!",
-    },
-  },
-});
+export const schema = builder.toSchema();
