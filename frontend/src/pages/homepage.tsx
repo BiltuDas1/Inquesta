@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
+// import { Link } from "react-router";
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate=useNavigate()
 
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
@@ -52,10 +54,10 @@ export default function Home() {
 
             {/* Buttons */}
             <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
-              <button className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">
+              <button onClick={()=>navigate("/login")} className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">
                 Login
               </button>
-              <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
+              <button onClick={()=>navigate("/signup")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
                 Get Started
               </button>
             </div>
@@ -87,7 +89,7 @@ export default function Home() {
                 PictoBlox to Arduino.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
+                <button onClick={()=>navigate("/signup")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
                   Start Learning
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">
                     arrow_forward
@@ -349,7 +351,7 @@ export default function Home() {
               and physical systems.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
+              <button onClick={()=>navigate("/signup")} className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
                 Start Your Journey
               </button>
               <button className="border border-outline-variant text-on-surface font-bold text-xl px-10 py-5 hover:bg-surface-container rounded-full transition-all">
