@@ -19,22 +19,14 @@ interface Course {
   tags: string[];
   iconEmoji: string;
   iconBg: string;
+  desc: string; // Added description field
 }
 
 // ── Seed Data ────────────────────────────────────────────────────────────────
 const SEED: Course[] = [
-  { id: 1, title: "UI/UX Design Fundamentals", cat: "Design", level: "Beginner", dur: 18, price: 49, enroll: 820, rating: 4.8, status: "Popular", instr: "Sara Kim", tags: ["figma", "wireframe"], iconEmoji: "🎨", iconBg: "#0d2a1f" },
-  { id: 2, title: "Full-Stack Web Development", cat: "Development", level: "Intermediate", dur: 60, price: 129, enroll: 1240, rating: 4.9, status: "Popular", instr: "Alex Torres", tags: ["react", "node"], iconEmoji: "💻", iconBg: "#161a38" },
-  { id: 3, title: "Python for Data Science", cat: "Data Science", level: "Beginner", dur: 30, price: 0, enroll: 980, rating: 4.7, status: "Active", instr: "Mia Chen", tags: ["python", "pandas"], iconEmoji: "🔬", iconBg: "#0d2a2a" },
-  { id: 4, title: "Advanced SQL & Analytics", cat: "Data Science", level: "Advanced", dur: 22, price: 89, enroll: 430, rating: 4.6, status: "Active", instr: "James Park", tags: ["sql", "analytics"], iconEmoji: "📊", iconBg: "#2a1010" },
-  { id: 5, title: "Digital Marketing Mastery", cat: "Marketing", level: "Beginner", dur: 15, price: 39, enroll: 670, rating: 4.5, status: "Active", instr: "Lily Adams", tags: ["seo", "ads"], iconEmoji: "🎯", iconBg: "#1a2a0d" },
-  { id: 6, title: "Machine Learning A–Z", cat: "Data Science", level: "Advanced", dur: 45, price: 149, enroll: 560, rating: 4.9, status: "Popular", instr: "Dr. Raj Patel", tags: ["ml", "tensorflow"], iconEmoji: "🧠", iconBg: "#1a1028" },
-  { id: 7, title: "Business Strategy & OKRs", cat: "Business", level: "Intermediate", dur: 12, price: 79, enroll: 310, rating: 4.4, status: "Active", instr: "Chris Lee", tags: ["strategy", "okr"], iconEmoji: "📈", iconBg: "#0d2a1f" },
-  { id: 8, title: "Motion Design with After Effects", cat: "Design", level: "Intermediate", dur: 28, price: 99, enroll: 285, rating: 4.7, status: "Draft", instr: "Zoe Hart", tags: ["motion", "ae"], iconEmoji: "🎬", iconBg: "#2a1010" },
-  { id: 9, title: "React Native Mobile Apps", cat: "Development", level: "Advanced", dur: 36, price: 119, enroll: 390, rating: 4.8, status: "Active", instr: "Alex Torres", tags: ["react-native", "expo"], iconEmoji: "⚡", iconBg: "#161a38" },
-  { id: 10, title: "Intro to Cloud Computing", cat: "Development", level: "Beginner", dur: 20, price: 0, enroll: 1100, rating: 4.6, status: "Active", instr: "Sam Brooks", tags: ["aws", "cloud"], iconEmoji: "🌐", iconBg: "#0d2a2a" },
-  { id: 11, title: "Content Marketing 101", cat: "Marketing", level: "Beginner", dur: 10, price: 0, enroll: 740, rating: 4.3, status: "Active", instr: "Nina Rogers", tags: ["content", "writing"], iconEmoji: "📐", iconBg: "#1a2a0d" },
-  { id: 12, title: "Figma Advanced Prototyping", cat: "Design", level: "Advanced", dur: 16, price: 69, enroll: 296, rating: 4.7, status: "Draft", instr: "Sara Kim", tags: ["figma", "prototype"], iconEmoji: "🚀", iconBg: "#1a1028" },
+  { id: 1, title: "UI/UX Design Fundamentals", cat: "Design", level: "Beginner", dur: 18, price: 49, enroll: 820, rating: 4.8, status: "Popular", instr: "Sara Kim", tags: ["figma", "wireframe"], iconEmoji: "🎨", iconBg: "#0d2a1f", desc: "Master the basics of visual design and user experience." },
+  { id: 2, title: "Full-Stack Web Development", cat: "Development", level: "Intermediate", dur: 60, price: 129, enroll: 1240, rating: 4.9, status: "Popular", instr: "Alex Torres", tags: ["react", "node"], iconEmoji: "💻", iconBg: "#161a38", desc: "Build complete web applications using the MERN stack." },
+  { id: 3, title: "Python for Data Science", cat: "Data Science", level: "Beginner", dur: 30, price: 0, enroll: 980, rating: 4.7, status: "Active", instr: "Mia Chen", tags: ["python", "pandas"], iconEmoji: "🔬", iconBg: "#0d2a2a", desc: "Learn data analysis and visualization with Python libraries." },
 ];
 
 const PER_PAGE = 6;
@@ -87,72 +79,101 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
   const [instr, setInstr] = useState(editing?.instr ?? "");
   const [status, setStatus] = useState<Status>(editing?.status ?? "Active");
   const [tags, setTags] = useState(editing?.tags.join(", ") ?? "");
+  const [desc, setDesc] = useState(editing?.desc ?? "");
 
   const inputClass = "w-full bg-[#262a31] border border-[#3b4a44] rounded-[10px] px-[0.85rem] py-[0.6rem] text-[#dfe2eb] text-[0.875rem] font-body outline-none focus:border-[#6fffd9] placeholder:text-[#84948e]";
   const labelClass = "block text-[0.8rem] text-[#b9cac3] mb-[5px] font-headline font-medium";
 
   function handleSubmit() {
     if (!title.trim()) return;
-    onSave({ title: title.trim(), cat, level, dur, price, instr: instr.trim() || "Instructor", status, tags: tags.split(",").map(t => t.trim()).filter(Boolean) });
+    onSave({ 
+      title: title.trim(), 
+      cat, 
+      level, 
+      dur, 
+      price, 
+      instr: instr.trim() || "Instructor", 
+      status, 
+      tags: tags.split(",").map(t => t.trim()).filter(Boolean),
+      desc: desc.trim() 
+    });
   }
 
   return (
-    <div className="fixed border  inset-0 bg-black/70 z-[100] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[20px] p-8 w-full max-w-[500px] max-h-[90vh] overflow-y-auto font-body shadow-2xl">
+    <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[20px] p-8 w-full max-w-[950px] max-h-[90vh] overflow-y-auto font-body shadow-2xl">
         <h2 className="font-headline text-[1.2rem] font-bold text-[#dfe2eb] mb-6">
           {editing ? "Edit Course" : "Add New Course"}
         </h2>
 
-        <div className="mb-4">
-          <label className={labelClass}>Course Title *</label>
-          <input className={inputClass} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Advanced React Patterns" />
+        {/* Two-Column Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Left Side: Fields */}
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>Course Title *</label>
+              <input className={inputClass} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Advanced React Patterns" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Category</label>
+                <select className={inputClass} value={cat} onChange={e => setCat(e.target.value as Cat)}>
+                  {CATS.map(c => <option key={c} className="bg-[#1c2026]">{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>Level</label>
+                <select className={inputClass} value={level} onChange={e => setLevel(e.target.value as Level)}>
+                  {LEVELS.map(l => <option key={l} className="bg-[#1c2026]">{l}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Duration (hrs)</label>
+                <input className={inputClass} type="number" min={1} value={dur || ""} onChange={e => setDur(Number(e.target.value))} placeholder="e.g. 24" />
+              </div>
+              <div>
+                <label className={labelClass}>Price (USD)</label>
+                <input className={inputClass} type="number" min={0} step={0.01} value={price || ""} onChange={e => setPrice(Number(e.target.value))} placeholder="0 = Free" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Instructor</label>
+                <input className={inputClass} value={instr} onChange={e => setInstr(e.target.value)} placeholder="Instructor name" />
+              </div>
+              <div>
+                <label className={labelClass}>Status</label>
+                <select className={inputClass} value={status} onChange={e => setStatus(e.target.value as Status)}>
+                  {STATUSES.map(s => <option key={s} className="bg-[#1c2026]">{s}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Tags (comma separated)</label>
+              <input className={inputClass} value={tags} onChange={e => setTags(e.target.value)} placeholder="e.g. react, hooks, typescript" />
+            </div>
+          </div>
+
+          {/* Right Side: Description */}
+          <div className="flex flex-col">
+            <label className={labelClass}>Course Description</label>
+            <textarea 
+              className={`${inputClass} flex-1 min-h-[200px] lg:min-h-0 resize-none`} 
+              value={desc} 
+              onChange={e => setDesc(e.target.value)} 
+              placeholder="Provide a detailed overview of the course content..."
+            />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div>
-            <label className={labelClass}>Category</label>
-            <select className={inputClass} value={cat} onChange={e => setCat(e.target.value as Cat)}>
-              {CATS.map(c => <option key={c} className="bg-[#1c2026]">{c}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Level</label>
-            <select className={inputClass} value={level} onChange={e => setLevel(e.target.value as Level)}>
-              {LEVELS.map(l => <option key={l} className="bg-[#1c2026]">{l}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div>
-            <label className={labelClass}>Duration (hrs)</label>
-            <input className={inputClass} type="number" min={1} value={dur || ""} onChange={e => setDur(Number(e.target.value))} placeholder="e.g. 24" />
-          </div>
-          <div>
-            <label className={labelClass}>Price (USD)</label>
-            <input className={inputClass} type="number" min={0} step={0.01} value={price || ""} onChange={e => setPrice(Number(e.target.value))} placeholder="0 = Free" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div>
-            <label className={labelClass}>Instructor</label>
-            <input className={inputClass} value={instr} onChange={e => setInstr(e.target.value)} placeholder="Instructor name" />
-          </div>
-          <div>
-            <label className={labelClass}>Status</label>
-            <select className={inputClass} value={status} onChange={e => setStatus(e.target.value as Status)}>
-              {STATUSES.map(s => <option key={s} className="bg-[#1c2026]">{s}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className={labelClass}>Tags (comma separated)</label>
-          <input className={inputClass} value={tags} onChange={e => setTags(e.target.value)} placeholder="e.g. react, hooks, typescript" />
-        </div>
-
-        <div className="flex gap-3 justify-end">
+        <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-[#3b4a44]">
           <button onClick={onClose} className="bg-transparent border border-[#3b4a44] rounded-full px-5 py-[0.55rem] text-[#b9cac3] font-headline font-semibold text-[0.875rem] cursor-pointer hover:opacity-80 transition-opacity">
             Cancel
           </button>
@@ -191,13 +212,6 @@ export default function DashboardPage() {
   const safePage = Math.min(page, pages);
   const sliced = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
-  // const stats = {
-  //   total: courses.length,
-  //   active: courses.filter(c => c.status !== "Draft").length,
-  //   enroll: courses.reduce((a, c) => a + c.enroll, 0),
-  //   free: courses.filter(c => c.price === 0).length,
-  // };
-
   const editingCourse = typeof modal === "number" ? courses.find(c => c.id === modal) ?? null : null;
 
   function handleSave(data: Omit<Course, "id" | "enroll" | "rating" | "iconEmoji" | "iconBg">) {
@@ -205,11 +219,24 @@ export default function DashboardPage() {
       setCourses(prev => prev.map(c => c.id === modal ? { ...c, ...data } : c));
     } else {
       const idx = nextId;
-      setCourses(prev => [...prev, { ...data, id: idx, enroll: 0, rating: 4.5, iconEmoji: EMOJIS[idx % EMOJIS.length], iconBg: ICON_BGS[idx % ICON_BGS.length] }]);
+      setCourses(prev => [...prev, { 
+        ...data, 
+        id: idx, 
+        enroll: 0, 
+        rating: 4.5, 
+        iconEmoji: EMOJIS[idx % EMOJIS.length], 
+        iconBg: ICON_BGS[idx % ICON_BGS.length] 
+      }]);
       setNextId(n => n + 1);
     }
     setModal(null);
   }
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this course?")) {
+      setCourses(prev => prev.filter(c => c.id !== id));
+    }
+  };
 
   const selectClass = "bg-[#1c2026] border border-[#3b4a44] rounded-[10px] px-[0.85rem] py-[0.55rem] text-[#dfe2eb] text-[0.85rem] font-body outline-none cursor-pointer focus:border-[#6fffd9]";
 
@@ -218,7 +245,7 @@ export default function DashboardPage() {
       <div className="bg-[#10141a] min-h-screen font-body text-[#dfe2eb] overflow-x-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
-          {/* ── Hero bar */}
+          {/* Hero Bar */}
           <div className="flex flex-wrap items-start justify-between gap-4 mb-10">
             <div>
               <h1 className="font-headline text-[clamp(1.4rem,3vw,2rem)] font-bold text-[#dfe2eb] tracking-tight">
@@ -232,27 +259,12 @@ export default function DashboardPage() {
               onClick={() => setModal("add")}
               className="inline-flex items-center gap-2 bg-[#6fffd9] text-[#00382c] font-headline font-bold text-[0.875rem] px-5 py-[0.6rem] rounded-full border-none cursor-pointer whitespace-nowrap flex-shrink-0 hover:opacity-90 transition-opacity"
             >
-             <span className="material-symbols-outlined ">Add</span>
+              <span className="material-symbols-outlined">Add</span>
               Add Course
             </button>
           </div>
 
-          {/* ── Stats row */}
-          {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-            {[
-              { val: stats.total, lbl: "Total Courses" },
-              { val: stats.active, lbl: "Active" },
-              { val: stats.enroll.toLocaleString(), lbl: "Enrollments" },
-              { val: stats.free, lbl: "Free Courses" },
-            ].map(s => (
-              <div key={s.lbl} className="bg-[#1c2026] border border-[#3b4a44] rounded-[14px] p-4 sm:p-5">
-                <div className="font-headline text-[1.3rem] sm:text-[1.6rem] font-bold text-[#6fffd9] leading-tight">{s.val}</div>
-                <div className="text-[0.75rem] text-[#b9cac3] mt-1">{s.lbl}</div>
-              </div>
-            ))}
-          </div> */}
-
-          {/* ── Search & Filters */}
+          {/* Search & Filters */}
           <div className="flex flex-wrap gap-3 mb-5 items-center">
             <div className="relative flex-1 min-w-[180px]">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-[15px] h-[15px] text-[#84948e]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -279,7 +291,7 @@ export default function DashboardPage() {
             </select>
           </div>
 
-          {/* ── Table Container */}
+          {/* Table Container */}
           <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[16px] overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -328,13 +340,23 @@ export default function DashboardPage() {
                         </span>
                       </td>
                       <td className="p-4 align-middle"><StatusDot status={c.status} /></td>
+                      
+                      {/* Actions Cell */}
                       <td className="p-4 align-middle text-right">
-                        <button
-                          onClick={() => setModal(c.id)}
-                          className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c] transition-colors"
-                        >
-                          Edit
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => setModal(c.id)}
+                            className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c] transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(c.id)}
+                            className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#ffb4ab] cursor-pointer hover:bg-[#2a0d10] transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -375,6 +397,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-
-
