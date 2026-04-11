@@ -42,7 +42,7 @@ const CATS: Cat[] = ["Design", "Development", "Business", "Data Science", "Marke
 const LEVELS: Level[] = ["Beginner", "Intermediate", "Advanced"];
 const STATUSES: Status[] = ["Active", "Draft", "Popular"];
 
-// ── Sub-components ───────────────────────────────────────────────────────────
+// ── Sub-components ──────────────────────────────────────────────────────────
 
 function LevelBadge({ level }: { level: Level }) {
   const styles: Record<Level, string> = {
@@ -97,7 +97,7 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
+    <div className="fixed border  inset-0 bg-black/70 z-[100] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[20px] p-8 w-full max-w-[500px] max-h-[90vh] overflow-y-auto font-body shadow-2xl">
         <h2 className="font-headline text-[1.2rem] font-bold text-[#dfe2eb] mb-6">
           {editing ? "Edit Course" : "Add New Course"}
@@ -215,8 +215,6 @@ export default function DashboardPage() {
 
   return (
     <>
-     
-
       <div className="bg-[#10141a] min-h-screen font-body text-[#dfe2eb] overflow-x-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
@@ -234,9 +232,7 @@ export default function DashboardPage() {
               onClick={() => setModal("add")}
               className="inline-flex items-center gap-2 bg-[#6fffd9] text-[#00382c] font-headline font-bold text-[0.875rem] px-5 py-[0.6rem] rounded-full border-none cursor-pointer whitespace-nowrap flex-shrink-0 hover:opacity-90 transition-opacity"
             >
-              <svg width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
+             <span className="material-symbols-outlined ">Add</span>
               Add Course
             </button>
           </div>
