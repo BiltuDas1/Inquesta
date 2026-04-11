@@ -191,12 +191,12 @@ export default function DashboardPage() {
   const safePage = Math.min(page, pages);
   const sliced = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
-  const stats = {
-    total: courses.length,
-    active: courses.filter(c => c.status !== "Draft").length,
-    enroll: courses.reduce((a, c) => a + c.enroll, 0),
-    free: courses.filter(c => c.price === 0).length,
-  };
+  // const stats = {
+  //   total: courses.length,
+  //   active: courses.filter(c => c.status !== "Draft").length,
+  //   enroll: courses.reduce((a, c) => a + c.enroll, 0),
+  //   free: courses.filter(c => c.price === 0).length,
+  // };
 
   const editingCourse = typeof modal === "number" ? courses.find(c => c.id === modal) ?? null : null;
 
@@ -238,7 +238,7 @@ export default function DashboardPage() {
           </div>
 
           {/* ── Stats row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
             {[
               { val: stats.total, lbl: "Total Courses" },
               { val: stats.active, lbl: "Active" },
@@ -250,7 +250,7 @@ export default function DashboardPage() {
                 <div className="text-[0.75rem] text-[#b9cac3] mt-1">{s.lbl}</div>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* ── Search & Filters */}
           <div className="flex flex-wrap gap-3 mb-5 items-center">
