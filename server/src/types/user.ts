@@ -1,14 +1,6 @@
-type userWithLastName = {
+export type User = {
   firstname: string;
-  lastname: string;
+  lastname?: string | null | undefined;
   email: string;
   password: string;
 };
-
-type userWithoutLastName = {
-  firstname: string;
-  email: string;
-  password: string;
-};
-
-export type User = userWithLastName | userWithoutLastName;
