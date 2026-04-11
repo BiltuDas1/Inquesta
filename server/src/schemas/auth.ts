@@ -1,9 +1,10 @@
-import { builder } from "../libraries/builder.ts";
+import { builder, GQLResponse } from "../libraries/builder.ts";
 import { loginUser, registerUser } from "../resolvers/user.ts";
 import type { User } from "../types/user.ts";
 
 builder.mutationField("register", (t) =>
-  t.string({
+  t.field({
+    type: GQLResponse,
     args: {
       firstname: t.arg.string({ required: true }),
       lastname: t.arg.string({ required: false }),
@@ -11,14 +12,25 @@ builder.mutationField("register", (t) =>
       password: t.arg.string({ required: true }),
     },
     resolve: async (_parent, data: User, context) => {
-      await registerUser(data);
-      return "registration complete";
+      try {
+        await registerUser(data);
+        return {
+          success: true,
+          message: "registration complete",
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "registration failed",
+        };
+      }
     },
   }),
 );
 
 builder.queryField("login", (t) =>
-  t.string({
+  t.field({
+    type: GQLResponse,
     args: {
       email: t.arg.string({ required: true }),
       password: t.arg.string({ required: true }),
@@ -27,9 +39,15 @@ builder.queryField("login", (t) =>
       const success = await loginUser(email, password);
 
       if (success) {
-        return "login successful";
+        return {
+          success: true,
+          message: "login successful",
+        };
       } else {
-        return "login failed";
+        return {
+          success: false,
+          message: "login failed",
+        };
       }
     },
   }),
