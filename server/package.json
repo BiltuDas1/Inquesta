@@ -9,6 +9,7 @@
     "start": "node --env-file=.env dist/server.js",
     "make-migrations": "npx drizzle-kit generate",
     "migrate": "npx drizzle-kit migrate",
+    "apply-migration": "npx drizzle-kit push",
     "formatter": "npx prettier --write ."
   },
   "dependencies": {
