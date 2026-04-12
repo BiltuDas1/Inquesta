@@ -12,13 +12,16 @@ export type Course = {
   instructorName: string;
 };
 
-export const CourseObject = builder.objectRef<Course>("Course").implement({
-  fields: (t) => ({
-    title: t.exposeString("title"),
-    description: t.exposeString("description", { nullable: true }),
-    price: t.exposeFloat("price"),
-    level: t.exposeString("level"),
-    duration: t.exposeString("duration"),
-    instructorName: t.exposeString("instructorName"),
-  }),
-});
+export const CourseObject = builder
+  .objectRef<Course & { id: string }>("Course")
+  .implement({
+    fields: (t) => ({
+      id: t.exposeString("id"),
+      title: t.exposeString("title"),
+      description: t.exposeString("description", { nullable: true }),
+      price: t.exposeFloat("price"),
+      level: t.exposeString("level"),
+      duration: t.exposeString("duration"),
+      instructorName: t.exposeString("instructorName"),
+    }),
+  });
