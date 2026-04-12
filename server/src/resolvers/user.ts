@@ -17,7 +17,6 @@ export async function loginUser(email: string, password: string) {
     .where(and(eq(users.isActive, true), eq(users.email, email)))
     .limit(1);
 
-  console.log(userRecord?.password);
 
   if (!userRecord) {
     return false;
