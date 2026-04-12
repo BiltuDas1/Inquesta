@@ -6,3 +6,7 @@ export async function addCourse(data: Course) {
   await db.insert(courses).values(data);
   return true;
 }
+
+export async function getCourse() {
+  return await db.select().from(courses);
+}
