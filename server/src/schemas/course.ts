@@ -1,6 +1,10 @@
 import { builder, GQLResponse } from "../libraries/builder.ts";
-import { addCourse } from "../resolvers/course.ts";
-import { type CourseLevel } from "../types/course.ts";
+import { addCourse, getCourse } from "../resolvers/course.ts";
+import {
+  CourseObject,
+  type Course,
+  type CourseLevel,
+} from "../types/course.ts";
 
 builder.mutationField("courseAdd", (t) =>
   t.field({
@@ -28,6 +32,45 @@ builder.mutationField("courseAdd", (t) =>
         return {
           success: false,
           message: "failed to add course",
+        };
+      }
+    },
+  }),
+);
+
+const courseResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: Course[];
+  }>("CourseResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [CourseObject],
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("courseGet", (t) =>
+  t.field({
+    type: courseResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      try {
+        const result = await getCourse();
+        return {
+          success: true,
+          message: "course list has been fetched successfully",
+          data: result,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "unable to fetch courses list",
         };
       }
     },
