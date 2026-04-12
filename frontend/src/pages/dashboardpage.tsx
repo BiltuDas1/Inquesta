@@ -2,22 +2,16 @@ import { useState, useMemo } from "react";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 type Level = "Beginner" | "Intermediate" | "Advanced";
-type Status = "Active" | "Draft" | "Popular";
-type Cat = "Design" | "Development" | "Business" | "Data Science" | "Marketing";
+
 
 interface Course {
   id: number;
   title: string;
-  cat: Cat;
   level: Level;
   dur: number;
   price: number;
-  enroll: number;
-  rating: number;
-  status: Status;
   instr: string;
-  tags: string[];
-  desc: string; // Added description field
+  desc: string;
 }
 
 // ── Seed Data ────────────────────────────────────────────────────────────────
@@ -25,57 +19,36 @@ const SEED: Course[] = [
   {
     id: 1,
     title: "UI/UX Design Fundamentals",
-    cat: "Design",
     level: "Beginner",
     dur: 18,
     price: 49,
-    enroll: 820,
-    rating: 4.8,
-    status: "Popular",
     instr: "Sara Kim",
-    tags: ["figma", "wireframe"],
     desc: "Master the basics of visual design and user experience.",
   },
   {
     id: 2,
     title: "Full-Stack Web Development",
-    cat: "Development",
+  
     level: "Intermediate",
     dur: 60,
     price: 129,
-    enroll: 1240,
-    rating: 4.9,
-    status: "Popular",
     instr: "Alex Torres",
-    tags: ["react", "node"],
     desc: "Build complete web applications using the MERN stack.",
   },
   {
     id: 3,
     title: "Python for Data Science",
-    cat: "Data Science",
     level: "Beginner",
     dur: 30,
     price: 0,
-    enroll: 980,
-    rating: 4.7,
-    status: "Active",
     instr: "Mia Chen",
-    tags: ["python", "pandas"],
     desc: "Learn data analysis and visualization with Python libraries.",
   },
 ];
 
 const PER_PAGE = 6;
-const CATS: Cat[] = [
-  "Design",
-  "Development",
-  "Business",
-  "Data Science",
-  "Marketing",
-];
 const LEVELS: Level[] = ["Beginner", "Intermediate", "Advanced"];
-const STATUSES: Status[] = ["Active", "Draft", "Popular"];
+
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
@@ -94,40 +67,21 @@ function LevelBadge({ level }: { level: Level }) {
   );
 }
 
-function StatusDot({ status }: { status: Status }) {
-  const dotColor: Record<Status, string> = {
-    Active: "bg-[#6fffd9]",
-    Draft: "bg-[#84948e]",
-    Popular: "bg-[#f5c518]",
-  };
-  return (
-    <span className="inline-flex items-center gap-[5px] text-[0.8rem] text-[#b9cac3]">
-      <span
-        className={`w-[7px] h-[7px] rounded-full flex-shrink-0 inline-block ${dotColor[status]}`}
-      />
-      {status}
-    </span>
-  );
-}
-
 // ── Modal ────────────────────────────────────────────────────────────────────
 interface ModalProps {
   editing: Course | null;
   onClose: () => void;
   onSave: (
-    data: Omit<Course, "id" | "enroll" | "rating" | "iconEmoji" | "iconBg">
+    data: Omit<Course, "id" | "enroll" | "rating" | "cat">
   ) => void;
 }
 
 function CourseModal({ editing, onClose, onSave }: ModalProps) {
   const [title, setTitle] = useState(editing?.title ?? "");
-  const [cat, setCat] = useState<Cat>(editing?.cat ?? "Design");
   const [level, setLevel] = useState<Level>(editing?.level ?? "Beginner");
   const [dur, setDur] = useState(editing?.dur ?? 0);
   const [price, setPrice] = useState(editing?.price ?? 0);
   const [instr, setInstr] = useState(editing?.instr ?? "");
-  const [status, setStatus] = useState<Status>(editing?.status ?? "Active");
-  const [tags, setTags] = useState(editing?.tags.join(", ") ?? "");
   const [desc, setDesc] = useState(editing?.desc ?? "");
 
   const inputClass =
@@ -139,16 +93,10 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
     if (!title.trim()) return;
     onSave({
       title: title.trim(),
-      cat,
       level,
       dur,
       price,
       instr: instr.trim() || "Instructor",
-      status,
-      tags: tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean),
       desc: desc.trim(),
     });
   }
@@ -163,7 +111,6 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
           {editing ? "Edit Course" : "Add New Course"}
         </h2>
 
-        {/* Two-Column Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side: Fields */}
           <div className="space-y-4">
@@ -177,21 +124,8 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
               />
             </div>
 
+            {/* Reorganized Row: Level and Instructor */}
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelClass}>Category</label>
-                <select
-                  className={inputClass}
-                  value={cat}
-                  onChange={(e) => setCat(e.target.value as Cat)}
-                >
-                  {CATS.map((c) => (
-                    <option key={c} className="bg-[#1c2026]">
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div>
                 <label className={labelClass}>Level</label>
                 <select
@@ -205,6 +139,15 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className={labelClass}>Instructor</label>
+                <input
+                  className={inputClass}
+                  value={instr}
+                  onChange={(e) => setInstr(e.target.value)}
+                  placeholder="Instructor name"
+                />
               </div>
             </div>
 
@@ -221,7 +164,7 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
                 />
               </div>
               <div>
-                <label className={labelClass}>Price (USD)</label>
+                <label className={labelClass}>Price (INR)</label>
                 <input
                   className={inputClass}
                   type="number"
@@ -232,42 +175,6 @@ function CourseModal({ editing, onClose, onSave }: ModalProps) {
                   placeholder="0 = Free"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelClass}>Instructor</label>
-                <input
-                  className={inputClass}
-                  value={instr}
-                  onChange={(e) => setInstr(e.target.value)}
-                  placeholder="Instructor name"
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Status</label>
-                <select
-                  className={inputClass}
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as Status)}
-                >
-                  {STATUSES.map((s) => (
-                    <option key={s} className="bg-[#1c2026]">
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className={labelClass}>Tags (comma separated)</label>
-              <input
-                className={inputClass}
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="e.g. react, hooks, typescript"
-              />
             </div>
           </div>
 
@@ -307,34 +214,9 @@ export default function DashboardPage() {
   const [courses, setCourses] = useState<Course[]>(SEED);
   const [search, setSearch] = useState("");
   const [filterLevel, setFilterLevel] = useState("");
-  const [filterCat, setFilterCat] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<"add" | number | null>(null);
   const [nextId, setNextId] = useState(SEED.length + 1);
-
-  const EMOJIS = [
-    "🎨",
-    "💻",
-    "📊",
-    "🚀",
-    "📐",
-    "🔬",
-    "📈",
-    "🎯",
-    "🌐",
-    "⚡",
-    "🧠",
-    "🎬",
-  ];
-  const ICON_BGS = [
-    "#0d2a1f",
-    "#161a38",
-    "#2a1010",
-    "#1a2a0d",
-    "#1a1028",
-    "#0d2a2a",
-  ];
 
   const filtered = useMemo(
     () =>
@@ -342,16 +224,14 @@ export default function DashboardPage() {
         if (
           search &&
           !c.title.toLowerCase().includes(search.toLowerCase()) &&
-          !c.instr.toLowerCase().includes(search.toLowerCase()) &&
-          !c.cat.toLowerCase().includes(search.toLowerCase())
+          !c.instr.toLowerCase().includes(search.toLowerCase())
         )
           return false;
         if (filterLevel && c.level !== filterLevel) return false;
-        if (filterCat && c.cat !== filterCat) return false;
-        if (filterStatus && c.status !== filterStatus) return false;
+    
         return true;
       }),
-    [courses, search, filterLevel, filterCat, filterStatus]
+    [courses, search, filterLevel]
   );
 
   const pages = Math.ceil(filtered.length / PER_PAGE) || 1;
@@ -364,7 +244,7 @@ export default function DashboardPage() {
       : null;
 
   function handleSave(
-    data: Omit<Course, "id" | "enroll" | "rating" | "iconEmoji" | "iconBg">
+    data: Omit<Course, "id" | "enroll" | "rating" | "cat">
   ) {
     if (typeof modal === "number") {
       setCourses((prev) =>
@@ -377,10 +257,6 @@ export default function DashboardPage() {
         {
           ...data,
           id: idx,
-          enroll: 0,
-          rating: 4.5,
-          iconEmoji: EMOJIS[idx % EMOJIS.length],
-          iconBg: ICON_BGS[idx % ICON_BGS.length],
         },
       ]);
       setNextId((n) => n + 1);
@@ -401,46 +277,33 @@ export default function DashboardPage() {
     <>
       <div className="bg-[#10141a] min-h-screen font-body text-[#dfe2eb] overflow-x-hidden">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
-          {/* Hero Bar */}
           <div className="flex flex-wrap items-start justify-between gap-4 mb-10">
             <div>
               <h1 className="font-headline text-[clamp(1.4rem,3vw,2rem)] font-bold text-[#dfe2eb] tracking-tight">
                 Course Catalog
               </h1>
               <p className="text-[0.875rem] text-[#b9cac3] mt-1">
-                Manage, monitor and grow your learning content
+                Manage and monitor your learning content
               </p>
             </div>
             <button
               onClick={() => setModal("add")}
-              className="inline-flex items-center gap-2 bg-[#6fffd9] text-[#00382c] font-headline font-bold text-[0.875rem] px-5 py-[0.6rem] rounded-full border-none cursor-pointer whitespace-nowrap flex-shrink-0 hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 bg-[#6fffd9] text-[#00382c] font-headline font-bold text-[0.875rem] px-5 py-[0.6rem] rounded-full border-none cursor-pointer hover:opacity-90 transition-opacity"
             >
-              <span className="material-symbols-outlined">Add</span>
-              Add Course
+             <span className="material-symbols-outlined">Add</span>  Add Course
             </button>
           </div>
 
-          {/* Search & Filters */}
           <div className="flex flex-wrap gap-3 mb-5 items-center">
             <div className="relative flex-1 min-w-[180px]">
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-[15px] h-[15px] text-[#84948e]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <circle cx={11} cy={11} r={8} />
-                <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-              </svg>
               <input
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                placeholder="Search courses..."
-                className="w-full bg-[#1c2026] border border-[#3b4a44] rounded-[10px] pl-[2.1rem] pr-3 py-[0.55rem] text-[#dfe2eb] text-[0.85rem] font-body outline-none focus:border-[#6fffd9] placeholder:text-[#84948e]"
+                placeholder="Search courses or instructors..."
+                className="w-full bg-[#1c2026] border border-[#3b4a44] rounded-[10px] px-[1rem] py-[0.55rem] text-[#dfe2eb] text-[0.85rem] font-body outline-none focus:border-[#6fffd9] placeholder:text-[#84948e]"
               />
             </div>
             <select
@@ -453,63 +316,23 @@ export default function DashboardPage() {
             >
               <option value="">All Levels</option>
               {LEVELS.map((o) => (
-                <option key={o} className="bg-[#1c2026]">
+                <option key={o} value={o}>
                   {o}
                 </option>
               ))}
             </select>
-            <select
-              className={selectClass}
-              value={filterCat}
-              onChange={(e) => {
-                setFilterCat(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">All Categories</option>
-              {CATS.map((o) => (
-                <option key={o} className="bg-[#1c2026]">
-                  {o}
-                </option>
-              ))}
-            </select>
-            <select
-              className={selectClass}
-              value={filterStatus}
-              onChange={(e) => {
-                setFilterStatus(e.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">All Status</option>
-              {STATUSES.map((o) => (
-                <option key={o} className="bg-[#1c2026]">
-                  {o}
-                </option>
-              ))}
-            </select>
+          
           </div>
 
-          {/* Table Container */}
           <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[16px] overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-[#181c22] border-b border-[#3b4a44]">
-                    {[
-                      "Course",
-                      "Level",
-                      "Duration",
-                      "Price",
-                      "Enrolled",
-                      "Rating",
-                      "Status",
-                      "",
-                    ].map((h, i) => (
+                    {["Course", "Level", "Duration", "Price", ""].map((h, i) => (
                       <th
                         key={i}
-                        className={`p-[0.8rem_1rem] text-left font-headline text-[0.75rem] font-bold text-[#b9cac3] tracking-widest uppercase whitespace-nowrap 
-                          ${i === 4 || i === 5 ? "hidden md:table-cell" : ""}`}
+                        className="p-[0.8rem_1rem] text-left font-headline text-[0.75rem] font-bold text-[#b9cac3] tracking-widest uppercase"
                       >
                         {h}
                       </th>
@@ -519,75 +342,45 @@ export default function DashboardPage() {
                 <tbody className="divide-y divide-[#3b4a44]">
                   {sliced.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan={8}
-                        className="text-center p-12 text-[#b9cac3] font-body"
-                      >
+                      <td colSpan={5} className="text-center p-12 text-[#b9cac3]">
                         No courses found
                       </td>
                     </tr>
                   ) : (
                     sliced.map((c) => (
-                      <tr
-                        key={c.id}
-                        className="group hover:bg-[#262a31] transition-colors"
-                      >
+                      <tr key={c.id} className="group hover:bg-[#262a31] transition-colors">
                         <td className="p-4 align-middle">
-                          <div className="flex items-center gap-3">
-                            <div className="min-w-0">
-                              <div className="font-headline font-semibold text-[0.9rem] text-[#dfe2eb] leading-tight truncate">
-                                {c.title}
-                              </div>
-                              <div className="text-[0.75rem] text-[#b9cac3] mt-[2px] truncate">
-                                {c.cat} · {c.instr}
-                              </div>
+                          <div className="min-w-0">
+                            <div className="font-headline font-semibold text-[0.9rem] text-[#dfe2eb] truncate">
+                              {c.title}
+                            </div>
+                            <div className="text-[0.75rem] text-[#b9cac3] mt-[2px] truncate">
+                              Instructor: {c.instr}
                             </div>
                           </div>
                         </td>
                         <td className="p-4 align-middle">
                           <LevelBadge level={c.level} />
                         </td>
-                        <td className="p-4 align-middle text-[#b9cac3] text-[0.875rem] font-body">
+                        <td className="p-4 align-middle text-[#b9cac3] text-[0.875rem]">
                           {c.dur}h
                         </td>
                         <td className="p-4 align-middle">
-                          {c.price === 0 ? (
-                            <span className="text-[#6fffd9] font-headline font-bold text-[0.95rem]">
-                              Free
-                            </span>
-                          ) : (
-                            <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
-                              ${c.price}
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-4 align-middle font-headline font-medium text-[#b9cac3] text-[0.875rem] hidden md:table-cell">
-                          {c.enroll.toLocaleString()}
-                        </td>
-                        <td className="p-4 align-middle hidden md:table-cell">
-                          <span className="inline-flex items-center gap-1 text-[0.8rem]">
-                            <span className="text-[#f5c518]">★</span>
-                            <span className="text-[0.85rem] text-[#dfe2eb]">
-                              {c.rating.toFixed(1)}
-                            </span>
+                          <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
+                            {c.price === 0 ? "Free" : `$${c.price}`}
                           </span>
                         </td>
-                        <td className="p-4 align-middle">
-                          <StatusDot status={c.status} />
-                        </td>
-
-                        {/* Actions Cell */}
                         <td className="p-4 align-middle text-right">
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => setModal(c.id)}
-                              className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c] transition-colors"
+                              className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c]"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(c.id)}
-                              className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#ffb4ab] cursor-pointer hover:bg-[#2a0d10] transition-colors"
+                              className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#ffb4ab] cursor-pointer hover:bg-[#2a0d10]"
                             >
                               Delete
                             </button>
@@ -600,25 +393,21 @@ export default function DashboardPage() {
               </table>
             </div>
 
-            {/* Pagination Footer */}
-            <div className="flex flex-wrap items-center justify-between p-4 border-t border-[#3b4a44] gap-2">
+            <div className="flex items-center justify-between p-4 border-t border-[#3b4a44]">
               <span className="text-[0.8rem] text-[#b9cac3]">
-                Showing{" "}
-                {filtered.length === 0 ? 0 : (safePage - 1) * PER_PAGE + 1}–
-                {Math.min(safePage * PER_PAGE, filtered.length)} of{" "}
-                {filtered.length}
+                Showing {filtered.length === 0 ? 0 : (safePage - 1) * PER_PAGE + 1}–
+                {Math.min(safePage * PER_PAGE, filtered.length)} of {filtered.length}
               </span>
               <div className="flex gap-1">
                 {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`px-3 py-1 rounded-[8px] text-[0.8rem] font-body cursor-pointer transition-all border
-                      ${
-                        p === safePage
-                          ? "bg-[#6fffd9] text-[#00382c] border-[#6fffd9]"
-                          : "bg-[#262a31] text-[#b9cac3] border-[#3b4a44] hover:border-[#84948e]"
-                      }`}
+                    className={`px-3 py-1 rounded-[8px] text-[0.8rem] border transition-all ${
+                      p === safePage
+                        ? "bg-[#6fffd9] text-[#00382c] border-[#6fffd9]"
+                        : "bg-[#262a31] text-[#b9cac3] border-[#3b4a44]"
+                    }`}
                   >
                     {p}
                   </button>
@@ -629,7 +418,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Modal Render */}
       {modal !== null && (
         <CourseModal
           editing={editingCourse}
