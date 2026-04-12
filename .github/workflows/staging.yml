@@ -1,4 +1,4 @@
-name: Hostinger Staging Deployment
+name: Staging Deployment
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
           fi
         continue-on-error: true
 
-  build-and-deploy:
+  deploy-backend-hostinger:
     runs-on: ubuntu-latest
     needs: check-changes
     if: needs.check-changes.outputs.should_run != 'false'
@@ -94,3 +94,29 @@ jobs:
 
             mkdir -p tmp
             touch tmp/restart.txt
+
+  deploy-frontend-cloudflare:
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.should_run != 'false'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./frontend/dist --project-name=inquesta-staging
