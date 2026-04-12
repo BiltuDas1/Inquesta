@@ -1,5 +1,10 @@
 import { builder, GQLResponse } from "../libraries/builder.ts";
-import { addCourse, getCourse } from "../resolvers/course.ts";
+import {
+  addCourse,
+  deleteCourse,
+  getCourse,
+  updateCourse,
+} from "../resolvers/course.ts";
 import {
   CourseObject,
   type Course,
@@ -42,7 +47,7 @@ const courseResponse = builder
   .objectRef<{
     success: boolean;
     message: string;
-    data?: Course[];
+    data?: (Course & { id: string })[];
   }>("CourseResponse")
   .implement({
     fields: (t) => ({
@@ -71,6 +76,62 @@ builder.queryField("courseGet", (t) =>
         return {
           success: false,
           message: "unable to fetch courses list",
+        };
+      }
+    },
+  }),
+);
+
+builder.mutationField("courseDelete", (t) =>
+  t.field({
+    type: GQLResponse,
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      try {
+        await deleteCourse(args.id);
+        return {
+          success: true,
+          message: "course deleted successfully",
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "failed to delete course",
+        };
+      }
+    },
+  }),
+);
+
+builder.mutationField("courseUpdate", (t) =>
+  t.field({
+    type: GQLResponse,
+    args: {
+      id: t.arg.string({ required: true }),
+      title: t.arg.string({ required: true }),
+      description: t.arg.string({ required: false }),
+      price: t.arg.int({ required: true }),
+      level: t.arg.string({ required: true }),
+      duration: t.arg.string({ required: true }),
+      instructor_name: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      try {
+        await updateCourse(args.id, {
+          ...args,
+          level: args.level as CourseLevel,
+          instructorName: args.instructor_name,
+        });
+        return {
+          success: true,
+          message: "course details has been updated",
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "failed to update course details",
         };
       }
     },
