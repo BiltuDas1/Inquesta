@@ -452,7 +452,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="p-4 align-middle">
                           <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
-                            {c.price === 0 ? "Free" : `₹${c.price}`}
+                            {c.price === 0 ? "Free" : `₹  ${c.price}`}
                           </span>
                         </td>
                         <td className="p-4 align-middle text-right">
