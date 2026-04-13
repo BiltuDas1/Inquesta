@@ -9,15 +9,15 @@ import { useMutation, useQuery } from "@apollo/client/react";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
-type Level = "beginner" | "intermediate" | "advanced";
+type Level = "Beginner" | "Intermediate" | "Advanced";
 
 // Course type
 interface Course {
   id: string | number;
   title: string;
   level: Level;
-  duration: number;
-  price: number;
+  duration: string;
+  price: number | string;
   instructorName: string;
   description: string;
 }
@@ -45,22 +45,29 @@ interface UpdateCourseMutationResult {
   };
 }
 
-const PER_PAGE = 6;
-const LEVELS: Level[] = ["beginner", "intermediate", "advanced"];
+// Convert the level into title case ──────────────────────────────────────────────────────────
+const formatLevel = (l: string): Level => {
+  const normalized = l.toLowerCase();
+  return (normalized.charAt(0).toUpperCase() + normalized.slice(1)) as Level;
+};
+
+const PER_PAGE = 5;
+const LEVELS: Level[] = ["Beginner", "Intermediate", "Advanced"];
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
 function LevelBadge({ level }: { level: Level }) {
+  const displayLevel = formatLevel(level);
   const styles: Record<Level, string> = {
-    beginner: "bg-[#0d2a20] text-[#6fffd9]",
-    intermediate: "bg-[#1c1d40] text-[#bdc2ff]",
-    advanced: "bg-[#2a0d10] text-[#ffb4ab]",
+    Beginner: "bg-[#0d2a20] text-[#6fffd9]",
+    Intermediate: "bg-[#1c1d40] text-[#bdc2ff]",
+    Advanced: "bg-[#2a0d10] text-[#ffb4ab]",
   };
   return (
     <span
-      className={`font-headline text-[0.72rem] font-semibold px-[10px] py-[3px] rounded-full whitespace-nowrap ${styles[level]}`}
+      className={`font-headline text-[0.72rem] font-semibold px-[10px] py-[3px] rounded-full whitespace-nowrap ${styles[displayLevel]}`}
     >
-      {level}
+      {displayLevel}
     </span>
   );
 }
@@ -76,9 +83,9 @@ interface ModalProps {
 function CourseModal({ editing, onClose, onSave, isSubmitting }: ModalProps) {
   const [formData, setFormData] = useState({
     title: editing?.title ?? "",
-    level: editing?.level ?? ("Beginner" as Level),
-    duration: editing?.duration ?? 0,
-    price: editing?.price ?? 0,
+    level: editing?.level ? formatLevel(editing.level) : ("Beginner" as Level),
+    duration: editing?.duration ? String(editing.duration) : "",
+    price: editing?.price ?? "",
     instructorName: editing?.instructorName ?? "",
     description: editing?.description ?? "",
   });
@@ -96,7 +103,7 @@ function CourseModal({ editing, onClose, onSave, isSubmitting }: ModalProps) {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "number" ? Number(value) : value,
+      [name]: type === "number" && value === "" ? "" : value,
     }));
   };
 
@@ -153,12 +160,11 @@ function CourseModal({ editing, onClose, onSave, isSubmitting }: ModalProps) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Duration (hrs)</label>
+                <label className={labelClass}>Duration</label>
                 <input
                   name="duration"
                   className={inputClass}
-                  type="number"
-                  min={1}
+                  type="text"
                   value={formData.duration || ""}
                   onChange={handleChange}
                   placeholder="e.g. 24"
@@ -172,7 +178,7 @@ function CourseModal({ editing, onClose, onSave, isSubmitting }: ModalProps) {
                   type="number"
                   min={0}
                   step={0.01}
-                  value={formData.price || ""}
+                  value={formData.price}
                   onChange={handleChange}
                   placeholder="0 = Free"
                 />
@@ -437,11 +443,11 @@ export default function DashboardPage() {
                           <LevelBadge level={c.level} />
                         </td>
                         <td className="p-4 align-middle text-[#b9cac3] text-[0.875rem]">
-                          {c.duration}h
+                          {c.duration}
                         </td>
                         <td className="p-4 align-middle">
                           <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
-                            {c.price === 0 ? "Free" : `$${c.price}`}
+                            {c.price === 0 ? "Free" : `₹${c.price}`}
                           </span>
                         </td>
                         <td className="p-4 align-middle text-right">
