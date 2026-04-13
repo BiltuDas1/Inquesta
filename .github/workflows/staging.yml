@@ -113,6 +113,8 @@ jobs:
           cd frontend
           npm install
           npm run build
+        env:
+          VITE_API_URL: "https://${{ secrets.API_DOMAIN }}"
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3.14.1
