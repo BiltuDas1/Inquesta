@@ -1,6 +1,6 @@
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { loginUser, registerUser } from "../resolvers/user.ts";
-import type { User } from "../types/user.ts";
+import { UserRoleObject, type User, type UserRole } from "../types/user.ts";
 
 builder.mutationField("register", (t) =>
   t.field({
@@ -28,27 +28,45 @@ builder.mutationField("register", (t) =>
   }),
 );
 
+const loginResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: UserRole;
+  }>("LoginResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: UserRoleObject,
+        nullable: true,
+      }),
+    }),
+  });
+
 builder.queryField("login", (t) =>
   t.field({
-    type: GQLResponse,
+    type: loginResponse,
     args: {
       email: t.arg.string({ required: true }),
       password: t.arg.string({ required: true }),
     },
     resolve: async (_parent, { email, password }, context) => {
-      const success = await loginUser(email, password);
+      const result = await loginUser(email, password);
 
-      if (success) {
-        return {
-          success: true,
-          message: "login successful",
-        };
-      } else {
+      if (result === false) {
         return {
           success: false,
           message: "login failed",
         };
       }
+
+      return {
+        success: true,
+        message: "login successful",
+        data: result,
+      };
     },
   }),
 );
