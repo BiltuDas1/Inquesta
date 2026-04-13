@@ -109,14 +109,14 @@ jobs:
           node-version: "24"
 
       - name: Build Frontend
+        working-directory: ./frontend
         run: |
-          cd frontend
           npm install
-          npm run build
+          VITE_API_URL="https://${{ secrets.API_DOMAIN }}" npm run build
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3.14.1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./frontend/dist --project-name=inquesta-staging
+          command: pages deploy ./frontend/dist --project-name=inquesta-staging --branch main
