@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^4.1.7",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@tailwindcss/postcss": "^4.2.2",
+    "graphql": "^16.13.2",
     "material-symbols": "^0.44.0",
     "postcss": "^8.5.8",
     "react": "^19.2.4",
