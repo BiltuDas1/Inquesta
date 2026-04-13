@@ -8,5 +8,3 @@ export const client = new ApolloClient({
   }),
   cache: new InMemoryCache(),
 });
-
-console.log("DEBUG: GQL URL is:", import.meta.env.VITE_API_URL);

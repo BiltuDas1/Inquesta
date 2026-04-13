@@ -4,6 +4,9 @@ import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
 import DashboardPage from "./pages/dashboardpage";
 
+console.log("!!! ATTENTION: APP IS LOADING !!!");
+console.log("DEBUG: GQL URL IS:", import.meta.env.VITE_API_URL);
+
 function App() {
   return (
     <BrowserRouter>
