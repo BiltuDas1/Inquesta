@@ -109,8 +109,8 @@ jobs:
           node-version: "24"
 
       - name: Build Frontend
+        working-directory: ./frontend
         run: |
-          cd frontend
           npm install
           VITE_API_URL="https://${{ secrets.API_DOMAIN }}" npm run build
 
