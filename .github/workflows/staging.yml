@@ -112,7 +112,7 @@ jobs:
         working-directory: ./frontend
         run: |
           npm install
-          VITE_API_URL="https://${{ secrets.API_DOMAIN }}" npm run build
+          VITE_API_URL="https://staging-gql.inquesta.org" npm run build
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3.14.1
