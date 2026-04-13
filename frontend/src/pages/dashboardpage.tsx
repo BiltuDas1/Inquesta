@@ -17,7 +17,7 @@ interface Course {
   title: string;
   level: Level;
   duration: string;
-  price: number | string;
+  price: number |string;
   instructorName: string;
   description: string;
 }
@@ -177,9 +177,14 @@ function CourseModal({ editing, onClose, onSave, isSubmitting }: ModalProps) {
                   className={inputClass}
                   type="number"
                   min={0}
-                  step={0.01}
+                  step="1"
                   value={formData.price}
                   onChange={handleChange}
+                  onKeyDown={(e) => {
+                  if (e.key === "." || e.key === "e") {
+                  e.preventDefault(); 
+                  }
+                  }}
                   placeholder="0 = Free"
                 />
               </div>
