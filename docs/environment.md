@@ -9,4 +9,4 @@
 # Environment Variables (Frontend)
 | Name         | Description                                                                                      | Required           |
 | ------------ | ------------------------------------------------------------------------------------------------ | ------------------ |
-| `VITE_API_URL` | The connection URI of the backend endpoint(GraphQL) | |
+| `VITE_API_URL` | The connection URI of the backend endpoint(GraphQL) | :white_check_mark:|
