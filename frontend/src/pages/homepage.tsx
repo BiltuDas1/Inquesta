@@ -168,7 +168,7 @@ export default function Home() {
                   Next-gen technical modules updated this week.
                 </p>
               </div>
-              <button className="flex items-center space-x-2 text-primary font-bold hover:opacity-80 transition-opacity">
+              <button onClick={() => navigate("/courses")} className="flex items-center space-x-2 text-primary font-bold hover:opacity-80 transition-opacity">
                 <span>View All Modules</span>
                 <span className="material-symbols-outlined">chevron_right</span>
               </button>
