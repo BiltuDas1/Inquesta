@@ -32,7 +32,7 @@ export default function Home() {
             {/* Nav Links */}
             <a
               className="text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
+              href="/courses"
             >
               Courses
             </a>
@@ -57,7 +57,7 @@ export default function Home() {
               <button onClick={()=>navigate("/login")} className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">
                 Login
               </button>
-              <button onClick={()=>navigate("/signup")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
+              <button onClick={()=>navigate("/courses")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
                 Get Started
               </button>
             </div>
@@ -89,13 +89,13 @@ export default function Home() {
                 PictoBlox to Arduino.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button onClick={()=>navigate("/signup")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
+                <button onClick={()=>navigate("/courses")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
                   Start Learning
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">
                     arrow_forward
                   </span>
                 </button>
-                <button className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all">
+                <button onClick={()=>navigate("/courses")} className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all">
                   Explore
                 </button>
               </div>
@@ -351,7 +351,7 @@ export default function Home() {
               and physical systems.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button onClick={()=>navigate("/signup")} className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
+              <button onClick={()=>navigate("/courses")} className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
                 Start Your Journey
               </button>
               <button className="border border-outline-variant text-on-surface font-bold text-xl px-10 py-5 hover:bg-surface-container rounded-full transition-all">
