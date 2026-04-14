@@ -8,7 +8,6 @@ interface Course {
   title: string;
   description: string;
   price: number;
-  // image: string;
   level: "Beginner" | "Intermediate" | "Advanced"; // Added level type
 }
 
@@ -23,11 +22,13 @@ interface CourseGetQueryResult {
 
 // --- Course Card Component ---
 function CourseCard({ course, onOpen }: { course: Course; onOpen: (c: Course) => void }) {
+  const normalizedLevel=(course.level.charAt(0).toUpperCase()+course.level.slice(1).toLowerCase()) as Course["level"]
+
   // Logic for level tag colors
   const levelStyles = {
-    Beginner: "bg-[#6fffd9]/10 text-[#6fffd9] border-[#6fffd9]/30",
-    Intermediate: "bg-[#bdc2ff]/10 text-[#bdc2ff] border-[#bdc2ff]/30",
-    Advanced: "bg-red-500/10 text-red-400 border-red-500/30",
+    Beginner: "bg-[#062d24] text-[#6fffd9] border-[#6fffd9]/30",
+    Intermediate: "bg-[#0a0202] text-[#bdc2ff] border-[#bdc2ff]/30",
+    Advanced: "bg-[#09090b] text-red-400 border-red-500/30",
   };
 
   return (
@@ -35,7 +36,7 @@ function CourseCard({ course, onOpen }: { course: Course; onOpen: (c: Course) =>
       
       {/* Level Tag Overlay */}
       <div className="absolute top-4 left-4 z-10">
-        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md ${levelStyles[course.level]}`}>
+        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md ${levelStyles[normalizedLevel]}`}>
           {course.level}
         </span>
       </div>
@@ -66,7 +67,7 @@ function CourseCard({ course, onOpen }: { course: Course; onOpen: (c: Course) =>
 
         <div className="mt-auto flex justify-between items-center pt-5 border-t border-[#262a31]">
           <span className="text-[#6fffd9] text-xl font-extrabold font-['Plus_Jakarta_Sans']">
-            ₹{course.price.toLocaleString()}
+            ₹ {course.price.toLocaleString()}
           </span>
           <button className="bg-[#6fffd9] text-[#00382c] rounded-xl px-5 py-2 text-[12px] font-bold hover:bg-[#00e5bc] transition-all">
             Enroll
@@ -110,7 +111,7 @@ function CourseModal({ course, onClose }: { course: Course; onClose: () => void 
             <div className="text-center sm:text-left">
               <span className="text-[#84948e] text-[11px] uppercase font-bold tracking-[0.15em] mb-1 block">Course Price</span>
               <span className="text-[#6fffd9] text-3xl font-extrabold font-['Plus_Jakarta_Sans']">
-                ₹{course.price.toLocaleString()}
+                ₹ {course.price.toLocaleString()}
               </span>
             </div>
             <button className="w-full sm:w-auto bg-[#6fffd9] text-[#00382c] rounded-2xl px-10 py-4 font-bold hover:bg-[#00e5bc] transition-all active:scale-95">
@@ -125,7 +126,10 @@ function CourseModal({ course, onClose }: { course: Course; onClose: () => void 
 
 // --- Main Page ---
 export default function CoursePage() {
-  const {loading,error,data}=useQuery<CourseGetQueryResult>(GET_COURSES)
+  const {loading,error,data}=useQuery<CourseGetQueryResult>(GET_COURSES,{
+   fetchPolicy: "network-only",  // ← always fetch fresh on mount
+  notifyOnNetworkStatusChange: true,
+  })
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   const courses:Course[]=data?.courseGet.data||[]
