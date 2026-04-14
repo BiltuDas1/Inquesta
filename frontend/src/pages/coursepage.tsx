@@ -9,6 +9,7 @@ interface Course {
   description: string;
   price: number;
   level: "Beginner" | "Intermediate" | "Advanced"; // Added level type
+  duration: string; // Added duration field
 }
 
 // Course GET Response type
@@ -18,7 +19,7 @@ interface CourseGetQueryResult {
   };
 }
 
-
+const ENROLLMENT_LINK="https://docs.google.com/forms/d/e/1FAIpQLScmHoRcvkyw7EEZYQIX-c5F6qwwb9VuEprHzjL3vPvkRlEI1Q/viewform?fbzx=-4420388597224411814"
 
 // --- Course Card Component ---
 function CourseCard({ course, onOpen }: { course: Course; onOpen: (c: Course) => void }) {
@@ -50,6 +51,14 @@ function CourseCard({ course, onOpen }: { course: Course; onOpen: (c: Course) =>
       </div>
 
       <div className="p-6 flex flex-col flex-1">
+        {/* --- DURATION  --- */}
+        <div className="flex items-center gap-1.5 mb-2 text-[#84948e] text-[10px] font-bold uppercase tracking-[0.1em]">
+          <svg className="w-3.5 h-3.5 text-[#6fffd9]/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {course.duration}
+        </div>
+
         <h3 className="text-[#dfe2eb] font-['Plus_Jakarta_Sans'] text-[18px] font-bold mb-3 leading-tight line-clamp-2 group-hover:text-[#6fffd9] transition-colors">
           {course.title}
         </h3>
@@ -66,20 +75,23 @@ function CourseCard({ course, onOpen }: { course: Course; onOpen: (c: Course) =>
         </button>
 
         <div className="mt-auto flex justify-between items-center pt-5 border-t border-[#262a31]">
-          <span className="text-[#6fffd9] text-xl font-extrabold font-['Plus_Jakarta_Sans']">
-            ₹ {course.price.toLocaleString()}
+          {/* --- UPDATED PRICE COLOR LOGIC --- */}
+          <span className={`text-xl font-extrabold font-['Plus_Jakarta_Sans'] ${course.price === 0 ? 'text-[#ffb800]' : 'text-[#6fffd9]'}`}>
+            {course.price === 0 ? "Free" : `₹ ${course.price.toLocaleString()}`}
           </span>
-          <button className="bg-[#6fffd9] text-[#00382c] rounded-xl px-5 py-2 text-[12px] font-bold hover:bg-[#00e5bc] transition-all">
+          <button onClick={() => window.open(ENROLLMENT_LINK, '_blank')} className="bg-[#6fffd9] text-[#00382c] rounded-xl px-5 py-2 text-[12px] font-bold hover:bg-[#00e5bc] transition-all">
             Enroll
           </button>
         </div>
       </div>
     </div>
+  
   );
 }
 
-// --- Text-Only Modal Component ---
+
 function CourseModal({ course, onClose }: { course: Course; onClose: () => void }) {
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-md animate-in fade-in duration-300" onClick={onClose} />
@@ -92,10 +104,16 @@ function CourseModal({ course, onClose }: { course: Course; onClose: () => void 
         </button>
 
         <div className="p-8 md:p-10 flex flex-col flex-1 overflow-hidden">
-          {/* Level in Modal */}
-          <span className="text-[#6fffd9] text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block">
-            {course.level} Level Course
-          </span>
+          {/* Level and Duration in Modal */}
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-[#6fffd9] text-[10px] font-bold uppercase tracking-[0.2em]">
+              {course.level} Level
+            </span>
+            <span className="w-1 h-1 rounded-full bg-[#3b4a44]" />
+            <span className="text-[#84948e] text-[10px] font-bold uppercase tracking-[0.2em]">
+              {course.duration}
+            </span>
+          </div>
 
           <h2 className="text-[#dfe2eb] font-['Plus_Jakarta_Sans'] text-2xl md:text-3xl font-extrabold mb-6 leading-tight pr-8">
             {course.title}
@@ -114,7 +132,7 @@ function CourseModal({ course, onClose }: { course: Course; onClose: () => void 
                 ₹ {course.price.toLocaleString()}
               </span>
             </div>
-            <button className="w-full sm:w-auto bg-[#6fffd9] text-[#00382c] rounded-2xl px-10 py-4 font-bold hover:bg-[#00e5bc] transition-all active:scale-95">
+            <button onClick={()=>window.open(ENROLLMENT_LINK,'_blank')} className="w-full sm:w-auto bg-[#6fffd9] text-[#00382c] rounded-2xl px-10 py-4 font-bold hover:bg-[#00e5bc] transition-all active:scale-95">
               Enroll Now
             </button>
           </div>
