@@ -12,7 +12,7 @@ on:
 jobs:
   check-changes:
     if: |
-      github.ref == 'refs/heads/main' && 
+      github.ref == 'refs/heads/prod' && 
       github.event.inputs.confirm_env == 'Production'
     runs-on: ubuntu-latest
     outputs:
