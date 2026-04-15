@@ -1,6 +1,6 @@
 // import {BookOpen, Eye, EyeOff, GraduationCap, LockKeyhole, Mail, Star, User} from "lucide-react";
 import { useState } from "react";
-import InputField from "../components/ui/InputField";
+import InputField from "../components/ui/inputfield";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);

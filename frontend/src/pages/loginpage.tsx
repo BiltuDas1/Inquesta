@@ -1,5 +1,8 @@
-import { useState } from "react";
-import InputField from "../components/ui/InputField";
+import { useEffect, useState } from "react";
+import InputField from "../components/ui/inputfield";
+import { gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client/react";
+import { useNavigate } from "react-router";
 
 const stats = [
   { value: "120K+", label: "Active Learners" },
@@ -25,9 +28,86 @@ const features = [
   },
 ];
 
+// QUERY to get user data
+const LOGIN_QUERY = gql`
+  query login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      data {
+        email
+        role
+      }
+    }
+  }
+`;
+
+// Response type of LOGIN
+interface LoginData {
+  login: {
+    
+    data: {
+      email: string;
+      role: string;
+    };
+  };
+}
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate=useNavigate()
+
+  const [loginUser, { data, error, loading }] =
+    useLazyQuery<LoginData>(LOGIN_QUERY);
+
+  // Use useEffect to listen for when 'data' changes
+  useEffect(() => {
+    if (data?.login?.data) {
+      const userData = data.login.data;
+
+      if (userData.role == "admin" && userData.email) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            email: userData.email,
+            role: userData.role,
+          })
+        );
+        navigate("/dashboard")
+      }
+    }
+   
+    
+  }, [data]);
+
+  const handleSave = (event: any) => {
+    event.preventDefault();
+
+    loginUser({
+      variables: {
+        email,
+        password,
+      },
+    });
+    setEmail("");
+    setPassword("");
+  };
+
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-[#6fffd9]">
+        Loading...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-red-400">
+        Error: {error.message}
+      </div>
+    );
 
   return (
     <div className="h-screen overflow-hidden flex bg-[#0a1515] font-sans">
@@ -295,6 +375,8 @@ export default function LoginPage() {
             <InputField
               label="Email Address"
               type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
               icon={
                 <span
@@ -325,6 +407,8 @@ export default function LoginPage() {
               <InputField
                 label=""
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 placeholder="Create a strong password"
                 name="password"
                 icon={
@@ -391,7 +475,10 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <button className="w-full cursor-pointer bg-[#00d4aa] hover:bg-[#00bfa0] text-[#061212] font-bold text-[13.5px] tracking-wide py-2.75 rounded-[11px] mb-3.5 transition-colors duration-200">
+          <button
+            onClick={handleSave}
+            className="w-full cursor-pointer bg-[#00d4aa] hover:bg-[#00bfa0] text-[#061212] font-bold text-[13.5px] tracking-wide py-2.75 rounded-[11px] mb-3.5 transition-colors duration-200"
+          >
             Sign In →
           </button>
 
