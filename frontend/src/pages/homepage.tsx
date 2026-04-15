@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
+// import { Link } from "react-router";
 
 export default function Home() {
   const currentYear = new Date().getFullYear();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate=useNavigate()
 
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
@@ -25,12 +27,12 @@ export default function Home() {
           {/* 3. Navigation Links and Action Buttons Container */}
           {/* Added dynamic classes to handle flex-col on mobile and flex-row on desktop */}
           <div
-            className={`${isMenuOpen ? "flex" : "hidden"} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 backdrop-blur-xl`}
+            className={`${isMenuOpen ? "flex" : "hidden"} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 `}
           >
             {/* Nav Links */}
             <a
               className="text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
+              href="/courses"
             >
               Courses
             </a>
@@ -52,10 +54,10 @@ export default function Home() {
 
             {/* Buttons */}
             <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
-              <button className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">
+              <button onClick={()=>navigate("/login")} className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">
                 Login
               </button>
-              <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
+              <button onClick={()=>navigate("/courses")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
                 Get Started
               </button>
             </div>
@@ -87,13 +89,13 @@ export default function Home() {
                 PictoBlox to Arduino.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
+                <button onClick={()=>navigate("/courses")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
                   Start Learning
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">
                     arrow_forward
                   </span>
                 </button>
-                <button className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all">
+                <button onClick={()=>navigate("/courses")} className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all">
                   Explore
                 </button>
               </div>
@@ -166,7 +168,7 @@ export default function Home() {
                   Next-gen technical modules updated this week.
                 </p>
               </div>
-              <button className="flex items-center space-x-2 text-primary font-bold hover:opacity-80 transition-opacity">
+              <button onClick={() => navigate("/courses")} className="flex items-center space-x-2 text-primary font-bold hover:opacity-80 transition-opacity">
                 <span>View All Modules</span>
                 <span className="material-symbols-outlined">chevron_right</span>
               </button>
@@ -349,7 +351,7 @@ export default function Home() {
               and physical systems.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
+              <button onClick={()=>navigate("/courses")} className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
                 Start Your Journey
               </button>
               <button className="border border-outline-variant text-on-surface font-bold text-xl px-10 py-5 hover:bg-surface-container rounded-full transition-all">
