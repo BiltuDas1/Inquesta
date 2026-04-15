@@ -1,7 +1,8 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { createYoga } from "graphql-yoga";
 import { schema } from "./schemas/schema.ts";
-import { isProduction, serverConfig } from "./config.ts";
+import { allowedOrigins, isProduction, serverConfig } from "./config.ts";
 import type { FastifyContext } from "./types/fastify.ts";
 
 const yoga = createYoga<FastifyContext>({
@@ -21,6 +22,11 @@ const server = Fastify({
       },
     },
   },
+});
+
+server.register(cors, {
+  origin: isProduction ? allowedOrigins : true,
+  credentials: true,
 });
 
 // Allow GraphiQL to send multipart requests
