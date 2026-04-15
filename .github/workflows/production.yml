@@ -1,0 +1,129 @@
+name: Production Deployment
+run-name: Deploy to Production by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_env:
+        description: 'Type "Production" to confirm deployment'
+        required: true
+        type: string
+
+jobs:
+  check-changes:
+    if: |
+      github.ref == 'refs/heads/main' && 
+      github.event.inputs.confirm_env == 'Production'
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.compare.outputs.run_deploy }}
+    steps:
+      - name: Fetch Remote Hash and Compare
+        id: compare
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          HASH_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.PROD_API_DOMAIN }}/nodejs/.deploy_hash"
+          LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
+
+          echo "Production Envrionment currently has hash: $LAST_HASH"
+          echo "Current GitHub commit hash: ${{ github.sha }}"
+
+          if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
+            echo "No changes detected. Skipping deployment."
+            echo "run_deploy=false" >> $GITHUB_OUTPUT
+          else
+            echo "Fresh deploy needed."
+            echo "run_deploy=true" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+  deploy-backend-hostinger:
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.should_run != 'false'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+
+      - name: Install and build
+        run: |
+          cd server
+          npm install
+          npm run build
+
+          mkdir ../deploy
+          cp -r ./dist ../deploy/
+          cp ./package.json ../deploy/
+          cp ./package-lock.json ../deploy/
+          echo "${{ github.sha }}" > ../deploy/.deploy_hash
+
+      - name: Clean old dist folder on Server
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            rm -rf /home/${{ secrets.SSH_USER }}/domains/${{ secrets.PROD_API_DOMAIN }}/nodejs/dist
+
+      - name: Copy files to Production
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "deploy/*"
+          target: "/home/${{ secrets.SSH_USER }}/domains/${{ secrets.PROD_API_DOMAIN }}/nodejs/"
+          strip_components: 1
+
+      - name: Finalize Deployment on Server
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/${{ secrets.SSH_USER }}/domains/${{ secrets.PROD_API_DOMAIN }}/nodejs
+
+            export PATH="$PATH:/opt/alt/alt-nodejs24/root/bin"
+            npm ci --omit=dev
+
+            mkdir -p tmp
+            touch tmp/restart.txt
+
+  deploy-frontend-cloudflare:
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.should_run != 'false'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24"
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm install
+          VITE_API_URL="https://${{ secrets.PROD_API_DOMAIN }}" npm run build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./frontend/dist --project-name=inquesta --branch main
