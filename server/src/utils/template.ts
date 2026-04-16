@@ -13,7 +13,7 @@ export class Template {
 
   constructor() {
     this.templates["magic-link"] = readFileSync(
-      path.join(process.cwd(), "templates", "magic_link.html"),
+      path.join(process.cwd(), "templates", "email", "magic_link.html"),
       "utf-8",
     );
   }
