@@ -1,6 +1,8 @@
 // Server Configuration & Environment
 import { requireEnv } from "./errors/environment.ts";
 import { drizzle } from "drizzle-orm/mysql2";
+import { Email } from "./utils/email.ts";
+import { Template } from "./utils/template.ts";
 
 export const isProduction = process.env.PRODUCTION !== undefined;
 export const serverConfig = {
@@ -19,3 +21,6 @@ if (process.env.ORIGINS !== undefined) {
       .filter((url) => url.length > 0),
   );
 }
+
+export const email = new Email(requireEnv("RESEND_API_KEY"))
+export const template = new Template();
