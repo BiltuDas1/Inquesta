@@ -12,9 +12,9 @@ const yoga = createYoga<FastifyContext>({
   graphiql: !isProduction,
   context: () => {
     return {
-      logger: logger
+      logger: logger,
     };
-  }
+  },
 });
 
 // Create the Fastify server and turn on the pretty logger

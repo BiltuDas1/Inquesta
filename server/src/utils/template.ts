@@ -4,6 +4,7 @@ import path from "node:path";
 interface MagicLinkConfig {
   verification_link: string;
   target_email: string;
+  expiry_minutes: number;
 }
 
 type TemplateArgs = { type: "magic-link"; config: MagicLinkConfig };
