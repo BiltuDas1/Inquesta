@@ -22,5 +22,5 @@ if (process.env.ORIGINS !== undefined) {
   );
 }
 
-export const email = new Email(requireEnv("RESEND_API_KEY"))
-export const template = new Template();
+export const emailObj = new Email(requireEnv("RESEND_API_KEY"))
+export const templateObj = new Template();
