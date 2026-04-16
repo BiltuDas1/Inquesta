@@ -8,6 +8,20 @@
       "when": 1775833410876,
       "tag": "0000_mean_stryfe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1775890236107,
+      "tag": "0001_deep_champions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1775937593374,
+      "tag": "0002_careful_mister_sinister",
+      "breakpoints": true
     }
   ]
 }

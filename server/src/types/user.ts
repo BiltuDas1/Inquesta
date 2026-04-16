@@ -1,14 +1,22 @@
-type userWithLastName = {
+import { builder } from "../libraries/builder.ts";
+
+export type User = {
   firstname: string;
-  lastname: string;
+  lastname?: string | null | undefined;
   email: string;
   password: string;
 };
 
-type userWithoutLastName = {
-  firstname: string;
+export type UserRole = {
   email: string;
-  password: string;
+  role: string;
 };
 
-export type User = userWithLastName | userWithoutLastName;
+export const UserRoleObject = builder
+  .objectRef<UserRole>("UserRole")
+  .implement({
+    fields: (t) => ({
+      email: t.exposeString("email"),
+      role: t.exposeString("role"),
+    }),
+  });
