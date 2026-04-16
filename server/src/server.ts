@@ -4,11 +4,17 @@ import { createYoga } from "graphql-yoga";
 import { schema } from "./schemas/schema.ts";
 import { allowedOrigins, isProduction, serverConfig } from "./config.ts";
 import type { FastifyContext } from "./types/fastify.ts";
+import { logger } from "./libraries/logger.ts";
 
 const yoga = createYoga<FastifyContext>({
   schema,
   graphqlEndpoint: serverConfig.endpoint,
   graphiql: !isProduction,
+  context: () => {
+    return {
+      logger: logger,
+    };
+  },
 });
 
 // Create the Fastify server and turn on the pretty logger
