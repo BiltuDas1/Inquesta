@@ -1,13 +1,56 @@
 import { hash, verify } from "argon2";
-import { db } from "../config.ts";
+import { db, emailObj, redis, templateObj } from "../config.ts";
 import { users } from "../databases/schema.ts";
 import { type UserRole, type User } from "../types/user.ts";
-import { and, eq } from "drizzle-orm";
+import { and, DrizzleQueryError, eq } from "drizzle-orm";
+import { generateUrlSafeToken } from "../utils/token.ts";
+
+async function sendEmail(email: string, verify_link: string) {
+  await emailObj.send_email({
+    name: "noreply",
+    sender_email: "noreply@inquesta.org",
+    receiver_emails: [email],
+    subject: "Verify your Email",
+    html_body: templateObj.getTemplate({
+      type: "magic-link",
+      config: {
+        target_email: email,
+        verification_link: verify_link,
+        expiry_minutes: 10,
+      },
+    }),
+  });
+}
 
 export async function registerUser(data: User) {
-  data.password = await hash(data.password);
-  await db.insert(users).values(data);
-  return true;
+  try {
+    data.password = await hash(data.password);
+    await db.insert(users).values(data);
+    const token = generateUrlSafeToken();
+    await redis.setEx("inquesta:user:email:" + data.email, 10 * 60, token); // Expire in 10 minutes
+    await sendEmail(
+      data.email,
+      `https://inquesta.org/email/verify?token=${token}`,
+    );
+    return {
+      success: true,
+      message: `An email has been sent to ${data.email}`,
+    };
+  } catch (error) {
+    if (!(error instanceof DrizzleQueryError)) {
+      throw error;
+    }
+
+    // Return if the email address already exist
+    if (error.cause?.message.includes("Duplicate entry")) {
+      return {
+        success: false,
+        message: "Email already registered",
+      };
+    }
+
+    throw error;
+  }
 }
 
 export async function loginUser(
