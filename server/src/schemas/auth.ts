@@ -13,15 +13,12 @@ builder.mutationField("register", (t) =>
     },
     resolve: async (_parent, data: User, context) => {
       try {
-        await registerUser(data);
-        return {
-          success: true,
-          message: "registration complete",
-        };
-      } catch (error) {
+        return await registerUser(data);
+      } catch (error: any) {
+        context.logger.error(error, "Registration Failed");
         return {
           success: false,
-          message: "registration failed",
+          message: "internal server error",
         };
       }
     },
