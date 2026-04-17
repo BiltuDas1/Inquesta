@@ -1,8 +1,7 @@
-import { type FastifyRequest, type FastifyReply } from "fastify";
-import type { logger } from "../libraries/logger.ts";
+import { type FastifyRequest, type FastifyReply, type FastifyBaseLogger } from "fastify";
 
 export type FastifyContext = {
   req: FastifyRequest;
   reply: FastifyReply;
-  logger: typeof logger;
+  logger: FastifyBaseLogger;
 };
