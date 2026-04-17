@@ -6,12 +6,12 @@ import DashboardPage from "./pages/dashboardpage";
 import CoursePage from "./pages/coursepage";
 import ProtectedRoute from "./components/middleware/protectedroute";
 import PublicRoute from "./components/middleware/publicroute";
+import NotFoundPage from "./pages/notfoundpage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         <Route path="/" element={<Home />} />
         <Route path="/courses" element={<CoursePage></CoursePage>} />
 
@@ -26,6 +26,8 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage></DashboardPage>} />
         </Route>
 
+        {/* Catch-all 404 Route */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
