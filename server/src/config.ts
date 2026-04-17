@@ -27,10 +27,7 @@ export const emailObj = new Email(requireEnv("RESEND_API_KEY"));
 export const templateObj = new Template();
 
 // Redis connection
-const client = createClient({
+export const redis = createClient({
   url: requireEnv("REDIS_URI"),
 });
-client.on("error", (err) => console.error("Redis Client Error", err));
-
-await client.connect();
-export const redis = client;
+redis.on("error", (err) => console.error("Redis Client Error", err));
