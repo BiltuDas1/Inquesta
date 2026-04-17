@@ -6,6 +6,7 @@ import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { AccessToken } from "../utils/jwt/accessToken.ts";
 import { RefreshToken } from "../utils/jwt/refreshToken.ts";
+import { JWT } from "../utils/jwt/jwt.ts";
 
 async function sendEmail(email: string, verify_link: string) {
   await emailObj.send_email({
@@ -74,17 +75,15 @@ export async function loginUser(
     return false;
   }
 
-  const userIdStr = String(userRecord.id);
-  // ==========================================
-  // NEW: Generate tokens asynchronously
-  // ==========================================
-  const accessTokenObj = await AccessToken.init(userIdStr);
-  const refreshTokenObj = await RefreshToken.init(userIdStr);
+  // Generate tokens asynchronously
+  const id = String(userRecord.id);
+  const jwtObj=await JWT.init({id})
+  const tokens=jwtObj.toObj()
 
   // Extract the actual token strings
-  const accessToken = accessTokenObj.getToken();
-  const refreshToken = refreshTokenObj.getToken();
-  
+  const accessToken = tokens.access_token;
+  const refreshToken = tokens.refresh_token;
+
   return {
     email: email,
     role: userRecord.role,
