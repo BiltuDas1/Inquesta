@@ -59,7 +59,7 @@ jobs:
           cp ./package-lock.json ../deploy/
           echo "${{ github.sha }}" > ../deploy/.deploy_hash
 
-      - name: Clean old dist folder on Server
+      - name: Clean old folders on Server
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -68,6 +68,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             rm -rf /home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/dist
+            rm -rf /home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/src
 
       - name: Copy files to Hostinger
         uses: appleboy/scp-action@v1.0.0
