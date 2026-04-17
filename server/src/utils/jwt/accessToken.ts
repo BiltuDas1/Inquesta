@@ -1,12 +1,6 @@
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 
-const ALG = "EdDSA";
-// const ALG = "RS256";
-
-// ==========================================
 // ACCESS TOKEN
-// ==========================================
-
 interface AccessTokenPayload {
   sub: string;
   iat: number;
@@ -14,6 +8,7 @@ interface AccessTokenPayload {
   type: "access";
 }
 
+const ALG = "EdDSA";
 const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY;
 
 export class AccessToken {
@@ -25,7 +20,7 @@ export class AccessToken {
     this.token = token;
   }
 
-  // This perfectly mirrors your original constructor's logic
+
   static async init(sub: string, token?: string): Promise<AccessToken> {
     
     // If the token exists then verify it

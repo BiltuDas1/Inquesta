@@ -1,11 +1,6 @@
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 
-const ALG = "EdDSA";
-// const ALG = "RS256";
-// ==========================================
 // REFRESH TOKEN
-// ==========================================
-
 interface RefreshTokenPayload {
   sub: string;
   jti: string;
@@ -14,6 +9,7 @@ interface RefreshTokenPayload {
   type: "refresh";
 }
 
+const ALG = "EdDSA";
 const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY;
 
 export class RefreshToken {
@@ -25,7 +21,6 @@ export class RefreshToken {
     this.token = token;
   }
 
-  // This perfectly mirrors your original constructor's logic
   static async init(sub: string, token?: string): Promise<RefreshToken> {
     // If token exists then verify it
     if (token) {
@@ -42,7 +37,7 @@ export class RefreshToken {
     const now = Math.floor(Date.now() / 1000);
     const payloadInfo: RefreshTokenPayload = {
       sub,
-      jti: crypto.randomUUID(),
+      jti: crypto.randomUUID(), //unique id for each token
       iat: now,
       exp: now + Number(REFRESH_TOKEN_EXPIRY)!,
       type: "refresh",
