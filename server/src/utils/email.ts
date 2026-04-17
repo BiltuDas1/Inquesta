@@ -10,7 +10,6 @@ type EmailData = {
 
 export class Email {
   private readonly resend: Resend;
-
   constructor(api_key: string) {
     this.resend = new Resend(api_key);
   }

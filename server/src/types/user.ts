@@ -10,6 +10,9 @@ export type User = {
 export type UserRole = {
   email: string;
   role: string;
+  access_token:string
+  refresh_token:string,
+
 };
 
 export const UserRoleObject = builder
@@ -18,5 +21,7 @@ export const UserRoleObject = builder
     fields: (t) => ({
       email: t.exposeString("email"),
       role: t.exposeString("role"),
+      refresh_token:t.exposeString("refresh_token"),
+      access_token:t.exposeString("access_token")
     }),
   });

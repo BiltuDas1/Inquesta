@@ -4,11 +4,13 @@ import { users } from "../databases/schema.ts";
 import { type UserRole, type User } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
+import { AccessToken } from "../utils/jwt/accessToken.ts";
+import { RefreshToken } from "../utils/jwt/refreshToken.ts";
 
 async function sendEmail(email: string, verify_link: string) {
   await emailObj.send_email({
     name: "noreply",
-    sender_email: "noreply@inquesta.org",
+    sender_email: "onboarding@resend.dev",
     receiver_emails: [email],
     subject: "Verify your Email",
     html_body: templateObj.getTemplate({
@@ -30,7 +32,7 @@ export async function registerUser(data: User) {
     await redis.setEx("inquesta:user:email:" + data.email, 10 * 60, token); // Expire in 10 minutes
     await sendEmail(
       data.email,
-      `https://inquesta.org/email/verify?token=${token}`,
+      `https://inquesta.org/email/verify?token=${token}`
     );
     return {
       success: true,
@@ -55,13 +57,13 @@ export async function registerUser(data: User) {
 
 export async function loginUser(
   email: string,
-  password: string,
+  password: string
 ): Promise<UserRole | false> {
   const [userRecord] = await db
-    .selectDistinct({ password: users.password, role: users.role })
-    .from(users)
-    .where(and(eq(users.isActive, true), eq(users.email, email)))
-    .limit(1);
+  .selectDistinct({ id: users.id, password: users.password, role: users.role })
+  .from(users)
+  .where(and(eq(users.isActive, true), eq(users.email, email)))
+  .limit(1);
 
   if (!userRecord) {
     return false;
@@ -72,8 +74,21 @@ export async function loginUser(
     return false;
   }
 
+  const userIdStr = String(userRecord.id);
+  // ==========================================
+  // NEW: Generate tokens asynchronously
+  // ==========================================
+  const accessTokenObj = await AccessToken.init(userIdStr);
+  const refreshTokenObj = await RefreshToken.init(userIdStr);
+
+  // Extract the actual token strings
+  const accessToken = accessTokenObj.getToken();
+  const refreshToken = refreshTokenObj.getToken();
+  
   return {
     email: email,
     role: userRecord.role,
+    access_token: accessToken,
+    refresh_token: refreshToken,
   };
 }
