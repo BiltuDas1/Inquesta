@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { createYoga } from "graphql-yoga";
 import { schema } from "./schemas/schema.ts";
-import { allowedOrigins, isProduction, serverConfig } from "./config.ts";
+import { allowedOrigins, isProduction, redis, serverConfig } from "./config.ts";
 import type { FastifyContext } from "./types/fastify.ts";
 import { logger } from "./libraries/logger.ts";
 
@@ -47,6 +47,11 @@ server.route({
   handler: async (req, reply) => {
     return yoga.handleNodeRequestAndResponse(req, reply, { req, reply });
   },
+});
+
+server.addHook("onReady", async () => {
+  await redis.connect()
+  server.log.info("Redis Connection Ready")
 });
 
 // Start the Server
