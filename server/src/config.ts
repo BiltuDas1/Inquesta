@@ -27,14 +27,11 @@ export const emailObj = new Email(requireEnv("RESEND_API_KEY"));
 export const templateObj = new Template();
 
 // Redis connection
-const client = createClient({
+export const redis = createClient({
   url: requireEnv("REDIS_URI"),
 });
-client.on("error", (err) => console.error("Redis Client Error", err));
-
-await client.connect();
-export const redis = client;
+redis.on("error", (err) => console.error("Redis Client Error", err));
 
 // JWT Token Expiry
 export const ACCESS_TOKEN_EXPIRY = 900;
-export const REFRESH_TOKEN_EXPIRY = 1800;
+export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
