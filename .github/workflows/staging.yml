@@ -41,12 +41,8 @@ jobs:
           EOF
           ) || { echo "SSH Connection Failed"; exit 1; }
 
-          echo "------- REMOTE DATA START"
-          echo "$REMOTE_DATA"
-          echo "------- REMOTE DATA END"
-
-          REMOTE_HASH=$(echo "$REMOTE_DATA" | sed -n '1p')
-          ENV_CONTENT=$(echo "$REMOTE_DATA" | sed '1,2d')
+          REMOTE_HASH=$(echo "$REMOTE_DATA" | sed -n '/---STARTHASH---/{n;p;}')
+          ENV_CONTENT=$(echo "$REMOTE_DATA" | sed -n '/---ENDHASH---/,$p' | sed '1d')
 
           if [ "$REMOTE_HASH" == "${{ github.sha }}" ]; then
             echo "No changes detected. Skipping deployment."
@@ -56,9 +52,6 @@ jobs:
 
           cd ci
           echo "$ENV_CONTENT" > .env
-          echo "------"
-          cat .env
-          echo "------"
           pip install -r requirements.txt
           
           python checker.py
