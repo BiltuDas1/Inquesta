@@ -33,7 +33,7 @@ export async function registerUser(data: User) {
     await redis.setEx("inquesta:user:email:" + data.email, 10 * 60, token); // Expire in 10 minutes
     await sendEmail(
       data.email,
-      `https://inquesta.org/email/verify?token=${token}`
+      `https://inquesta.org/email/verify?token=${token}`,
     );
     return {
       success: true,
@@ -58,13 +58,17 @@ export async function registerUser(data: User) {
 
 export async function loginUser(
   email: string,
-  password: string
+  password: string,
 ): Promise<UserRole | false> {
   const [userRecord] = await db
-  .selectDistinct({ id: users.id, password: users.password, role: users.role })
-  .from(users)
-  .where(and(eq(users.isActive, true), eq(users.email, email)))
-  .limit(1);
+    .selectDistinct({
+      id: users.id,
+      password: users.password,
+      role: users.role,
+    })
+    .from(users)
+    .where(and(eq(users.isActive, true), eq(users.email, email)))
+    .limit(1);
 
   if (!userRecord) {
     return false;
@@ -77,8 +81,8 @@ export async function loginUser(
 
   // Generate tokens asynchronously
   const id = String(userRecord.id);
-  const jwtObj=await JWT.init({id})
-  const tokens=jwtObj.toObj()
+  const jwtObj = await JWT.init({ id });
+  const tokens = jwtObj.toObj();
 
   // Extract the actual token strings
   const accessToken = tokens.access_token;

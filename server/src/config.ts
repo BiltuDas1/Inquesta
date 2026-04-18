@@ -34,3 +34,7 @@ client.on("error", (err) => console.error("Redis Client Error", err));
 
 await client.connect();
 export const redis = client;
+
+// JWT Token Expiry
+export const ACCESS_TOKEN_EXPIRY = 900;
+export const REFRESH_TOKEN_EXPIRY = 1800;
