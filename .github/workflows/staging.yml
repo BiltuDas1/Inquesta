@@ -15,11 +15,11 @@ jobs:
         id: compare
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_eddsa
+          chmod 600 ~/.ssh/id_eddsa
 
           HASH_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/.deploy_hash"
-          LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
+          LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_eddsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
 
           echo "Hostinger currently has hash: $LAST_HASH"
           echo "Current GitHub commit hash: ${{ github.sha }}"
