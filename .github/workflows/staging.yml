@@ -9,7 +9,7 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_run: ${{ steps.compare.outputs.run_deploy }}
+      env_check: ${{ steps.compare.outputs.run_env_check }}
     steps:
       - name: Fetch Remote Hash and Compare
         id: compare
@@ -26,17 +26,36 @@ jobs:
 
           if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
             echo "No changes detected. Skipping deployment."
-            echo "run_deploy=false" >> $GITHUB_OUTPUT
+            echo "run_env_check=false" >> $GITHUB_OUTPUT
           else
             echo "Fresh deploy needed."
-            echo "run_deploy=true" >> $GITHUB_OUTPUT
+            echo "run_env_check=true" >> $GITHUB_OUTPUT
           fi
         continue-on-error: true
 
-  deploy-backend-hostinger:
+  check-env:
     runs-on: ubuntu-latest
     needs: check-changes
-    if: needs.check-changes.outputs.should_run != 'false'
+    if: needs.check-changes.outputs.env_check != 'false'
+    steps:
+      - name: Checking Remote Environment Variables
+        id: check_environ
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_eddsa
+          chmod 600 ~/.ssh/id_eddsa
+
+          ENV_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/public_html/.builds/config/.env"
+          ENV_DATA=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_eddsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $ENV_FILE 2>/dev/null || echo 'none'")
+
+          cd ci
+          echo $ENV_DATA > .env
+          pip install -r requirements.txt
+          python checker.py
+
+  deploy-backend-hostinger:
+    runs-on: ubuntu-latest
+    needs: check-env
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6.0.2
@@ -99,8 +118,7 @@ jobs:
 
   deploy-frontend-cloudflare:
     runs-on: ubuntu-latest
-    needs: check-changes
-    if: needs.check-changes.outputs.should_run != 'false'
+    needs: check-env
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
