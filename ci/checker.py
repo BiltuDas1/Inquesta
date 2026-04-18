@@ -35,7 +35,7 @@ for token in tokens:
 
 if tables:
   important_vars = [row[0] for row in tables[0][1:] if ":white_check_mark:" in row]
-  config = dotenv.dotenv_values(".env")
+  config = dotenv.dotenv_values(Path(__file__).parent / ".env")
 
   success = True
   for var in important_vars:
