@@ -1,0 +1,4 @@
+# Allow all bots to crawl the site
+User-agent: *
+
+Sitemap: https://inquesta.org/sitemap.xml
