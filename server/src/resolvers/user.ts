@@ -4,11 +4,14 @@ import { users } from "../databases/schema.ts";
 import { type UserRole, type User } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
+import { AccessToken } from "../utils/jwt/accessToken.ts";
+import { RefreshToken } from "../utils/jwt/refreshToken.ts";
+import { JWT } from "../utils/jwt/jwt.ts";
 
 async function sendEmail(email: string, verify_link: string) {
   await emailObj.send_email({
     name: "noreply",
-    sender_email: "noreply@inquesta.org",
+    sender_email: "onboarding@resend.dev",
     receiver_emails: [email],
     subject: "Verify your Email",
     html_body: templateObj.getTemplate({
@@ -58,7 +61,11 @@ export async function loginUser(
   password: string,
 ): Promise<UserRole | false> {
   const [userRecord] = await db
-    .selectDistinct({ password: users.password, role: users.role })
+    .selectDistinct({
+      id: users.id,
+      password: users.password,
+      role: users.role,
+    })
     .from(users)
     .where(and(eq(users.isActive, true), eq(users.email, email)))
     .limit(1);
@@ -72,8 +79,19 @@ export async function loginUser(
     return false;
   }
 
+  // Generate tokens asynchronously
+  const id = String(userRecord.id);
+  const jwtObj = await JWT.init({ id });
+  const tokens = jwtObj.toObj();
+
+  // Extract the actual token strings
+  const accessToken = tokens.access_token;
+  const refreshToken = tokens.refresh_token;
+
   return {
     email: email,
     role: userRecord.role,
+    access_token: accessToken,
+    refresh_token: refreshToken,
   };
 }

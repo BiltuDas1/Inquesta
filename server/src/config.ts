@@ -31,3 +31,7 @@ export const redis = createClient({
   url: requireEnv("REDIS_URI"),
 });
 redis.on("error", (err) => console.error("Redis Client Error", err));
+
+// JWT Token Expiry
+export const ACCESS_TOKEN_EXPIRY = 900;
+export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
