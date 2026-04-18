@@ -51,6 +51,9 @@ jobs:
 
           cd ci
           echo "$ENV_CONTENT" > .env
+          echo "------"
+          cat .env
+          echo "------"
           pip install -r requirements.txt
           
           python checker.py
