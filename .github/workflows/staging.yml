@@ -34,6 +34,7 @@ jobs:
             HASH_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/.deploy_hash"
             ENV_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/public_html/.builds/config/.env"
             
+            echo "---STARTHASH---"
             cat $HASH_FILE 2>/dev/null || echo "none"
             echo "---ENDHASH---"
             cat $ENV_FILE 2>/dev/null || echo "none"
