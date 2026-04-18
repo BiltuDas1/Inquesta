@@ -46,7 +46,7 @@ export default function Home() {
               className="text-on-surface-variant hover:text-on-surface transition-colors"
               href="#"
             >
-              Community
+              About
             </a>
 
             {/* Divider for mobile */}
@@ -133,7 +133,7 @@ export default function Home() {
         </section>
 
         {/* Stats Row */}
-        <section className="py-20 bg-surface-container-low/30">
+        {/* <section className="py-20 bg-surface-container-low/30">
           <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-3 gap-12 md:gap-0">
             {[
               { val: "50K+", label: "Students" },
@@ -154,7 +154,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Courses Bento Grid */}
         <section className="py-32 px-8">
@@ -364,27 +364,34 @@ export default function Home() {
 
       <footer className="w-full py-12 bg-background border-t border-outline-variant text-sm">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto space-y-8 md:space-y-0">
-          <div className="text-xl font-bold text-on-surface">Inquesta</div>
+          <div className="flex justify-center items-center gap-2">
+            <img className="h-8" src="/inquesta.svg" />
+            <span className="text-xl font-bold text-on-surface">Inquesta</span>
+          </div>
           <div className="flex flex-wrap justify-center gap-8 text-on-surface-variant">
             {[
-              "Terms of Service",
-              "Privacy Policy",
-              "Twitter",
-              "LinkedIn",
-              "GitHub",
-            ].map((link) => (
+              {name: "Terms of Service", url: "", new_tab: false},
+              {name: "Privacy Policy", url: "", new_tab: false},
+              {name: "Instagram", url: "https://www.instagram.com/inquestasolutions/", new_tab: true},
+              {name: "LinkedIn", url: "https://www.linkedin.com/company/inquesta-solutions/", new_tab: true},
+            ].map((data) => (
               <a
-                key={link}
+                key={data.name}
                 className="hover:text-primary transition-colors"
-                href="#"
+                href={data.url.length > 0 ? data.url : "#"}
+                target={data.new_tab === true ? "_blank" : "_parent"}
               >
-                {link}
+                {data.name}
               </a>
             ))}
           </div>
-          <p className="text-on-surface-variant">
-            © {currentYear} Inquesta. All rights reserved.
-          </p>
+          <div className="flex flex-col justify-center items-center">
+            <p className="text-on-surface-variant">© {currentYear} Inquesta. All rights reserved.</p>
+            <p className="text-on-surface-variant flex items-center gap-1 justify-end">
+              <span className="material-symbols-outlined text-[14px] opacity-70">verified_user</span>
+              A Registered MSME Enterprise
+            </p>
+          </div>
         </div>
       </footer>
     </div>
