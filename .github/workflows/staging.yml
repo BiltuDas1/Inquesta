@@ -6,56 +6,61 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  check-changes:
+  pre-deploy-check:
     runs-on: ubuntu-latest
     outputs:
-      env_check: ${{ steps.compare.outputs.run_env_check }}
+      should_deploy: ${{ steps.master_check.outputs.should_deploy }}
     steps:
-      - name: Fetch Remote Hash and Compare
-        id: compare
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: '3.13'
+
+      - name: Run Combined Check
+        id: master_check
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_eddsa
           chmod 600 ~/.ssh/id_eddsa
+          
+          REMOTE_DATA=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_eddsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            HASH_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/.deploy_hash"
+            ENV_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/public_html/.builds/config/.env"
+            
+            cat $HASH_FILE 2>/dev/null || echo "none"
+            echo "---ENDHASH---"
+            cat $ENV_FILE 2>/dev/null || echo "none"
+          EOF
+          )
 
-          HASH_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/nodejs/.deploy_hash"
-          LAST_HASH=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_eddsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $HASH_FILE 2>/dev/null || echo 'none'")
+          REMOTE_HASH=$(echo "$REMOTE_DATA" | sed -n '1p')
+          ENV_CONTENT=$(echo "$REMOTE_DATA" | sed '1,2d')
 
-          echo "Hostinger currently has hash: $LAST_HASH"
-          echo "Current GitHub commit hash: ${{ github.sha }}"
-
-          if [ "$LAST_HASH" == "${{ github.sha }}" ]; then
-            echo "No changes detected. Skipping deployment."
-            echo "run_env_check=false" >> $GITHUB_OUTPUT
-          else
-            echo "Fresh deploy needed."
-            echo "run_env_check=true" >> $GITHUB_OUTPUT
+          echo "Remote Hash: $REMOTE_HASH"
+          
+          if [ "$REMOTE_HASH" == "${{ github.sha }}" ]; then
+            echo "No changes detected. Skipping."
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
-        continue-on-error: true
 
-  check-env:
-    runs-on: ubuntu-latest
-    needs: check-changes
-    if: needs.check-changes.outputs.env_check != 'false'
-    steps:
-      - name: Checking Remote Environment Variables
-        id: check_environ
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_eddsa
-          chmod 600 ~/.ssh/id_eddsa
-
-          ENV_FILE="/home/${{ secrets.SSH_USER }}/domains/${{ secrets.API_DOMAIN }}/public_html/.builds/config/.env"
-          ENV_DATA=$(ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_eddsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat $ENV_FILE 2>/dev/null || echo 'none'")
-
+          echo "$ENV_CONTENT" > ci/.env
           cd ci
-          echo $ENV_DATA > .env
           pip install -r requirements.txt
-          python checker.py
+          if python checker.py; then
+             echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+             echo "Environment check failed!"
+             exit 1
+          fi
 
   deploy-backend-hostinger:
     runs-on: ubuntu-latest
-    needs: check-env
+    needs: pre-deploy-check
+    if: needs.pre-deploy-check.outputs.should_deploy == 'true'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6.0.2
@@ -118,7 +123,8 @@ jobs:
 
   deploy-frontend-cloudflare:
     runs-on: ubuntu-latest
-    needs: check-env
+    needs: pre-deploy-check
+    if: needs.pre-deploy-check.outputs.should_deploy == 'true'
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6.0.2
