@@ -38,7 +38,6 @@ redis.on("error", (err) => console.error("Redis Client Error", err));
 // JWT Token Expiry
 export const ACCESS_TOKEN_EXPIRY = 900;
 export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
-// export const EDDSA_PRIVATE_KEY = requireEnv("EDDSA_PRIVATE_KEY");
 
 // Google Authentication
 export const GOOGLE_CLIENT = new OAuth2Client({
