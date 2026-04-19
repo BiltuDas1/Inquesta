@@ -110,7 +110,6 @@ export async function googleLogin(payload: GoogleUser) {
 
   try {
     await db.insert(users).values({
-      id: payload.sub,
       firstname: payload.given_name,
       lastname: payload.family_name,
       email: payload.email,
