@@ -83,6 +83,13 @@ export async function loginUser(
   }
 
   const jwtObj = await JWT.init(userRecord.id);
+
+  redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), userRecord.id, {
+    expiration: {
+      type: "EXAT",
+      value: jwtObj.refreshToken.expiryTime()
+    }
+  });
   
   return {
     role: {
@@ -113,10 +120,30 @@ export async function googleLogin(payload: GoogleUser) {
       firstname: payload.given_name,
       lastname: payload.family_name,
       email: payload.email,
-      password: await hash(generateUrlSafeToken())
+      password: await hash(generateUrlSafeToken()),
+      isActive: true
     })
 
-    return (await JWT.init(payload.sub))
+    const result = await db.selectDistinct({
+      id: users.id
+    })
+      .from(users)
+      .where(eq(users.email, payload.email))
+      .limit(1);
+
+    if (result[0]?.id === undefined) {
+      throw Error("Failed to insert data in database");
+    }
+
+    const jwtObj = await JWT.init(result[0].id);
+    redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
+      expiration: {
+        type: "EXAT",
+        value: jwtObj.refreshToken.expiryTime()
+      }
+    });
+
+    return jwtObj
   } catch (error) {
     if (!(error instanceof DrizzleQueryError)) {
       throw error;
