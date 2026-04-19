@@ -1,27 +1,26 @@
 import { AccessToken } from "./accessToken.ts";
 import { RefreshToken } from "./refreshToken.ts";
 
-interface User {
-  id: string;
-}
-
 export class JWT {
-  private accessToken!: AccessToken;
-  private refreshToken!: RefreshToken;
+  public accessToken!: AccessToken;
+  public refreshToken!: RefreshToken;
 
   private constructor() {}
 
   //  Create both tokens
-  static async init(user: User): Promise<JWT> {
+  static async init(sub: string): Promise<JWT> {
     const jwtObj = new JWT();
 
-    jwtObj.accessToken = await AccessToken.init(user.id);
-    jwtObj.refreshToken = await RefreshToken.init(user.id);
+    jwtObj.accessToken = await AccessToken.init(sub);
+    jwtObj.refreshToken = await RefreshToken.init(sub);
 
     return jwtObj;
   }
 
-  //   Return  both tokens
+  /**
+   * Get the access and refresh token
+   * @returns Returns an object containing access and refresh token
+   */
   toObj(): { access_token: string; refresh_token: string } {
     return {
       access_token: this.accessToken.getToken(),
@@ -29,6 +28,11 @@ export class JWT {
     };
   }
 
+  /**
+   * Get the refresh token in RefreshToken object
+   * @param token The refresh token in string format 
+   * @returns If valid then returns refresh token object, otherwise returns null
+   */
   static async toRefreshToken(token: string): Promise<RefreshToken | null> {
     try {
       return await RefreshToken.init("", token);
