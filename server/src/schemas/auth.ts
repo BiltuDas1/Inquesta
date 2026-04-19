@@ -85,7 +85,7 @@ builder.queryField("login", (t) =>
         })
       );
 
-      context.reply.header("set-login", "logged-in");
+      context.reply.header("Set-Login", "logged-in");
 
       return {
         success: true,
@@ -151,7 +151,7 @@ builder.mutationField("loginWithGoogle", (t) =>
         })
       );
 
-      context.reply.header("set-login", "logged-in");
+      context.reply.header("Set-Login", "logged-in");
 
       return {
         success: true,
