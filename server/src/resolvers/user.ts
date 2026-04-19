@@ -151,7 +151,26 @@ export async function googleLogin(payload: GoogleUser) {
 
     // Return if the email address already exist
     if (error.cause?.message.includes("Duplicate entry")) {
-      return (await JWT.init(payload.sub))
+      const result = await db.selectDistinct({
+        id: users.id
+      })
+        .from(users)
+        .where(eq(users.email, payload.email))
+        .limit(1);
+
+      if (result[0]?.id === undefined) {
+        throw Error("Failed to read data from database");
+      }
+
+      const jwtObj = await JWT.init(result[0].id);
+      redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
+        expiration: {
+          type: "EXAT",
+          value: jwtObj.refreshToken.expiryTime()
+        }
+      });
+
+      return jwtObj
     }
 
     throw error;
