@@ -1,10 +1,9 @@
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 import * as crypto from "crypto";
 import { generateUrlSafeToken } from "../token.ts";
-import { ACCESS_TOKEN_EXPIRY } from "../../config.ts";
+import { ACCESS_TOKEN_EXPIRY, EDDSA_PRIVATE_KEY } from "../../config.ts";
 
-// ACCESS TOKEN
-interface AccessTokenPayload {
+type AccessTokenPayload = {
   sub: string;
   jti: string;
   iat: number;
@@ -24,14 +23,8 @@ export class AccessToken {
   }
 
   static async init(sub: string, token?: string): Promise<AccessToken> {
-    if (!process.env.EDDSA_PRIVATE_KEY) {
-      throw new Error(
-        "EDDSA_PRIVATE_KEY is missing from environment variables.",
-      );
-    }
-
     // Format the private key from the environment
-    const privateKeyPem = process.env.EDDSA_PRIVATE_KEY.replace(/\\n/g, "\n");
+    const privateKeyPem = EDDSA_PRIVATE_KEY.replace(/\\n/g, "\n");
 
     // Dynamically generate the public key from the private key
     const keyObject = crypto.createPublicKey(privateKeyPem);
@@ -72,16 +65,35 @@ export class AccessToken {
   }
 
   // Return the token
+  /**
+   * Get the Access Token
+   * @returns Returns the access token in string format
+   */
   getToken(): string {
     return this.token;
   }
 
-  // Return the token creation time
+  /**
+   * Gets the token creation time
+   * @returns UNIX Time of token creation
+   */
   creationTime(): number {
     return this.payload.iat;
   }
 
-  // Return Expiry time
+  // Return the unique id for each token
+  /**
+   * Get the JWT Indentifier
+   * @returns ID in string format
+   */
+  getJti(): string {
+    return this.payload.jti;
+  }
+
+  /**
+   * Gets the token expiry
+   * @returns UNIX Time of token expiry
+   */
   expiryTime(): number {
     return this.payload.exp;
   }

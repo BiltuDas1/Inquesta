@@ -1,6 +1,8 @@
+import { isProduction } from "../config.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { loginUser, registerUser } from "../resolvers/user.ts";
 import { UserRoleObject, type User, type UserRole } from "../types/user.ts";
+import { set_cookie } from "../utils/cookie.ts";
 
 builder.mutationField("register", (t) =>
   t.field({
@@ -59,10 +61,35 @@ builder.queryField("login", (t) =>
         };
       }
 
+      // Passing Cookies via HTTP Response
+      context.reply.header("set-cookie", set_cookie({
+          name: "access_token",
+          value: result.jwt.accessToken.getToken(),
+          expires: result.jwt.accessToken.expiryTime(),
+          path: "/",
+          samesite: "Lax",
+          httponly: true,
+          secure: isProduction
+        })
+      );
+
+      context.reply.header("set-cookie", set_cookie({
+          name: "refresh_token",
+          value: result.jwt.refreshToken.getToken(),
+          expires: result.jwt.refreshToken.expiryTime(),
+          path: "/",
+          samesite: "Strict",
+          httponly: true,
+          secure: isProduction
+        })
+      );
+
+      context.reply.header("set-login", "logged-in");
+
       return {
         success: true,
         message: "login successful",
-        data: result,
+        data: result.role,
       };
     },
   }),
