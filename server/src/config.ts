@@ -41,5 +41,5 @@ export const EDDSA_PRIVATE_KEY = requireEnv("EDDSA_PRIVATE_KEY");
 // Google Authentication
 export const GOOGLE_CLIENT = new OAuth2Client({
   clientId: requireEnv("GOOGLE_CLIENT_ID"),
-  clientSecret: Buffer.from(requireEnv("GOOGLE_CLIENT_SECRET"), "base64").toString("utf-8")
+  clientSecret: requireEnv("GOOGLE_CLIENT_SECRET")
 });
