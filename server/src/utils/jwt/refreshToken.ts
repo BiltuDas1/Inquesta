@@ -1,10 +1,9 @@
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 import { generateUrlSafeToken } from "../token.ts";
 import * as crypto from "crypto";
-import { REFRESH_TOKEN_EXPIRY } from "../../config.ts";
+import { EDDSA_PRIVATE_KEY, REFRESH_TOKEN_EXPIRY } from "../../config.ts";
 
-// REFRESH TOKEN
-interface RefreshTokenPayload {
+type RefreshTokenPayload = {
   sub: string;
   jti: string;
   iat: number;
@@ -24,14 +23,8 @@ export class RefreshToken {
   }
 
   static async init(sub: string, token?: string): Promise<RefreshToken> {
-    if (!process.env.EDDSA_PRIVATE_KEY) {
-      throw new Error(
-        "EDDSA_PRIVATE_KEY is missing from environment variables.",
-      );
-    }
-
     // Format the private key from the environment
-    const privateKeyPem = process.env.EDDSA_PRIVATE_KEY.replace(/\\n/g, "\n");
+    const privateKeyPem = EDDSA_PRIVATE_KEY.replace(/\\n/g, "\n");
 
     // Dynamically generate the public key from the private key
     const keyObject = crypto.createPublicKey(privateKeyPem);
@@ -55,7 +48,7 @@ export class RefreshToken {
     const now = Math.floor(Date.now() / 1000);
     const payloadInfo: RefreshTokenPayload = {
       sub,
-      jti: generateUrlSafeToken(), //unique id for each token
+      jti: generateUrlSafeToken(),
       iat: now,
       exp: now + Number(REFRESH_TOKEN_EXPIRY)!,
       typ: "refresh",
@@ -70,22 +63,34 @@ export class RefreshToken {
     return new RefreshToken(payloadInfo, signedToken);
   }
 
-  // Return the token
+  /**
+   * Get the Refresh token
+   * @returns Returns the refresh token in string format
+   */
   getToken(): string {
     return this.token;
   }
 
-  // Return the token creation time
+  /**
+   * Get the creation time of the refresh token
+   * @returns UNIX time of creation
+   */
   creationTime(): number {
     return this.payload.iat;
   }
 
-  // Return the unique id for each token
+  /**
+   * Get the JWT Indentifier
+   * @returns ID in string format
+   */
   getJti(): string {
     return this.payload.jti;
   }
 
-  // Return Expiry time
+  /**
+   * Get the expiry time of the refresh token
+   * @returns UNIX time of expiry
+   */
   expiryTime(): number {
     return this.payload.exp;
   }
