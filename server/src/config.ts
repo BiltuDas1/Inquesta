@@ -43,7 +43,8 @@ export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
 // Google Authentication
 export const GOOGLE_CLIENT = new OAuth2Client({
   clientId: requireEnv("GOOGLE_CLIENT_ID"),
-  clientSecret: requireEnv("GOOGLE_CLIENT_SECRET")
+  clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
+  redirectUri: requireEnv("GOOGLE_REDIRECT_URI")
 });
 
 // EdDSA Keys

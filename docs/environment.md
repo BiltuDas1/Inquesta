@@ -10,6 +10,7 @@
 | `EDDSA_PRIVATE_KEY`    | Private key used to sign Access Tokens (JWT)                                                     | :white_check_mark: |
 | `GOOGLE_CLIENT_ID`     | The client ID of the Google OAuth 2.0 Application                                                | :white_check_mark: |
 | `GOOGLE_CLIENT_SECRET` | The client secret of the Google OAuth 2.0 Application                                            | :white_check_mark: |
+| `GOOGLE_REDIRECT_URI`  | The URL where Google will redirect after authentication                                          | :white_check_mark: |
 
 # Environment Variables (Frontend)
 
