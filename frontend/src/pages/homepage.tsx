@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 export default function Home() {
   const currentYear = new Date().getFullYear();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
@@ -54,10 +54,16 @@ export default function Home() {
 
             {/* Buttons */}
             <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
-              <button onClick={()=>navigate("/login")} className="text-on-surface-variant hover:text-on-surface transition-colors font-medium">
+              <button
+                onClick={() => navigate("/login")}
+                className="text-on-surface-variant hover:text-on-surface transition-colors font-medium"
+              >
                 Login
               </button>
-              <button onClick={()=>navigate("/courses")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto">
+              <button
+                onClick={() => navigate("/courses")}
+                className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto"
+              >
                 Get Started
               </button>
             </div>
@@ -89,13 +95,19 @@ export default function Home() {
                 PictoBlox to Arduino.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button onClick={()=>navigate("/courses")} className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95">
+                <button
+                  onClick={() => navigate("/courses")}
+                  className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95"
+                >
                   Start Learning
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">
                     arrow_forward
                   </span>
                 </button>
-                <button onClick={()=>navigate("/courses")} className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all">
+                <button
+                  onClick={() => navigate("/courses")}
+                  className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all"
+                >
                   Explore
                 </button>
               </div>
@@ -168,7 +180,10 @@ export default function Home() {
                   Next-gen technical modules updated this week.
                 </p>
               </div>
-              <button onClick={() => navigate("/courses")} className="flex items-center space-x-2 text-primary font-bold hover:opacity-80 transition-opacity">
+              <button
+                onClick={() => navigate("/courses")}
+                className="flex items-center space-x-2 text-primary font-bold hover:opacity-80 transition-opacity"
+              >
                 <span>View All Modules</span>
                 <span className="material-symbols-outlined">chevron_right</span>
               </button>
@@ -351,7 +366,10 @@ export default function Home() {
               and physical systems.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button onClick={()=>navigate("/courses")} className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95">
+              <button
+                onClick={() => navigate("/courses")}
+                className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95"
+              >
                 Start Your Journey
               </button>
               <button className="border border-outline-variant text-on-surface font-bold text-xl px-10 py-5 hover:bg-surface-container rounded-full transition-all">
@@ -370,10 +388,18 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap justify-center gap-8 text-on-surface-variant">
             {[
-              {name: "Terms of Service", url: "", new_tab: false},
-              {name: "Privacy Policy", url: "", new_tab: false},
-              {name: "Instagram", url: "https://www.instagram.com/inquestasolutions/", new_tab: true},
-              {name: "LinkedIn", url: "https://www.linkedin.com/company/inquesta-solutions/", new_tab: true},
+              { name: "Terms of Service", url: "", new_tab: false },
+              { name: "Privacy Policy", url: "", new_tab: false },
+              {
+                name: "Instagram",
+                url: "https://www.instagram.com/inquestasolutions/",
+                new_tab: true,
+              },
+              {
+                name: "LinkedIn",
+                url: "https://www.linkedin.com/company/inquesta-solutions/",
+                new_tab: true,
+              },
             ].map((data) => (
               <a
                 key={data.name}
@@ -386,9 +412,13 @@ export default function Home() {
             ))}
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-on-surface-variant">© {currentYear} Inquesta. All rights reserved.</p>
+            <p className="text-on-surface-variant">
+              © {currentYear} Inquesta. All rights reserved.
+            </p>
             <p className="text-on-surface-variant flex items-center gap-1 justify-end">
-              <span className="material-symbols-outlined text-[14px] opacity-70">verified_user</span>
+              <span className="material-symbols-outlined text-[14px] opacity-70">
+                verified_user
+              </span>
               A Registered MSME Enterprise
             </p>
           </div>

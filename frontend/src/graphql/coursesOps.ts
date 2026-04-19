@@ -42,12 +42,12 @@ export const ADD_COURSE = gql`
 
 // Mutation to delete the course
 export const DELETE_COURSE = gql`
- mutation courseDelete($id:String!){
- courseDelete(id:$id) {
+  mutation courseDelete($id: String!) {
+    courseDelete(id: $id) {
       message
       success
     }
-}
+  }
 `;
 
 // Mutation to update the course
@@ -55,21 +55,21 @@ export const DELETE_COURSE = gql`
 
 export const UPDATE_COURSE = gql`
   mutation courseUpdate(
-    $id: String!,
-    $description: String, 
-    $duration: String!, 
-    $instructor_name: String!, 
-    $level: String!, 
-    $price: Int!, 
+    $id: String!
+    $description: String
+    $duration: String!
+    $instructor_name: String!
+    $level: String!
+    $price: Int!
     $title: String!
   ) {
     courseUpdate(
-      id: $id,
-      description: $description,
-      duration: $duration,
-      instructor_name: $instructor_name,
-      level: $level,
-      price: $price,
+      id: $id
+      description: $description
+      duration: $duration
+      instructor_name: $instructor_name
+      level: $level
+      price: $price
       title: $title
     ) {
       message
