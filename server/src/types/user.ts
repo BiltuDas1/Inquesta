@@ -12,6 +12,14 @@ export type UserRole = {
   role: string;
 };
 
+export type GoogleUser = {
+  sub: string;
+  email?: string;
+  family_name?: string;
+  given_name?: string;
+  email_verified?: boolean;
+}
+
 export const UserRoleObject = builder
   .objectRef<UserRole>("UserRole")
   .implement({

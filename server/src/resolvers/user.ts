@@ -1,7 +1,7 @@
 import { hash, verify } from "argon2";
 import { db, emailObj, redis, templateObj } from "../config.ts";
 import { users } from "../databases/schema.ts";
-import { type UserRole, type User } from "../types/user.ts";
+import { type UserRole, type User, type GoogleUser } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
@@ -91,4 +91,43 @@ export async function loginUser(
     },
     jwt: jwtObj
   };
+}
+
+export async function googleLogin(payload: GoogleUser) {
+  if (payload.given_name === undefined) {
+    return {
+      success: false,
+      message: "`firstname` is not provided"
+    }
+  }
+
+  if (payload.email === undefined) {
+    return {
+      success: false,
+      message: "`email` is not provided"
+    }
+  }
+
+  try {
+    await db.insert(users).values({
+      id: payload.sub,
+      firstname: payload.given_name,
+      lastname: payload.family_name,
+      email: payload.email,
+      password: await hash(generateUrlSafeToken())
+    })
+
+    return (await JWT.init(payload.sub))
+  } catch (error) {
+    if (!(error instanceof DrizzleQueryError)) {
+      throw error;
+    }
+
+    // Return if the email address already exist
+    if (error.cause?.message.includes("Duplicate entry")) {
+      return (await JWT.init(payload.sub))
+    }
+
+    throw error;
+  }
 }

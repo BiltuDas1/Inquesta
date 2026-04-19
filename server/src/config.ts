@@ -4,6 +4,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { Email } from "./utils/email.ts";
 import { Template } from "./utils/template.ts";
 import { createClient } from "redis";
+import { OAuth2Client } from "google-auth-library";
 
 export const isProduction = process.env.PRODUCTION !== undefined;
 export const serverConfig = {
@@ -36,3 +37,9 @@ redis.on("error", (err) => console.error("Redis Client Error", err));
 export const ACCESS_TOKEN_EXPIRY = 900;
 export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
 export const EDDSA_PRIVATE_KEY = requireEnv("EDDSA_PRIVATE_KEY");
+
+// Google Authentication
+export const GOOGLE_CLIENT = new OAuth2Client({
+  clientId: requireEnv("GOOGLE_CLIENT_ID"),
+  clientSecret: Buffer.from(requireEnv("GOOGLE_CLIENT_SECRET"), "base64").toString("utf-8")
+});
