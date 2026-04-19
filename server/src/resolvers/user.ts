@@ -4,8 +4,6 @@ import { users } from "../databases/schema.ts";
 import { type UserRole, type User } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
-import { AccessToken } from "../utils/jwt/accessToken.ts";
-import { RefreshToken } from "../utils/jwt/refreshToken.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
 
 async function sendEmail(email: string, verify_link: string) {
@@ -56,10 +54,15 @@ export async function registerUser(data: User) {
   }
 }
 
+type LoginResponse = {
+  role: UserRole,
+  jwt: JWT
+}
+
 export async function loginUser(
   email: string,
   password: string,
-): Promise<UserRole | false> {
+): Promise<LoginResponse | false> {
   const [userRecord] = await db
     .selectDistinct({
       id: users.id,
@@ -79,19 +82,13 @@ export async function loginUser(
     return false;
   }
 
-  // Generate tokens asynchronously
-  const id = String(userRecord.id);
-  const jwtObj = await JWT.init({ id });
-  const tokens = jwtObj.toObj();
-
-  // Extract the actual token strings
-  const accessToken = tokens.access_token;
-  const refreshToken = tokens.refresh_token;
-
+  const jwtObj = await JWT.init(userRecord.id);
+  
   return {
-    email: email,
-    role: userRecord.role,
-    access_token: accessToken,
-    refresh_token: refreshToken,
+    role: {
+      email: email,
+      role: userRecord.role
+    },
+    jwt: jwtObj
   };
 }
