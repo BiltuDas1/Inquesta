@@ -7,7 +7,11 @@ export class JWT {
 
   private constructor() {}
 
-  //  Create both tokens
+  /**
+   * Initialize JWT Object
+   * @param sub The main identifier for which requires the JWT
+   * @returns New JWT Object
+   */
   static async init(sub: string): Promise<JWT> {
     const jwtObj = new JWT();
 
