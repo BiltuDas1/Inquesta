@@ -84,7 +84,7 @@ export async function loginUser(
 
   const jwtObj = await JWT.init(userRecord.id);
 
-  redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), userRecord.id, {
+  await redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), userRecord.id, {
     expiration: {
       type: "EXAT",
       value: jwtObj.refreshToken.expiryTime()
@@ -141,7 +141,7 @@ export async function googleLogin(payload: GoogleUser) {
     }
 
     const jwtObj = await JWT.init(result[0].id);
-    redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
+    await redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
       expiration: {
         type: "EXAT",
         value: jwtObj.refreshToken.expiryTime()
@@ -177,7 +177,7 @@ export async function googleLogin(payload: GoogleUser) {
       }
 
       const jwtObj = await JWT.init(result[0].id);
-      redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
+      await redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
         expiration: {
           type: "EXAT",
           value: jwtObj.refreshToken.expiryTime()

@@ -1,8 +1,10 @@
 import { GOOGLE_CLIENT, isProduction } from "../config.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
+import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import { googleLogin, loginUser, registerUser } from "../resolvers/user.ts";
 import { UserRoleObject, type User, type UserRole } from "../types/user.ts";
 import { set_cookie } from "../utils/cookie.ts";
+import * as cookie from 'cookie';
 
 builder.mutationField("register", (t) =>
   t.field({
@@ -180,4 +182,86 @@ builder.mutationField("loginWithGoogle", (t) =>
       }
     }
   }),
+);
+
+builder.mutationField("refreshJWT", (t) =>
+  t.field({
+    type: GQLResponse,
+    args: {},
+    resolve: async (_parent, data, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server"
+        }
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["refresh_token"] === undefined) {
+        return {
+          success: false,
+          message: "no refresh_token cookie"
+        }
+      }
+
+      const response = await refresh_jwt(cookieObj["refresh_token"]);
+      if (!response.success) {
+        context.reply.header("set-cookie", set_cookie({
+            name: "access_token",
+            value: "",
+            expires: 0
+          })
+        );
+
+        context.reply.header("set-cookie", set_cookie({
+            name: "refresh_token",
+            value: "",
+            expires: 0
+          })
+        );
+
+        return {
+          success: false,
+          message: response.message
+        };
+      }
+
+      if (response.jwt === undefined) {
+        return {
+          success: false,
+          message: "failed to generate JWT"
+        }
+      }
+
+      // Passing Cookies via HTTP Response
+      context.reply.header("set-cookie", set_cookie({
+          name: "access_token",
+          value: response.jwt.accessToken.getToken(),
+          expires: response.jwt.accessToken.expiryTime(),
+          path: "/",
+          samesite: "Lax",
+          httponly: true,
+          secure: isProduction
+        })
+      );
+
+      context.reply.header("set-cookie", set_cookie({
+          name: "refresh_token",
+          value: response.jwt.refreshToken.getToken(),
+          expires: response.jwt.refreshToken.expiryTime(),
+          path: "/",
+          samesite: "Strict",
+          httponly: true,
+          secure: isProduction
+        })
+      );
+
+      context.reply.header("Set-Login", "logged-in");
+
+      return {
+        success: true,
+        message: "token refreshed successfully"
+      }
+    }
+  })
 );
