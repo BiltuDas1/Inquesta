@@ -307,7 +307,7 @@ export default function LoginPage() {
             {[
               {
                 label: "Continue with Google",
-                icon: (<GoogleSVG />),
+                icon: <GoogleSVG />,
               },
             ].map((b) => (
               <button

@@ -7,11 +7,11 @@ const getGoogleAuthUrl = () => {
 
   const options = {
     client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    redirect_uri: import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL, 
+    redirect_uri: import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL,
     response_type: "code",
     prompt: "select_account",
     access_type: "offline",
-    
+
     scope: [
       "https://www.googleapis.com/auth/userinfo.profile",
       "https://www.googleapis.com/auth/userinfo.email",
@@ -126,7 +126,10 @@ export default function SignupPage() {
 
           {/* Social buttons */}
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <button className="flex-1 flex items-center justify-center gap-2  cursor-pointer bg-[#1b2e2e] hover:bg-[#1f3535] border border-[#2a4040] text-white text-sm font-medium py-3 px-4 rounded-xl transition-colors duration-200" onClick={google_login}>
+            <button
+              className="flex-1 flex items-center justify-center gap-2  cursor-pointer bg-[#1b2e2e] hover:bg-[#1f3535] border border-[#2a4040] text-white text-sm font-medium py-3 px-4 rounded-xl transition-colors duration-200"
+              onClick={google_login}
+            >
               <GoogleSVG />
               Continue with Google
             </button>
