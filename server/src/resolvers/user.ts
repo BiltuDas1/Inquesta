@@ -104,14 +104,18 @@ export async function googleLogin(payload: GoogleUser) {
   if (payload.given_name === undefined) {
     return {
       success: false,
-      message: "`firstname` is not provided"
+      message: "`firstname` is not provided",
+      role: null,
+      jwt: null
     }
   }
 
   if (payload.email === undefined) {
     return {
       success: false,
-      message: "`email` is not provided"
+      message: "`email` is not provided",
+      role: null,
+      jwt: null
     }
   }
 
@@ -125,13 +129,14 @@ export async function googleLogin(payload: GoogleUser) {
     })
 
     const result = await db.selectDistinct({
-      id: users.id
+      id: users.id,
+      role: users.role
     })
       .from(users)
       .where(eq(users.email, payload.email))
       .limit(1);
 
-    if (result[0]?.id === undefined) {
+    if (result[0]?.id === undefined || result[0]?.role === undefined) {
       throw Error("Failed to insert data in database");
     }
 
@@ -143,7 +148,15 @@ export async function googleLogin(payload: GoogleUser) {
       }
     });
 
-    return jwtObj
+    return {
+      success: true,
+      message: "login successful",
+      role: {
+        email: payload.email,
+        role: result[0]?.role
+      },
+      jwt: jwtObj
+    }
   } catch (error) {
     if (!(error instanceof DrizzleQueryError)) {
       throw error;
@@ -152,13 +165,14 @@ export async function googleLogin(payload: GoogleUser) {
     // Return if the email address already exist
     if (error.cause?.message.includes("Duplicate entry")) {
       const result = await db.selectDistinct({
-        id: users.id
+        id: users.id,
+        role: users.role
       })
         .from(users)
         .where(eq(users.email, payload.email))
         .limit(1);
 
-      if (result[0]?.id === undefined) {
+      if (result[0]?.id === undefined || result[0]?.role === undefined) {
         throw Error("Failed to read data from database");
       }
 
@@ -170,7 +184,15 @@ export async function googleLogin(payload: GoogleUser) {
         }
       });
 
-      return jwtObj
+      return {
+        success: true,
+        message: "login successful",
+        role: {
+          email: payload.email,
+          role: result[0]?.role
+        },
+        jwt: jwtObj
+      }
     }
 
     throw error;

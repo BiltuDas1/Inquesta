@@ -3,7 +3,6 @@ import { builder, GQLResponse } from "../libraries/builder.ts";
 import { googleLogin, loginUser, registerUser } from "../resolvers/user.ts";
 import { UserRoleObject, type User, type UserRole } from "../types/user.ts";
 import { set_cookie } from "../utils/cookie.ts";
-import { JWT } from "../utils/jwt/jwt.ts";
 
 builder.mutationField("register", (t) =>
   t.field({
@@ -98,64 +97,86 @@ builder.queryField("login", (t) =>
 
 builder.mutationField("loginWithGoogle", (t) => 
   t.field({
-    type: GQLResponse,
+    type: loginResponse,
     args: {
       code: t.arg.string({ required: true })
     },
     resolve: async (_parent, { code }, context) => {
-      const { tokens } = await GOOGLE_CLIENT.getToken(code);
-      if (tokens.id_token === undefined || tokens.id_token === null) {
-        return {
-          success: false,
-          message: "Unable to get access token from Google side"
+      try {
+        const { tokens } = await GOOGLE_CLIENT.getToken(code);
+        if (tokens.id_token === undefined || tokens.id_token === null) {
+          return {
+            success: false,
+            message: "unable to get access token from Google side"
+          }
         }
-      }
-
-      const ticket = await GOOGLE_CLIENT.verifyIdToken({
-        idToken: tokens.id_token
-      });
-
-      const payload = ticket.getPayload();
-      if (payload === undefined) {
-        return {
-          success: false,
-          message: "No payload received from Google"
+  
+        const ticket = await GOOGLE_CLIENT.verifyIdToken({
+          idToken: tokens.id_token
+        });
+  
+        const payload = ticket.getPayload();
+        if (payload === undefined) {
+          return {
+            success: false,
+            message: "no payload received from Google"
+          }
         }
-      }
+  
+        const result = await googleLogin(payload)
+        if (result.success === false) {
+          return {
+            success: false,
+            message: result.message
+          };
+        }
+  
+        if (result.jwt === null) {
+          return {
+            success: false,
+            message: "unable to generate JWT"
+          };
+        }
+  
+        // Passing Cookies via HTTP Response
+        context.reply.header("set-cookie", set_cookie({
+            name: "access_token",
+            value: result.jwt.accessToken.getToken(),
+            expires: result.jwt.accessToken.expiryTime(),
+            path: "/",
+            samesite: "Lax",
+            httponly: true,
+            secure: isProduction
+          })
+        );
+  
+        context.reply.header("set-cookie", set_cookie({
+            name: "refresh_token",
+            value: result.jwt.refreshToken.getToken(),
+            expires: result.jwt.refreshToken.expiryTime(),
+            path: "/",
+            samesite: "Strict",
+            httponly: true,
+            secure: isProduction
+          })
+        );
+  
+        context.reply.header("Set-Login", "logged-in");
+  
+        return {
+          success: true,
+          message: result.message,
+          data: result.role
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === "invalid_grant") {
+          return {
+            success: false,
+            message: "invalid or expired code"
+          }
+        }
 
-      const result = await googleLogin(payload)
-      if (!(result instanceof JWT)) {
-        return result;
-      }
-
-      // Passing Cookies via HTTP Response
-      context.reply.header("set-cookie", set_cookie({
-          name: "access_token",
-          value: result.accessToken.getToken(),
-          expires: result.accessToken.expiryTime(),
-          path: "/",
-          samesite: "Lax",
-          httponly: true,
-          secure: isProduction
-        })
-      );
-
-      context.reply.header("set-cookie", set_cookie({
-          name: "refresh_token",
-          value: result.refreshToken.getToken(),
-          expires: result.refreshToken.expiryTime(),
-          path: "/",
-          samesite: "Strict",
-          httponly: true,
-          secure: isProduction
-        })
-      );
-
-      context.reply.header("Set-Login", "logged-in");
-
-      return {
-        success: true,
-        message: "login successful"
+        throw error;
       }
     }
   }),
