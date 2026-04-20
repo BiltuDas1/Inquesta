@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { createYoga } from "graphql-yoga";
 import { schema } from "./schemas/schema.ts";
-import { allowedOrigins, isProduction, redis, serverConfig } from "./config.ts";
+import { allowedOrigins, isProduction, loadEdDSAKey, redis, serverConfig } from "./config.ts";
 import type { FastifyContext } from "./types/fastify.ts";
 
 // Create the Fastify server and turn on the pretty logger
@@ -58,8 +58,9 @@ server.route({
 });
 
 server.addHook("onReady", async () => {
-  await redis.connect()
-  server.log.info("Redis Connection Ready")
+  await loadEdDSAKey();
+  await redis.connect();
+  server.log.info("Redis Connection Ready");
 });
 
 // Start the Server

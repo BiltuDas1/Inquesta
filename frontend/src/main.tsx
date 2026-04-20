@@ -11,8 +11,8 @@ import { client } from "./lib/apolloclient";
 
 createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
-  <StrictMode>
-    <App />
-  </StrictMode>
+    <StrictMode>
+      <App />
+    </StrictMode>
   </ApolloProvider>,
 );

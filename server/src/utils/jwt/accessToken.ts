@@ -1,7 +1,6 @@
-import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
-import * as crypto from "crypto";
+import { SignJWT, jwtVerify } from "jose";
 import { generateUrlSafeToken } from "../token.ts";
-import { ACCESS_TOKEN_EXPIRY, EDDSA_PRIVATE_KEY } from "../../config.ts";
+import { ACCESS_TOKEN_EXPIRY, EDDSA_PRIVATE_KEY, EDDSA_PUBLIC_KEY } from "../../config.ts";
 
 type AccessTokenPayload = {
   sub: string;
@@ -23,22 +22,9 @@ export class AccessToken {
   }
 
   static async init(sub: string, token?: string): Promise<AccessToken> {
-    // Format the private key from the environment
-    const privateKeyPem = EDDSA_PRIVATE_KEY.replace(/\\n/g, "\n");
-
-    // Dynamically generate the public key from the private key
-    const keyObject = crypto.createPublicKey(privateKeyPem);
-    const publicKeyPem = keyObject.export({
-      type: "spki",
-      format: "pem",
-    });
-
     // If the token exists then verify it
     if (token) {
-      // Import the dynamically generated public key
-      const publicKey = await importSPKI(publicKeyPem as string, ALG);
-
-      const { payload } = await jwtVerify(token, publicKey, {
+      const { payload } = await jwtVerify(token, EDDSA_PUBLIC_KEY, {
         algorithms: [ALG],
       });
 
@@ -55,11 +41,9 @@ export class AccessToken {
       typ: "access",
     };
 
-    const privateKey = await importPKCS8(privateKeyPem, ALG);
-
     const signedToken = await new SignJWT({ ...payloadInfo })
       .setProtectedHeader({ alg: ALG })
-      .sign(privateKey);
+      .sign(EDDSA_PRIVATE_KEY);
 
     return new AccessToken(payloadInfo, signedToken);
   }

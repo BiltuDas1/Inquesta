@@ -7,6 +7,7 @@ import CoursePage from "./pages/coursepage";
 import ProtectedRoute from "./components/middleware/protectedroute";
 import PublicRoute from "./components/middleware/publicroute";
 import NotFoundPage from "./pages/notfoundpage";
+import GoogleLogin from "./pages/googleloginpage";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         {/* Block if already logged in */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/register" element={<SignupPage />} />
+          <Route path="/auth/google" element={<GoogleLogin />} />
         </Route>
 
         {/* Protected Route */}

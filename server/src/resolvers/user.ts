@@ -1,7 +1,7 @@
 import { hash, verify } from "argon2";
 import { db, emailObj, redis, templateObj } from "../config.ts";
 import { users } from "../databases/schema.ts";
-import { type UserRole, type User } from "../types/user.ts";
+import { type UserRole, type User, type GoogleUser } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
@@ -83,6 +83,13 @@ export async function loginUser(
   }
 
   const jwtObj = await JWT.init(userRecord.id);
+
+  redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), userRecord.id, {
+    expiration: {
+      type: "EXAT",
+      value: jwtObj.refreshToken.expiryTime()
+    }
+  });
   
   return {
     role: {
@@ -91,4 +98,103 @@ export async function loginUser(
     },
     jwt: jwtObj
   };
+}
+
+export async function googleLogin(payload: GoogleUser) {
+  if (payload.given_name === undefined) {
+    return {
+      success: false,
+      message: "`firstname` is not provided",
+      role: null,
+      jwt: null
+    }
+  }
+
+  if (payload.email === undefined) {
+    return {
+      success: false,
+      message: "`email` is not provided",
+      role: null,
+      jwt: null
+    }
+  }
+
+  try {
+    await db.insert(users).values({
+      firstname: payload.given_name,
+      lastname: payload.family_name,
+      email: payload.email,
+      password: await hash(generateUrlSafeToken()),
+      isActive: true
+    })
+
+    const result = await db.selectDistinct({
+      id: users.id,
+      role: users.role
+    })
+      .from(users)
+      .where(eq(users.email, payload.email))
+      .limit(1);
+
+    if (result[0]?.id === undefined || result[0]?.role === undefined) {
+      throw Error("Failed to insert data in database");
+    }
+
+    const jwtObj = await JWT.init(result[0].id);
+    redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
+      expiration: {
+        type: "EXAT",
+        value: jwtObj.refreshToken.expiryTime()
+      }
+    });
+
+    return {
+      success: true,
+      message: "login successful",
+      role: {
+        email: payload.email,
+        role: result[0]?.role
+      },
+      jwt: jwtObj
+    }
+  } catch (error) {
+    if (!(error instanceof DrizzleQueryError)) {
+      throw error;
+    }
+
+    // Return if the email address already exist
+    if (error.cause?.message.includes("Duplicate entry")) {
+      const result = await db.selectDistinct({
+        id: users.id,
+        role: users.role
+      })
+        .from(users)
+        .where(eq(users.email, payload.email))
+        .limit(1);
+
+      if (result[0]?.id === undefined || result[0]?.role === undefined) {
+        throw Error("Failed to read data from database");
+      }
+
+      const jwtObj = await JWT.init(result[0].id);
+      redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
+        expiration: {
+          type: "EXAT",
+          value: jwtObj.refreshToken.expiryTime()
+        }
+      });
+
+      return {
+        success: true,
+        message: "login successful",
+        role: {
+          email: payload.email,
+          role: result[0]?.role
+        },
+        jwt: jwtObj
+      }
+    }
+
+    throw error;
+  }
 }
