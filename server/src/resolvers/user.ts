@@ -1,5 +1,5 @@
 import { hash, verify } from "argon2";
-import { db, emailObj, redis, templateObj } from "../config.ts";
+import { db, DOMAIN, emailObj, redis, templateObj } from "../config.ts";
 import { users } from "../databases/schema.ts";
 import { type UserRole, type User, type GoogleUser } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
@@ -31,7 +31,7 @@ export async function registerUser(data: User) {
     await redis.setEx("inquesta:user:email:" + data.email, 10 * 60, token); // Expire in 10 minutes
     await sendEmail(
       data.email,
-      `https://inquesta.org/email/verify?token=${token}`,
+      `${DOMAIN}?token=${token}`,
     );
     return {
       success: true,
