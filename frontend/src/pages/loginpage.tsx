@@ -1,33 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import InputField from "../components/ui/inputfield";
 import { gql } from "@apollo/client";
 import { useLazyQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router";
 import GoogleSVG from "../components/svg/google";
-
-const stats = [
-  { value: "120K+", label: "Active Learners" },
-  { value: "4.9★", label: "Avg Rating" },
-  { value: "2,400+", label: "Courses" },
-];
-
-const features = [
-  {
-    icon: <span className="material-symbols-outlined">star</span>,
-    title: "AI-Personalized Paths",
-    sub: "Tailored to your pace & goals",
-  },
-  {
-    icon: <span className="material-symbols-outlined">psychology_alt</span>,
-    title: "Expert Instructors",
-    sub: "Industry-certified educators",
-  },
-  {
-    icon: <span className="material-symbols-outlined">crowdsource</span>,
-    title: "Live Collaboration",
-    sub: "Real-time peer learning",
-  },
-];
+import { google_login } from "../utils/googleauth";
+import toast from "react-hot-toast";
 
 // QUERY to get user data
 const LOGIN_QUERY = gql`
@@ -37,6 +15,8 @@ const LOGIN_QUERY = gql`
         email
         role
       }
+      message
+      success
     }
   }
 `;
@@ -47,7 +27,9 @@ interface LoginData {
     data: {
       email: string;
       role: string;
-    };
+    } | null;
+    message: string;
+    success: boolean;
   };
 }
 
@@ -55,20 +37,50 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
   const navigate = useNavigate();
 
-  const [loginUser, { data, error, loading }] =
-    useLazyQuery<LoginData>(LOGIN_QUERY);
+  // Initialize Apollo Lazy Query
+  const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
 
-  // Use useEffect to listen for when 'data' changes
-  useEffect(() => {
-    if (data?.login?.data) {
-      const userData = data.login.data;
+  // Triggered when the input will be changed
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
 
-      if (userData.role == "admin" && userData.email) {
+  const handleSave = async (event: any) => {
+    event.preventDefault();
+
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      // Execute the query
+      const { data, error } = await loginUser({
+        variables: {
+          email: formData.email,
+          password: formData.password,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message || "An error occurred during login.");
+        return;
+      }
+
+      // Handle backend response
+      if (data?.login.success && data.login.data) {
+        toast.success(data.login.message || "Logged in successfully!");
+        const userData = data.login.data;
+
+        // Save user session (localStorage or Context/Redux)
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -76,22 +88,24 @@ export default function LoginPage() {
             role: userData.role,
           }),
         );
-        navigate("/dashboard");
+
+        // Role-based redirection
+        if (userData.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          // Assuming default users go to courses
+          navigate("/courses");
+        }
+
+        // Clear input fields
+        setFormData({ email: "", password: "" });
+      } else {
+        toast.error(data?.login.message || "Invalid credentials.");
       }
+    } catch (err: any) {
+      console.error("GraphQL Error:", err);
+      toast.error(err.message || "An unexpected error occurred.");
     }
-  }, [data]);
-
-  const handleSave = (event: any) => {
-    event.preventDefault();
-
-    loginUser({
-      variables: {
-        email,
-        password,
-      },
-    });
-    setEmail("");
-    setPassword("");
   };
 
   if (loading)
@@ -145,20 +159,7 @@ export default function LoginPage() {
                 boxShadow: "0 0 16px rgba(0,212,170,0.14)",
               }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M4 19V7a2 2 0 012-2h12a2 2 0 012 2v12"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M4 19h16M9 7v4M15 7v4M12 7v4"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <img className="h-8" src="/inquesta.svg" />
             </div>
             <div>
               <div className="text-white text-[18px] font-bold tracking-tight">
@@ -179,79 +180,6 @@ export default function LoginPage() {
             <p className="text-[#5a8888] text-[13px] leading-[1.6]">
               Your dashboard, courses & progress are waiting for you.
             </p>
-          </div>
-
-          <div className="flex gap-2 mb-3.5">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="flex-1 text-center rounded-[10px] px-2 py-2"
-                style={{
-                  background: "rgba(0,212,170,0.07)",
-                  border: "1px solid rgba(0,212,170,0.15)",
-                }}
-              >
-                <div className="text-[#00d4aa] text-[15px] font-extrabold leading-none">
-                  {s.value}
-                </div>
-                <div className="text-[#4a7070] text-[9.5px] mt-1">
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col gap-1.5 mb-3.5">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-[10px] border border-white/5 bg-white/2 hover:bg-[#00d4aa]/6 hover:border-[#00d4aa]/20 transition-all duration-200"
-              >
-                <div
-                  className="w-7.5 h-7.5 rounded-lg flex items-center justify-center shrink-0 text-[#00d4aa]"
-                  style={{
-                    background: "rgba(0,212,170,0.1)",
-                    border: "1px solid rgba(0,212,170,0.15)",
-                  }}
-                >
-                  {f.icon}
-                </div>
-                <div>
-                  <div className="text-[#d0e8e8] text-[12px] font-semibold">
-                    {f.title}
-                  </div>
-                  <div className="text-[#3a6060] text-[10.5px] mt-0.5">
-                    {f.sub}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div
-            className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(0,212,170,0.12)",
-            }}
-          >
-            <div
-              className="w-8.5 h-8.5 rounded-full shrink-0 flex items-center justify-center font-bold text-[#061212] text-[13px]"
-              style={{ background: "linear-gradient(135deg,#00d4aa,#0099aa)" }}
-            >
-              S
-            </div>
-            <div className="flex-1">
-              <div className="text-[#c5dede] text-[11px] leading-normal">
-                "Inquesta transformed how I learn — 3 certifications in 2
-                months!"
-              </div>
-              <div className="text-[#3a6060] text-[10px] mt-0.5">
-                Sarah K. · UX Designer
-              </div>
-            </div>
-            <div className="text-[#00d4aa] text-[11px] shrink-0">★★★★★</div>
-            <div className="text-[#00d4aa] text-[11px] shrink-0">★★★★★</div>
           </div>
         </div>
       </div>
@@ -311,6 +239,7 @@ export default function LoginPage() {
               },
             ].map((b) => (
               <button
+                onClick={google_login}
                 key={b.label}
                 className="cursor-pointer flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-[10px] border border-[#1e3535] bg-[#0e1e1e] hover:bg-[#162929] hover:border-[#2a4848] text-white text-[12.5px] font-medium transition-all duration-200"
               >
@@ -343,8 +272,8 @@ export default function LoginPage() {
             <InputField
               label="Email Address"
               type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              value={formData.email}
+              onChange={handleInputChange}
               placeholder="you@example.com"
               icon={
                 <span
@@ -375,8 +304,8 @@ export default function LoginPage() {
               <InputField
                 label=""
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                value={formData.password}
+                onChange={handleInputChange}
                 placeholder="Create a strong password"
                 name="password"
                 icon={

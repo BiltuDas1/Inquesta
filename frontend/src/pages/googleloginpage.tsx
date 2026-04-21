@@ -7,6 +7,10 @@ import { useNavigate, useSearchParams } from "react-router";
 const LOGIN_WITH_GOOGLE = gql`
   mutation loginWithGoogle($code: String!) {
     loginWithGoogle(code: $code) {
+      data {
+        email
+        role
+      }
       message
       success
     }
@@ -23,7 +27,24 @@ export default function GoogleLogin() {
     {
       onCompleted: (data: any) => {
         if (data.loginWithGoogle.success) {
-          navigate("/courses");
+          const userData = data.loginWithGoogle.data;
+          console.log(userData.email)
+          // 2. THIS IS THE CRITICAL FIX: SAVE TO LOCALSTORAGE BEFORE NAVIGATING
+          if (userData) {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                email: userData.email,
+                role: userData.role,
+              }),
+            );
+          }
+          // Route based on role
+          if (userData?.role === "admin") {
+            navigate("/dashboard");
+          } else {
+            navigate("/courses");
+          }
         }
         // Capture the specific GraphQL validation message (e.g., "Token expired")
         else {

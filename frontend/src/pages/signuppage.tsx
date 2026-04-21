@@ -1,34 +1,124 @@
 import { useState } from "react";
 import InputField from "../components/ui/inputfield";
 import GoogleSVG from "../components/svg/google";
+import { gql } from "@apollo/client";
+import toast from "react-hot-toast";
+import { useMutation } from "@apollo/client/react";
+import { useNavigate } from "react-router";
+import { google_login } from "../utils/googleauth";
 
-const getGoogleAuthUrl = () => {
-  const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
-
-  const options = {
-    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    redirect_uri: import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL,
-    response_type: "code",
-    prompt: "select_account",
-    access_type: "offline",
-
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.profile",
-      "https://www.googleapis.com/auth/userinfo.email",
-    ].join(" "),
+// Define what the GraphQL server returns
+interface RegisterResponse {
+  register: {
+    success: boolean;
+    message: string;
   };
-
-  const queryString = new URLSearchParams(options).toString();
-  return `${rootUrl}?${queryString}`;
-};
-
-function google_login() {
-  window.location.href = getGoogleAuthUrl();
 }
+
+// Define your GraphQL mutation
+const REGISTER_MUTATION = gql`
+  mutation register(
+    $email: String!
+    $firstname: String!
+    $lastname: String!
+    $password: String!
+  ) {
+    register(
+      email: $email
+      firstname: $firstname
+      lastname: $lastname
+      password: $password
+    ) {
+      message
+      success
+    }
+  }
+`;
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const navigate = useNavigate();
+
+  // Add state for the form data
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // Initalize apollo mutation
+  const [registerUser, { loading }] =
+    useMutation<RegisterResponse>(REGISTER_MUTATION);
+
+  // Handle input change
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  // Send the data into backend server
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // Basic validation
+    if (
+      !formData.email ||
+      !formData.password ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.confirmPassword
+    ) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    // check password and confirm password both are same or not
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Password and confirm password do not match");
+      return;
+    }
+
+    try {
+      // Execute the mutation
+      const { data } = await registerUser({
+        variables: {
+          email: formData.email,
+          firstname: formData.firstName,
+          lastname: formData.lastName,
+          password: formData.password,
+        },
+      });
+
+      // Handled backend response
+      if (data?.register.success) {
+        toast.success(
+          data?.register.message ||
+            "Account created successfully! Check your email",
+        );
+
+        // Navigate to the new page AND pass the email in state
+        navigate("/check-email", { state: { email: formData.email } });
+
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      } else {
+        toast.error(
+          data?.register?.message || "Registration failed. Please try again.",
+        );
+      }
+    } catch (error: any) {
+      console.error("GraphQL Error:", error);
+      toast.error(error.message || "An unexpected error occurred.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex bg-[#0e1a1a] font-sans">
       {/* LEFT PANEL — hidden on mobile */}
@@ -42,20 +132,7 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex items-center justify-start gap-3 mb-10">
             <div className="w-10 h-10 rounded-xl bg-[#1a3a35] flex items-center justify-center">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M4 19V7a2 2 0 012-2h12a2 2 0 012 2v12"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M4 19h16M9 7v4M15 7v4M12 7v4"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <img className="h-8" src="/inquesta.svg" />
             </div>
             <span className="text-white text-xl font-semibold tracking-wide">
               Inquesta
@@ -78,7 +155,7 @@ export default function SignupPage() {
           </p>
 
           {/* Feature pills */}
-          <div className="flex flex-col gap-3 text-left">
+          {/* <div className="flex flex-col gap-3 text-left">
             {[
               {
                 icon: <span className="material-symbols-outlined ">star</span>,
@@ -107,7 +184,7 @@ export default function SignupPage() {
                 </span>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -144,147 +221,166 @@ export default function SignupPage() {
             <div className="flex-1 h-px bg-[#1e3535]" />
           </div>
 
-          {/* Name row */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-4">
-            <div className="flex-1">
-              <InputField
-                label="First Name"
-                type="text"
-                placeholder="John"
-                icon={
-                  <span
-                    className="material-symbols-outlined "
-                    style={{ fontSize: "22px" }}
-                  >
-                    account_circle
-                  </span>
-                }
-                name="email"
-              />
+          <form onSubmit={handleSave}>
+            {/* Name row */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-4">
+              <div className="flex-1">
+                <InputField
+                  label="First Name"
+                  type="text"
+                  placeholder="John"
+                  icon={
+                    <span
+                      className="material-symbols-outlined "
+                      style={{ fontSize: "22px" }}
+                    >
+                      account_circle
+                    </span>
+                  }
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex-1">
+                <InputField
+                  label="Last Name"
+                  type="text"
+                  placeholder="Doe"
+                  icon={
+                    <span
+                      className="material-symbols-outlined"
+                      style={{ fontSize: "22px" }}
+                    >
+                      account_circle
+                    </span>
+                  }
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
-            <div className="flex-1">
+
+            {/* Email */}
+            <div className="mb-2.5">
               <InputField
-                label="Last Name"
-                type="text"
-                placeholder="Doe"
+                label="Email Address"
+                type="email"
+                placeholder="you@example.com"
                 icon={
                   <span
                     className="material-symbols-outlined"
                     style={{ fontSize: "22px" }}
                   >
-                    account_circle
+                    mail
                   </span>
                 }
                 name="email"
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
-          </div>
 
-          {/* Email */}
-          <div className="mb-2.5">
-            <InputField
-              label="Email Address"
-              type="email"
-              placeholder="you@example.com"
-              icon={
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: "22px" }}
-                >
-                  mail
-                </span>
-              }
-              name="email"
-            />
-          </div>
+            {/* Password */}
+            <div className="mb-4">
+              <InputField
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Create a strong password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                icon={
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "22px" }}
+                  >
+                    lock
+                  </span>
+                }
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
+                  >
+                    {showPassword ? (
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: "22px" }}
+                      >
+                        visibility
+                      </span>
+                    ) : (
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: "22px" }}
+                      >
+                        visibility_off
+                      </span>
+                    )}
+                  </button>
+                }
+              />
+            </div>
 
-          {/* Password */}
-          <div className="mb-4">
-            <InputField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Create a strong password"
-              name="password"
-              icon={
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: "22px" }}
-                >
-                  lock
-                </span>
-              }
-              rightElement={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
-                >
-                  {showPassword ? (
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: "22px" }}
-                    >
-                      visibility
-                    </span>
-                  ) : (
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: "22px" }}
-                    >
-                      visibility_off
-                    </span>
-                  )}
-                </button>
-              }
-            />
-          </div>
+            {/* Confirm Password */}
+            <div className="mb-6">
+              <InputField
+                label="Confirm Password"
+                type={showConfirm ? "text" : "password"}
+                placeholder="Re-enter a password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                icon={
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "22px" }}
+                  >
+                    lock
+                  </span>
+                }
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
+                  >
+                    {showConfirm ? (
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: "22px" }}
+                      >
+                        visibility
+                      </span>
+                    ) : (
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: "22px" }}
+                      >
+                        visibility_off
+                      </span>
+                    )}
+                  </button>
+                }
+              />
+            </div>
 
-          {/* Confirm Password */}
-          <div className="mb-6">
-            <InputField
-              label="Confirm Password"
-              type={showConfirm ? "text" : "password"}
-              placeholder="Re-enter a password"
-              name="password"
-              icon={
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: "22px" }}
-                >
-                  lock
-                </span>
-              }
-              rightElement={
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="cursor-pointer text-[#4a7070] hover:text-[#00d4aa] transition-colors"
-                >
-                  {showConfirm ? (
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: "22px" }}
-                    >
-                      visibility
-                    </span>
-                  ) : (
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: "22px" }}
-                    >
-                      visibility_off
-                    </span>
-                  )}
-                </button>
-              }
-            />
-          </div>
-
-          {/* CTA */}
-          <button className="w-full text-white bg-[#00d4aa] hover:bg-[#00bfa0] active:bg-[#00a88c] cursor-pointer font-semibold py-3.5 rounded-xl text-sm transition-colors duration-200 tracking-wide mb-5">
-            Create Account
-          </button>
-
+            {/* CTA */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full flex items-center justify-center gap-2 text-white font-semibold py-3.5 rounded-xl text-sm transition-colors duration-200 tracking-wide mb-5 
+                ${loading ? "bg-[#4a7070] cursor-not-allowed opacity-80" : "bg-[#00d4aa] hover:bg-[#00bfa0] active:bg-[#00a88c] cursor-pointer"}`}
+            >
+              {loading && (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              )}
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
           {/* Login link */}
           <p className="text-center text-[#4a7070] text-sm">
             Already have an account?{" "}
