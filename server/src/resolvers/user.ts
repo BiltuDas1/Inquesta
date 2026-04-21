@@ -1,15 +1,23 @@
 import { hash, verify } from "argon2";
-import { db, emailObj, redis, templateObj } from "../config.ts";
+import {
+  db,
+  emailObj,
+  FRONTEND_FQDN,
+  isProduction,
+  redis,
+  templateObj,
+} from "../config.ts";
 import { users } from "../databases/schema.ts";
 import { type UserRole, type User, type GoogleUser } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
+import type { FastifyContext } from "../types/fastify.ts";
 
 async function sendEmail(email: string, verify_link: string) {
-  await emailObj.send_email({
+  const { error } = await emailObj.send_email({
     name: "noreply",
-    sender_email: "onboarding@resend.dev",
+    sender_email: "noreply@inquesta.org",
     receiver_emails: [email],
     subject: "Verify your Email",
     html_body: templateObj.getTemplate({
@@ -21,18 +29,30 @@ async function sendEmail(email: string, verify_link: string) {
       },
     }),
   });
+
+  return error;
 }
 
-export async function registerUser(data: User) {
+export async function registerUser(data: User, context: FastifyContext) {
   try {
     data.password = await hash(data.password);
     await db.insert(users).values(data);
     const token = generateUrlSafeToken();
-    await redis.setEx("inquesta:user:email:" + data.email, 10 * 60, token); // Expire in 10 minutes
-    await sendEmail(
+    await redis.setEx("inquesta:user:email:" + token, 10 * 60, data.email); // Expire in 10 minutes
+    const emailError = await sendEmail(
       data.email,
-      `https://inquesta.org/email/verify?token=${token}`,
+      (isProduction ? "https://" : "http://") +
+        `${FRONTEND_FQDN}/email/verify?token=${token}`,
     );
+
+    if (emailError !== null) {
+      context.logger.error(emailError.message);
+      return {
+        success: false,
+        message: "unable to send email",
+      };
+    }
+
     return {
       success: true,
       message: `An email has been sent to ${data.email}`,
@@ -55,9 +75,9 @@ export async function registerUser(data: User) {
 }
 
 type LoginResponse = {
-  role: UserRole,
-  jwt: JWT
-}
+  role: UserRole;
+  jwt: JWT;
+};
 
 export async function loginUser(
   email: string,
@@ -84,19 +104,23 @@ export async function loginUser(
 
   const jwtObj = await JWT.init(userRecord.id);
 
-  await redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), userRecord.id, {
-    expiration: {
-      type: "EXAT",
-      value: jwtObj.refreshToken.expiryTime()
-    }
-  });
-  
+  await redis.set(
+    "inquesta:user:jwt:" + jwtObj.refreshToken.getJti(),
+    userRecord.id,
+    {
+      expiration: {
+        type: "EXAT",
+        value: jwtObj.refreshToken.expiryTime(),
+      },
+    },
+  );
+
   return {
     role: {
       email: email,
-      role: userRecord.role
+      role: userRecord.role,
     },
-    jwt: jwtObj
+    jwt: jwtObj,
   };
 }
 
@@ -106,8 +130,8 @@ export async function googleLogin(payload: GoogleUser) {
       success: false,
       message: "`firstname` is not provided",
       role: null,
-      jwt: null
-    }
+      jwt: null,
+    };
   }
 
   if (payload.email === undefined) {
@@ -115,8 +139,8 @@ export async function googleLogin(payload: GoogleUser) {
       success: false,
       message: "`email` is not provided",
       role: null,
-      jwt: null
-    }
+      jwt: null,
+    };
   }
 
   try {
@@ -125,13 +149,14 @@ export async function googleLogin(payload: GoogleUser) {
       lastname: payload.family_name,
       email: payload.email,
       password: await hash(generateUrlSafeToken()),
-      isActive: true
-    })
+      isActive: true,
+    });
 
-    const result = await db.selectDistinct({
-      id: users.id,
-      role: users.role
-    })
+    const result = await db
+      .selectDistinct({
+        id: users.id,
+        role: users.role,
+      })
       .from(users)
       .where(eq(users.email, payload.email))
       .limit(1);
@@ -141,22 +166,26 @@ export async function googleLogin(payload: GoogleUser) {
     }
 
     const jwtObj = await JWT.init(result[0].id);
-    await redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
-      expiration: {
-        type: "EXAT",
-        value: jwtObj.refreshToken.expiryTime()
-      }
-    });
+    await redis.set(
+      "inquesta:user:jwt:" + jwtObj.refreshToken.getJti(),
+      result[0]?.id,
+      {
+        expiration: {
+          type: "EXAT",
+          value: jwtObj.refreshToken.expiryTime(),
+        },
+      },
+    );
 
     return {
       success: true,
       message: "login successful",
       role: {
         email: payload.email,
-        role: result[0]?.role
+        role: result[0]?.role,
       },
-      jwt: jwtObj
-    }
+      jwt: jwtObj,
+    };
   } catch (error) {
     if (!(error instanceof DrizzleQueryError)) {
       throw error;
@@ -164,10 +193,11 @@ export async function googleLogin(payload: GoogleUser) {
 
     // Return if the email address already exist
     if (error.cause?.message.includes("Duplicate entry")) {
-      const result = await db.selectDistinct({
-        id: users.id,
-        role: users.role
-      })
+      const result = await db
+        .selectDistinct({
+          id: users.id,
+          role: users.role,
+        })
         .from(users)
         .where(eq(users.email, payload.email))
         .limit(1);
@@ -177,24 +207,56 @@ export async function googleLogin(payload: GoogleUser) {
       }
 
       const jwtObj = await JWT.init(result[0].id);
-      await redis.set("inquesta:user:jwt:" + jwtObj.refreshToken.getJti(), result[0]?.id, {
-        expiration: {
-          type: "EXAT",
-          value: jwtObj.refreshToken.expiryTime()
-        }
-      });
+      await redis.set(
+        "inquesta:user:jwt:" + jwtObj.refreshToken.getJti(),
+        result[0]?.id,
+        {
+          expiration: {
+            type: "EXAT",
+            value: jwtObj.refreshToken.expiryTime(),
+          },
+        },
+      );
 
       return {
         success: true,
         message: "login successful",
         role: {
           email: payload.email,
-          role: result[0]?.role
+          role: result[0]?.role,
         },
-        jwt: jwtObj
-      }
+        jwt: jwtObj,
+      };
     }
 
+    throw error;
+  }
+}
+
+export async function verify_email(token: string) {
+  const email = await redis.getDel("inquesta:user:email:" + token);
+  if (email === null) {
+    return {
+      success: false,
+      data: null,
+    };
+  }
+
+  try {
+    await db
+      .update(users)
+      .set({
+        isActive: true,
+      })
+      .where(eq(users.email, email));
+
+    return {
+      success: true,
+      data: {
+        email: email,
+      },
+    };
+  } catch (error) {
     throw error;
   }
 }

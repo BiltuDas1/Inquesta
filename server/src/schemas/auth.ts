@@ -1,10 +1,15 @@
 import { GOOGLE_CLIENT, isProduction } from "../config.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
-import { googleLogin, loginUser, registerUser } from "../resolvers/user.ts";
+import {
+  googleLogin,
+  loginUser,
+  registerUser,
+  verify_email,
+} from "../resolvers/user.ts";
 import { UserRoleObject, type User, type UserRole } from "../types/user.ts";
 import { set_cookie } from "../utils/cookie.ts";
-import * as cookie from 'cookie';
+import * as cookie from "cookie";
 
 builder.mutationField("register", (t) =>
   t.field({
@@ -17,7 +22,7 @@ builder.mutationField("register", (t) =>
     },
     resolve: async (_parent, data: User, context) => {
       try {
-        return await registerUser(data);
+        return await registerUser(data, context);
       } catch (error: any) {
         context.logger.error(error, "Registration Failed");
         return {
@@ -64,26 +69,30 @@ builder.queryField("login", (t) =>
       }
 
       // Passing Cookies via HTTP Response
-      context.reply.header("set-cookie", set_cookie({
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
           name: "access_token",
           value: result.jwt.accessToken.getToken(),
           expires: result.jwt.accessToken.expiryTime(),
           path: "/",
           samesite: "Lax",
           httponly: true,
-          secure: isProduction
-        })
+          secure: isProduction,
+        }),
       );
 
-      context.reply.header("set-cookie", set_cookie({
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
           name: "refresh_token",
           value: result.jwt.refreshToken.getToken(),
           expires: result.jwt.refreshToken.expiryTime(),
           path: "/",
           samesite: "Strict",
           httponly: true,
-          secure: isProduction
-        })
+          secure: isProduction,
+        }),
       );
 
       context.reply.header("Set-Login", "logged-in");
@@ -97,11 +106,11 @@ builder.queryField("login", (t) =>
   }),
 );
 
-builder.mutationField("loginWithGoogle", (t) => 
+builder.mutationField("loginWithGoogle", (t) =>
   t.field({
     type: loginResponse,
     args: {
-      code: t.arg.string({ required: true })
+      code: t.arg.string({ required: true }),
     },
     resolve: async (_parent, { code }, context) => {
       try {
@@ -109,78 +118,82 @@ builder.mutationField("loginWithGoogle", (t) =>
         if (tokens.id_token === undefined || tokens.id_token === null) {
           return {
             success: false,
-            message: "unable to get access token from Google side"
-          }
+            message: "unable to get access token from Google side",
+          };
         }
-  
+
         const ticket = await GOOGLE_CLIENT.verifyIdToken({
-          idToken: tokens.id_token
+          idToken: tokens.id_token,
         });
-  
+
         const payload = ticket.getPayload();
         if (payload === undefined) {
           return {
             success: false,
-            message: "no payload received from Google"
-          }
+            message: "no payload received from Google",
+          };
         }
-  
-        const result = await googleLogin(payload)
+
+        const result = await googleLogin(payload);
         if (result.success === false) {
           return {
             success: false,
-            message: result.message
+            message: result.message,
           };
         }
-  
+
         if (result.jwt === null) {
           return {
             success: false,
-            message: "unable to generate JWT"
+            message: "unable to generate JWT",
           };
         }
-  
+
         // Passing Cookies via HTTP Response
-        context.reply.header("set-cookie", set_cookie({
+        context.reply.header(
+          "set-cookie",
+          set_cookie({
             name: "access_token",
             value: result.jwt.accessToken.getToken(),
             expires: result.jwt.accessToken.expiryTime(),
             path: "/",
             samesite: "Lax",
             httponly: true,
-            secure: isProduction
-          })
+            secure: isProduction,
+          }),
         );
-  
-        context.reply.header("set-cookie", set_cookie({
+
+        context.reply.header(
+          "set-cookie",
+          set_cookie({
             name: "refresh_token",
             value: result.jwt.refreshToken.getToken(),
             expires: result.jwt.refreshToken.expiryTime(),
             path: "/",
             samesite: "Strict",
             httponly: true,
-            secure: isProduction
-          })
+            secure: isProduction,
+          }),
         );
-  
+
         context.reply.header("Set-Login", "logged-in");
-  
+
         return {
           success: true,
           message: result.message,
-          data: result.role
-        }
+          data: result.role,
+        };
       } catch (error) {
         if (error instanceof Error && error.message === "invalid_grant") {
           return {
             success: false,
-            message: "invalid or expired code"
-          }
+            message: "invalid or expired code",
+          };
         }
 
         throw error;
       }
-    }
+    },
   }),
 );
 
@@ -192,76 +205,134 @@ builder.mutationField("refreshJWT", (t) =>
       if (context.req.headers.cookie === undefined) {
         return {
           success: false,
-          message: "no cookie has been passed to the server"
-        }
+          message: "no cookie has been passed to the server",
+        };
       }
 
       const cookieObj = cookie.parseCookie(context.req.headers.cookie);
       if (cookieObj["refresh_token"] === undefined) {
         return {
           success: false,
-          message: "no refresh_token cookie"
-        }
+          message: "no refresh_token cookie",
+        };
       }
 
       const response = await refresh_jwt(cookieObj["refresh_token"]);
       if (!response.success) {
-        context.reply.header("set-cookie", set_cookie({
+        context.reply.header(
+          "set-cookie",
+          set_cookie({
             name: "access_token",
             value: "",
-            expires: 0
-          })
+            expires: 0,
+          }),
         );
 
-        context.reply.header("set-cookie", set_cookie({
+        context.reply.header(
+          "set-cookie",
+          set_cookie({
             name: "refresh_token",
             value: "",
-            expires: 0
-          })
+            expires: 0,
+          }),
         );
 
         return {
           success: false,
-          message: response.message
+          message: response.message,
         };
       }
 
       if (response.jwt === undefined) {
         return {
           success: false,
-          message: "failed to generate JWT"
-        }
+          message: "failed to generate JWT",
+        };
       }
 
       // Passing Cookies via HTTP Response
-      context.reply.header("set-cookie", set_cookie({
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
           name: "access_token",
           value: response.jwt.accessToken.getToken(),
           expires: response.jwt.accessToken.expiryTime(),
           path: "/",
           samesite: "Lax",
           httponly: true,
-          secure: isProduction
-        })
+          secure: isProduction,
+        }),
       );
 
-      context.reply.header("set-cookie", set_cookie({
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
           name: "refresh_token",
           value: response.jwt.refreshToken.getToken(),
           expires: response.jwt.refreshToken.expiryTime(),
           path: "/",
           samesite: "Strict",
           httponly: true,
-          secure: isProduction
-        })
+          secure: isProduction,
+        }),
       );
 
       context.reply.header("Set-Login", "logged-in");
 
       return {
         success: true,
-        message: "token refreshed successfully"
+        message: "token refreshed successfully",
+      };
+    },
+  }),
+);
+
+const verifyEmailResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: { email: string };
+  }>("VerifyEmailResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.field({
+        nullable: true,
+        type: builder
+          .objectRef<{ email: string }>("VerifyEmailData")
+          .implement({
+            fields: (tInner) => ({
+              email: tInner.exposeString("email"),
+            }),
+          }),
+        resolve: (parent) => parent.data,
+      }),
+    }),
+  });
+
+builder.mutationField("verifyEmail", (t) =>
+  t.field({
+    type: verifyEmailResponse,
+    args: {
+      token: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, { token }, context) => {
+      const result = await verify_email(token);
+      if (!result.success || result.data === null) {
+        return {
+          success: false,
+          message: "invalid or expired token",
+        };
       }
-    }
-  })
+
+      return {
+        success: true,
+        message: "email verified successfully",
+        data: {
+          email: result.data.email,
+        },
+      };
+    },
+  }),
 );
