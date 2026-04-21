@@ -4,6 +4,8 @@ import { gql } from "@apollo/client";
 import { useLazyQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router";
 import GoogleSVG from "../components/svg/google";
+import { google_login } from "../utils/googleauth";
+
 
 
 // QUERY to get user data
@@ -215,6 +217,7 @@ export default function LoginPage() {
               },
             ].map((b) => (
               <button
+                onClick={google_login}
                 key={b.label}
                 className="cursor-pointer flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-[10px] border border-[#1e3535] bg-[#0e1e1e] hover:bg-[#162929] hover:border-[#2a4848] text-white text-[12.5px] font-medium transition-all duration-200"
               >

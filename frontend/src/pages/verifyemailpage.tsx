@@ -67,8 +67,8 @@ export default function VerifyEmailPage() {
       }
     };
 
-    verifyToken()
-  },[token,navigate,verifyEmailMutation]);
+    verifyToken();
+  }, [token, navigate, verifyEmailMutation]);
 
   return (
     <div className="bg-background min-h-screen flex flex-col items-center justify-center p-6 md:p-12 font-body text-on-surface relative overflow-hidden">
