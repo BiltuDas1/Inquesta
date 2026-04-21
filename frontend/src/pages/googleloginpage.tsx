@@ -26,10 +26,20 @@ export default function GoogleLogin() {
     {
       onCompleted: (data: any) => {
         if (data.loginWithGoogle.success) {
-          const userRole = data.loginWithGoogle.data?.role;
+          const userData = data.loginWithGoogle.data;
 
+          // 2. THIS IS THE CRITICAL FIX: SAVE TO LOCALSTORAGE BEFORE NAVIGATING
+          if (userData) {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                email: userData.email,
+                role: userData.role,
+              }),
+            );
+          }
           // Route based on role
-          if (userRole === "admin") {
+          if (userData?.role === "admin") {
             navigate("/dashboard");
           } else {
             navigate("/courses");

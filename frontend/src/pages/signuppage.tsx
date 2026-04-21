@@ -67,7 +67,7 @@ export default function SignupPage() {
       !formData.email ||
       !formData.password ||
       !formData.firstName ||
-      formData.lastName ||
+      !formData.lastName ||
       !formData.confirmPassword
     ) {
       toast.error("Please fill in all fields.");
