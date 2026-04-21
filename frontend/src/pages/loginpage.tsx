@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../components/ui/inputfield";
 import { gql } from "@apollo/client";
 import { useLazyQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router";
 import GoogleSVG from "../components/svg/google";
 import { google_login } from "../utils/googleauth";
-
-
+import toast from "react-hot-toast";
 
 // QUERY to get user data
 const LOGIN_QUERY = gql`
@@ -16,6 +15,8 @@ const LOGIN_QUERY = gql`
         email
         role
       }
+      message
+      success
     }
   }
 `;
@@ -26,7 +27,9 @@ interface LoginData {
     data: {
       email: string;
       role: string;
-    };
+    } | null;
+    message: string;
+    success: boolean;
   };
 }
 
@@ -34,20 +37,50 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
   const navigate = useNavigate();
 
-  const [loginUser, { data, error, loading }] =
-    useLazyQuery<LoginData>(LOGIN_QUERY);
+  // Initialize Apollo Lazy Query
+  const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
 
-  // Use useEffect to listen for when 'data' changes
-  useEffect(() => {
-    if (data?.login?.data) {
-      const userData = data.login.data;
+  // Triggered when the input will be changed
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
 
-      if (userData.role == "admin" && userData.email) {
+  const handleSave = async (event: any) => {
+    event.preventDefault();
+
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      // Execute the query
+      const { data, error } = await loginUser({
+        variables: {
+          email: formData.email,
+          password: formData.password,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message || "An error occurred during login.");
+        return;
+      }
+
+      // Handle backend response
+      if (data?.login.success && data.login.data) {
+        toast.success(data.login.message || "Logged in successfully!");
+        const userData = data.login.data;
+
+        // Save user session (localStorage or Context/Redux)
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -55,22 +88,24 @@ export default function LoginPage() {
             role: userData.role,
           }),
         );
-        navigate("/dashboard");
+
+        // Role-based redirection
+        if (userData.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          // Assuming default users go to courses
+          navigate("/courses");
+        }
+
+        // Clear input fields
+        setFormData({ email: "", password: "" });
+      } else {
+        toast.error(data?.login.message || "Invalid credentials.");
       }
+    } catch (err: any) {
+      console.error("GraphQL Error:", err);
+      toast.error(err.message || "An unexpected error occurred.");
     }
-  }, [data]);
-
-  const handleSave = (event: any) => {
-    event.preventDefault();
-
-    loginUser({
-      variables: {
-        email,
-        password,
-      },
-    });
-    setEmail("");
-    setPassword("");
   };
 
   if (loading)
@@ -124,20 +159,7 @@ export default function LoginPage() {
                 boxShadow: "0 0 16px rgba(0,212,170,0.14)",
               }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M4 19V7a2 2 0 012-2h12a2 2 0 012 2v12"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M4 19h16M9 7v4M15 7v4M12 7v4"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <img className="h-8" src="/inquesta.svg" />
             </div>
             <div>
               <div className="text-white text-[18px] font-bold tracking-tight">
@@ -250,8 +272,8 @@ export default function LoginPage() {
             <InputField
               label="Email Address"
               type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              value={formData.email}
+              onChange={handleInputChange}
               placeholder="you@example.com"
               icon={
                 <span
@@ -282,8 +304,8 @@ export default function LoginPage() {
               <InputField
                 label=""
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                value={formData.password}
+                onChange={handleInputChange}
                 placeholder="Create a strong password"
                 name="password"
                 icon={

@@ -61,7 +61,7 @@ export default function Home() {
                 Login
               </button>
               <button
-                onClick={() => navigate("/courses")}
+                onClick={() => navigate("/register")}
                 className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto"
               >
                 Get Started
@@ -105,7 +105,7 @@ export default function Home() {
                   </span>
                 </button>
                 <button
-                  onClick={() => navigate("/courses")}
+                  onClick={() => navigate("/register")}
                   className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all"
                 >
                   Explore
@@ -367,7 +367,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <button
-                onClick={() => navigate("/courses")}
+                onClick={() => navigate("/register")}
                 className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl glow-hover transition-all active:scale-95"
               >
                 Start Your Journey

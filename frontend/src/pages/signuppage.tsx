@@ -7,7 +7,6 @@ import { useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router";
 import { google_login } from "../utils/googleauth";
 
-
 // Define what the GraphQL server returns
 interface RegisterResponse {
   register: {
@@ -62,6 +61,12 @@ export default function SignupPage() {
   // Send the data into backend server
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // Basic validation
+      if (!formData.email || !formData.password ||!formData.firstName||formData.lastName||!formData.confirmPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
 
     // check password and confirm password both are same or not
     if (formData.password !== formData.confirmPassword) {
@@ -121,20 +126,7 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex items-center justify-start gap-3 mb-10">
             <div className="w-10 h-10 rounded-xl bg-[#1a3a35] flex items-center justify-center">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M4 19V7a2 2 0 012-2h12a2 2 0 012 2v12"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M4 19h16M9 7v4M15 7v4M12 7v4"
-                  stroke="#00d4aa"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <img className="h-8" src="/inquesta.svg" />
             </div>
             <span className="text-white text-xl font-semibold tracking-wide">
               Inquesta
@@ -157,7 +149,7 @@ export default function SignupPage() {
           </p>
 
           {/* Feature pills */}
-          <div className="flex flex-col gap-3 text-left">
+          {/* <div className="flex flex-col gap-3 text-left">
             {[
               {
                 icon: <span className="material-symbols-outlined ">star</span>,
@@ -186,7 +178,7 @@ export default function SignupPage() {
                 </span>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 
