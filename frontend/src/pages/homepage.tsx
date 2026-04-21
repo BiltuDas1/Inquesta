@@ -174,10 +174,10 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
               <div>
                 <h2 className="text-4xl md:text-5xl font-headline font-extrabold tracking-tight mb-4">
-                  Latest Architectures
+                  Coming Soon
                 </h2>
                 <p className="text-on-surface-variant text-lg">
-                  Next-gen technical modules updated this week.
+                  Upcoming next-generation courses.
                 </p>
               </div>
               <button
