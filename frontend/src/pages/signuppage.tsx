@@ -61,8 +61,8 @@ const REGISTER_MUTATION = gql`
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const navigate=useNavigate()
-  
+  const navigate = useNavigate();
+
   // Add state for the form data
   const [formData, setFormData] = useState({
     firstName: "",

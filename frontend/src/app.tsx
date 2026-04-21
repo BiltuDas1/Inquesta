@@ -9,8 +9,8 @@ import PublicRoute from "./components/middleware/publicroute";
 import NotFoundPage from "./pages/notfoundpage";
 import GoogleLogin from "./pages/googleloginpage";
 import { Toaster } from "react-hot-toast";
-import { VerifyEmailPage } from "./pages/verifyemailpage";
 import CheckEmailPage from "./pages/checkemailpage";
+import VerifyEmailPage from "./pages/verifyemailpage";
 
 function App() {
   return (
