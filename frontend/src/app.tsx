@@ -10,6 +10,7 @@ import NotFoundPage from "./pages/notfoundpage";
 import GoogleLogin from "./pages/googleloginpage";
 import { Toaster } from "react-hot-toast";
 import { VerifyEmailPage } from "./pages/verifyemailpage";
+import CheckEmailPage from "./pages/checkemailpage";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<SignupPage />} />
             <Route path="/auth/google" element={<GoogleLogin />} />
+            <Route path="/check-email" element={<CheckEmailPage />} />
             <Route path="/email/verify" element={<VerifyEmailPage />} />
           </Route>
 

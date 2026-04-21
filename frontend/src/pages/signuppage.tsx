@@ -4,6 +4,7 @@ import GoogleSVG from "../components/svg/google";
 import { gql } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useMutation } from "@apollo/client/react";
+import { useNavigate } from "react-router";
 
 const getGoogleAuthUrl = () => {
   const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -60,7 +61,8 @@ const REGISTER_MUTATION = gql`
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
+  const navigate=useNavigate()
+  
   // Add state for the form data
   const [formData, setFormData] = useState({
     firstName: "",
@@ -107,7 +109,9 @@ export default function SignupPage() {
             "Account created successfully! Check your email",
         );
 
-        // Optional: Clear the form or redirect the user
+        // Navigate to the new page AND pass the email in state
+        navigate("/check-email", { state: { email: formData.email } });
+
         setFormData({
           firstName: "",
           lastName: "",
