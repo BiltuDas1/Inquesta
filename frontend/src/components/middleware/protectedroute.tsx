@@ -6,6 +6,10 @@ const ProtectedRoute = () => {
     return <Navigate to="/login" replace />;
   }
 
+  if (user.role !== "admin") {
+    return <Navigate to="/courses" replace />; // or /unauthorized
+  }
+
   return <Outlet />;
 };
 
