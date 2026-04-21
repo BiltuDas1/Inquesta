@@ -1,6 +1,10 @@
 import { SignJWT, jwtVerify } from "jose";
 import { generateUrlSafeToken } from "../token.ts";
-import { ACCESS_TOKEN_EXPIRY, EDDSA_PRIVATE_KEY, EDDSA_PUBLIC_KEY } from "../../config.ts";
+import {
+  ACCESS_TOKEN_EXPIRY,
+  EDDSA_PRIVATE_KEY,
+  EDDSA_PUBLIC_KEY,
+} from "../../config.ts";
 
 type AccessTokenPayload = {
   sub: string;
@@ -8,7 +12,7 @@ type AccessTokenPayload = {
   iat: number;
   exp: number;
   typ: "access";
-}
+};
 
 const ALG = "EdDSA";
 

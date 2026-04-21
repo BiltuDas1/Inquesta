@@ -15,13 +15,11 @@ export class Email {
   }
 
   async send_email(params: EmailData) {
-    const { data, error } = await this.resend.emails.send({
+    return await this.resend.emails.send({
       from: `${params.name} <${params.sender_email}>`,
       to: params.receiver_emails,
       subject: params.subject,
       html: params.html_body,
     });
-
-    return { data, error };
   }
 }

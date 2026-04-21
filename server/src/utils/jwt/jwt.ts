@@ -34,7 +34,7 @@ export class JWT {
 
   /**
    * Converts the refresh token string to RefreshToken Object
-   * @param token The refresh token in string format 
+   * @param token The refresh token in string format
    * @returns If valid then returns refresh token object, otherwise returns null
    */
   static async toRefreshToken(token: string): Promise<RefreshToken | null> {
@@ -47,7 +47,7 @@ export class JWT {
 
   /**
    * Converts the access token string to AccessToken Object
-   * @param token The access token in string format 
+   * @param token The access token in string format
    * @returns If valid then returns access token object, otherwise returns null
    */
   static async toAccessToken(token: string): Promise<AccessToken | null> {

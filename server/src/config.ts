@@ -26,6 +26,7 @@ if (process.env.ORIGINS !== undefined) {
   );
 }
 
+export const FRONTEND_FQDN = requireEnv("FRONTEND_FQDN");
 export const emailObj = new Email(requireEnv("RESEND_API_KEY"));
 export const templateObj = new Template();
 
@@ -43,15 +44,18 @@ export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
 export const GOOGLE_CLIENT = new OAuth2Client({
   clientId: requireEnv("GOOGLE_CLIENT_ID"),
   clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
-  redirectUri: requireEnv("GOOGLE_REDIRECT_URI")
+  redirectUri: requireEnv("GOOGLE_REDIRECT_URI"),
 });
 
 // EdDSA Keys
-export let EDDSA_PRIVATE_KEY: CryptoKey
-export let EDDSA_PUBLIC_KEY: CryptoKey
+export let EDDSA_PRIVATE_KEY: CryptoKey;
+export let EDDSA_PUBLIC_KEY: CryptoKey;
 
 export async function loadEdDSAKey() {
-  const private_key_str = Buffer.from(requireEnv("EDDSA_PRIVATE_KEY"), "base64").toString("utf-8");
+  const private_key_str = Buffer.from(
+    requireEnv("EDDSA_PRIVATE_KEY"),
+    "base64",
+  ).toString("utf-8");
   EDDSA_PRIVATE_KEY = await importPKCS8(private_key_str, "EdDSA");
   const public_key_str = crypto.createPublicKey(private_key_str).export({
     type: "spki",
