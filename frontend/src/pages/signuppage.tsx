@@ -63,7 +63,13 @@ export default function SignupPage() {
     event.preventDefault();
 
     // Basic validation
-      if (!formData.email || !formData.password ||!formData.firstName||formData.lastName||!formData.confirmPassword) {
+    if (
+      !formData.email ||
+      !formData.password ||
+      !formData.firstName ||
+      formData.lastName ||
+      !formData.confirmPassword
+    ) {
       toast.error("Please fill in all fields.");
       return;
     }

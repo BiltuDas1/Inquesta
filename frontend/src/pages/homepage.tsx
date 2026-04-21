@@ -96,7 +96,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={() => navigate("/courses")}
+                  onClick={() => navigate("/register")}
                   className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg glow-hover transition-all flex items-center justify-center group active:scale-95"
                 >
                   Start Learning
@@ -105,7 +105,7 @@ export default function Home() {
                   </span>
                 </button>
                 <button
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate("/courses")}
                   className="border border-outline-variant text-on-surface px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container transition-all"
                 >
                   Explore

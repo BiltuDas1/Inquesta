@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import InputField from "../components/ui/inputfield";
 import { gql } from "@apollo/client";
 import { useLazyQuery } from "@apollo/client/react";

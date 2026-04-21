@@ -7,6 +7,9 @@ import { useNavigate, useSearchParams } from "react-router";
 const LOGIN_WITH_GOOGLE = gql`
   mutation loginWithGoogle($code: String!) {
     loginWithGoogle(code: $code) {
+      data {
+        role
+      }
       message
       success
     }
@@ -23,7 +26,14 @@ export default function GoogleLogin() {
     {
       onCompleted: (data: any) => {
         if (data.loginWithGoogle.success) {
-          navigate("/courses");
+          const userRole = data.loginWithGoogle.data?.role;
+
+          // Route based on role
+          if (userRole === "admin") {
+            navigate("/dashboard");
+          } else {
+            navigate("/courses");
+          }
         }
         // Capture the specific GraphQL validation message (e.g., "Token expired")
         else {
