@@ -18,13 +18,13 @@ export type GoogleUser = {
   family_name?: string;
   given_name?: string;
   email_verified?: boolean;
-}
+};
 
 export const UserRoleObject = builder
   .objectRef<UserRole>("UserRole")
   .implement({
     fields: (t) => ({
       email: t.exposeString("email"),
-      role: t.exposeString("role")
+      role: t.exposeString("role"),
     }),
   });

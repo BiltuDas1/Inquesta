@@ -1,29 +1,29 @@
 type Cookie = {
-  name: string
-  value: string,
-  path?: string,
-  httponly?: boolean,
-  secure?: boolean,
-  samesite?: "Lax" | "Strict" | "None",
-  expires?: number
-}
+  name: string;
+  value: string;
+  path?: string;
+  httponly?: boolean;
+  secure?: boolean;
+  samesite?: "Lax" | "Strict" | "None";
+  expires?: number;
+};
 
 const formatDate = (unix: number): string => {
   const date = new Date(unix * 1000);
 
-  const formatter = new Intl.DateTimeFormat('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    timeZone: 'GMT',
-    hour12: false
+  const formatter = new Intl.DateTimeFormat("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "GMT",
+    hour12: false,
   });
 
-  return formatter.format(date).replace(' at ', ' ') + ' GMT';
+  return formatter.format(date).replace(" at ", " ") + " GMT";
 };
 
 /**
@@ -42,7 +42,7 @@ export function set_cookie(data: Cookie): string {
   if (data.expires !== undefined) {
     cookie_str += `Expires=${formatDate(data.expires)}; `;
   }
-  
+
   if (data.samesite !== undefined) {
     cookie_str += `SameSite=${data.samesite}; `;
   }

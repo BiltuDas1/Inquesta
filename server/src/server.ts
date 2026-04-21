@@ -2,29 +2,36 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { createYoga } from "graphql-yoga";
 import { schema } from "./schemas/schema.ts";
-import { allowedOrigins, isProduction, loadEdDSAKey, redis, serverConfig } from "./config.ts";
+import {
+  allowedOrigins,
+  isProduction,
+  loadEdDSAKey,
+  redis,
+  serverConfig,
+} from "./config.ts";
 import type { FastifyContext } from "./types/fastify.ts";
 
 // Create the Fastify server and turn on the pretty logger
 const server = Fastify({
-  logger: isProduction 
-    ? { 
+  logger: isProduction
+    ? {
         base: null,
         timestamp: () => {
           const now = new Date();
-          const date = now.toISOString().split('T')[0];
-          const time = now.toTimeString().split(' ')[0];
+          const date = now.toISOString().split("T")[0];
+          const time = now.toTimeString().split(" ")[0];
           return `,"time":"${date} ${time}"`;
         },
-      } : {
+      }
+    : {
         transport: {
           target: "pino-pretty",
           options: {
             translateTime: "HH:MM:ss",
             ignore: "pid,hostname",
           },
+        },
       },
-  },
 });
 
 const yoga = createYoga<FastifyContext>({

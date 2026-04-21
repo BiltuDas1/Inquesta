@@ -13,6 +13,9 @@ import {
 
 builder.mutationField("courseAdd", (t) =>
   t.field({
+    authScopes: {
+      isValidSession: true,
+    },
     type: GQLResponse,
     args: {
       title: t.arg.string({ required: true }),
@@ -85,6 +88,9 @@ builder.queryField("courseGet", (t) =>
 builder.mutationField("courseDelete", (t) =>
   t.field({
     type: GQLResponse,
+    authScopes: {
+      isValidSession: true,
+    },
     args: {
       id: t.arg.string({ required: true }),
     },
@@ -107,6 +113,9 @@ builder.mutationField("courseDelete", (t) =>
 
 builder.mutationField("courseUpdate", (t) =>
   t.field({
+    authScopes: {
+      isValidSession: true,
+    },
     type: GQLResponse,
     args: {
       id: t.arg.string({ required: true }),
