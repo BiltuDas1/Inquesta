@@ -1,9 +1,19 @@
 import SchemaBuilder from "@pothos/core";
 import { type FastifyContext } from "../types/fastify.ts";
+import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
+import type { Auth } from "../types/auth.ts";
+import { verify_user } from "../middlewares/verify.ts";
 
 export const builder = new SchemaBuilder<{
   Context: FastifyContext;
-}>({});
+  AuthScopes: Auth
+}>({
+  plugins: [ScopeAuthPlugin],
+  scopeAuth: {
+    authorizeOnSubscribe: true,
+    authScopes: verify_user
+  }
+});
 
 export const GQLResponse = builder
   .objectRef<{

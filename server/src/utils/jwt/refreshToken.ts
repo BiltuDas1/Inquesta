@@ -79,4 +79,12 @@ export class RefreshToken {
   expiryTime(): number {
     return this.payload.exp;
   }
+
+  /**
+   * Gets the main subject of the jwt
+   * @returns String returning unique identifier of the target
+   */
+  getSub(): string {
+    return this.payload.sub;
+  }
 }
