@@ -1,0 +1,18 @@
+[project]
+name = "inquesta-testing"
+version = "0.0.0"
+description = ""
+authors = []
+requires-python = ">=3.12"
+dependencies = ["pytest-playwright (>=0.7.2,<0.8.0)"]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = ["ruff (>=0.15.11,<0.16.0)"]
+
+[tool.poetry]
+package-mode = false
