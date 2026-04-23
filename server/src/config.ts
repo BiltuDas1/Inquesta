@@ -63,4 +63,3 @@ export async function loadEdDSAKey() {
   });
   EDDSA_PUBLIC_KEY = await importSPKI(public_key_str, "EdDSA");
 }
-

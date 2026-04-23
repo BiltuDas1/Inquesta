@@ -15,7 +15,7 @@ export async function getCourse() {
     result = JSON.stringify(await db.select().from(courses));
     await redis.set("inquesta:courses:list", result);
   }
-  
+
   return JSON.parse(result);
 }
 

@@ -7,8 +7,13 @@ import {
   redis,
   templateObj,
 } from "../config.ts";
-import { users } from "../databases/schema.ts";
-import { type UserRole, type User, type GoogleUser } from "../types/user.ts";
+import { users, users_info } from "../databases/schema.ts";
+import {
+  type UserRole,
+  type User,
+  type GoogleUser,
+  type UserInfo,
+} from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
@@ -258,5 +263,36 @@ export async function verify_email(token: string) {
     };
   } catch (error) {
     throw error;
+  }
+}
+
+export async function update_userinfo(access_token: string, info: UserInfo) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token",
+    };
+  }
+
+  try {
+    await db.insert(users_info).values({
+      users_id: accessToken.getSub(),
+      phone_number_cc: info.phone_country_code,
+      phone_number: info.phone,
+      whatsapp_number_cc: info.whatsapp_country_code,
+      whatsapp_number: info.whatsapp,
+      qualification: info.qualification,
+    });
+
+    return {
+      success: true,
+      message: "data updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "failed to update data",
+    };
   }
 }

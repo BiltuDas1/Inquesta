@@ -2,8 +2,10 @@ import {
   mysqlTable,
   mysqlEnum,
   varchar,
+  char,
   text,
   int,
+  smallint,
   boolean,
   index,
 } from "drizzle-orm/mysql-core";
@@ -36,4 +38,22 @@ export const courses = mysqlTable("courses", {
   level: mysqlEnum("level", CourseLevels).notNull(),
   duration: varchar({ length: 255 }).notNull(),
   instructorName: varchar("instructor_name", { length: 255 }).notNull(),
+});
+
+export const users_info = mysqlTable("users_info", {
+  users_id: varchar("users_id", { length: 36 })
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  phone_number_cc: smallint({ unsigned: true }),
+  phone_number: varchar({ length: 10 }),
+  whatsapp_number_cc: smallint({ unsigned: true }),
+  whatsapp_number: varchar({ length: 10 }),
+  qualification: varchar({ length: 255 }),
+});
+
+export const countries = mysqlTable("countries", {
+  code: smallint({ unsigned: true }).primaryKey(),
+  name: varchar({ length: 100 }).notNull(),
+  iso_code: char({ length: 2 }).notNull(),
+  currency_code: char({ length: 3 }).notNull(),
 });
