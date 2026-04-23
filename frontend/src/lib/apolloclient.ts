@@ -103,7 +103,8 @@ const errorLink = onError(({ error, operation, forward }) => {
         isRefreshing = false;
 
         localStorage.removeItem("user");
-        window.location.href = "/login";
+
+        window.dispatchEvent(new CustomEvent("session-expired"));
         observer.error(err);
       });
   });

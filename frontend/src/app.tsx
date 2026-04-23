@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
 import Home from "./pages/homepage";
 import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
@@ -8,9 +8,35 @@ import ProtectedRoute from "./components/middleware/protectedroute";
 import PublicRoute from "./components/middleware/publicroute";
 import NotFoundPage from "./pages/notfoundpage";
 import GoogleLogin from "./pages/googleloginpage";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import CheckEmailPage from "./pages/checkemailpage";
 import VerifyEmailPage from "./pages/verifyemailpage";
+import { useEffect } from "react";
+import { client } from "./lib/apolloclient";
+
+// For handling global session
+const GlobalSessionHandler = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleSessionExpired = async () => {
+      // Clear apollo cache
+      await client.clearStore();
+
+      toast.error("Your session has expired. Please log in again.");
+      navigate("/login");
+    };
+
+    window.addEventListener("session-expired", handleSessionExpired);
+
+    // Cleanup resources
+    return () => {
+      window.removeEventListener("session-expired", handleSessionExpired);
+    };
+  }, [navigate]);
+
+  return null;
+};
 
 function App() {
   return (
@@ -19,6 +45,7 @@ function App() {
       <Toaster position="top-right"></Toaster>
 
       <BrowserRouter>
+        <GlobalSessionHandler />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursePage></CoursePage>} />
