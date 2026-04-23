@@ -28,7 +28,7 @@ export default function GoogleLogin() {
       onCompleted: (data: any) => {
         if (data.loginWithGoogle.success) {
           const userData = data.loginWithGoogle.data;
-          console.log(userData.email)
+          console.log(userData.email);
           // 2. THIS IS THE CRITICAL FIX: SAVE TO LOCALSTORAGE BEFORE NAVIGATING
           if (userData) {
             localStorage.setItem(

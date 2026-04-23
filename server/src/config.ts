@@ -40,6 +40,7 @@ redis.on("error", (err) => console.error("Redis Client Error", err));
 export const ACCESS_TOKEN_EXPIRY = 900;
 export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
 
+
 // Google Authentication
 export const GOOGLE_CLIENT = new OAuth2Client({
   clientId: requireEnv("GOOGLE_CLIENT_ID"),
