@@ -1,0 +1,25 @@
+{
+  "name": "GraphQL Python Tests",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspace,type=bind",
+  "mounts": [
+    "source=python-venv-storage,target=/workspace/testing/.venv,type=volume"
+  ],
+  "workspaceFolder": "/workspace/testing",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/workspace/testing/.venv/bin/python"
+      },
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "PKief.material-icon-theme"
+      ]
+    }
+  },
+  "runArgs": ["--add-host=host.docker.internal:host-gateway"]
+}
