@@ -28,3 +28,11 @@ export const UserRoleObject = builder
       role: t.exposeString("role"),
     }),
   });
+
+export type UserInfo = {
+  phone: string | null;
+  whatsapp: string | null;
+  phone_country_code: number | null;
+  whatsapp_country_code: number | null;
+  qualification: string | null;
+};

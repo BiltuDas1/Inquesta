@@ -5,9 +5,15 @@ import {
   googleLogin,
   loginUser,
   registerUser,
+  update_userinfo,
   verify_email,
 } from "../resolvers/user.ts";
-import { UserRoleObject, type User, type UserRole } from "../types/user.ts";
+import {
+  UserRoleObject,
+  type User,
+  type UserInfo,
+  type UserRole,
+} from "../types/user.ts";
 import { set_cookie } from "../utils/cookie.ts";
 import * as cookie from "cookie";
 
@@ -333,6 +339,56 @@ builder.mutationField("verifyEmail", (t) =>
           email: result.data.email,
         },
       };
+    },
+  }),
+);
+
+builder.mutationField("updateUserInfo", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GQLResponse,
+    args: {
+      phone_number: t.arg.string(),
+      whatsapp_number: t.arg.string(),
+      phone_number_country_code: t.arg.int(),
+      whatsapp_number_country_code: t.arg.int(),
+      qualification: t.arg.string(),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      const userinfo: UserInfo = {
+        phone: args.phone_number === undefined ? null : args.phone_number,
+        whatsapp:
+          args.whatsapp_number === undefined ? null : args.whatsapp_number,
+        phone_country_code:
+          args.phone_number_country_code === undefined
+            ? null
+            : args.phone_number_country_code,
+        whatsapp_country_code:
+          args.whatsapp_number_country_code === undefined
+            ? null
+            : args.whatsapp_number_country_code,
+        qualification:
+          args.qualification === undefined ? null : args.qualification,
+      };
+
+      return await update_userinfo(cookieObj["access_token"], userinfo);
     },
   }),
 );
