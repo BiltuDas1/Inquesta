@@ -50,7 +50,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursePage></CoursePage>} />
-
           {/* Block if already logged in */}
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<LoginPage />} />
@@ -58,18 +57,16 @@ function App() {
             <Route path="/auth/google" element={<GoogleLogin />} />
             <Route path="/check-email" element={<CheckEmailPage />} />
             <Route path="/email/verify" element={<VerifyEmailPage />} />
-        
           </Route>
-
           {/* Protected Route */}
           <Route element={<ProtectedRoute />}>
             <Route
               path="/dashboard"
               element={<DashboardPage></DashboardPage>}
             />
+            <Route path="/onboarding" element={<UserDataCollectionForm />} />
           </Route>
 
-            <Route path="/user-data" element={<UserDataCollectionForm />} />``
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
