@@ -7,6 +7,7 @@ import { createClient } from "redis";
 import { OAuth2Client } from "google-auth-library";
 import { importPKCS8, importSPKI } from "jose";
 import * as crypto from "crypto";
+import mysql from "mysql2/promise";
 
 export const isProduction = process.env.PRODUCTION !== undefined;
 export const serverConfig = {
@@ -14,7 +15,20 @@ export const serverConfig = {
   port: 4000,
   endpoint: "/",
 };
-export const db = drizzle(requireEnv("MYSQL_URI"));
+
+// Create MySQL Pool
+const poolConnection = mysql.createPool({
+  uri: requireEnv("MYSQL_URI"),
+  waitForConnections: true,
+  connectionLimit: 30,
+  maxIdle: 30,
+  idleTimeout: 15000,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
+});
+
+export const db = drizzle(poolConnection);
 
 // CORS
 export const allowedOrigins: string[] = [];
