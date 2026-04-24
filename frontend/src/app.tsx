@@ -13,6 +13,7 @@ import CheckEmailPage from "./pages/checkemailpage";
 import VerifyEmailPage from "./pages/verifyemailpage";
 import { useEffect } from "react";
 import { client } from "./lib/apolloclient";
+import UserDataCollectionForm from "./pages/userdatacollectionform";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -57,6 +58,7 @@ function App() {
             <Route path="/auth/google" element={<GoogleLogin />} />
             <Route path="/check-email" element={<CheckEmailPage />} />
             <Route path="/email/verify" element={<VerifyEmailPage />} />
+        
           </Route>
 
           {/* Protected Route */}
@@ -67,6 +69,7 @@ function App() {
             />
           </Route>
 
+            <Route path="/user-data" element={<UserDataCollectionForm />} />``
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
