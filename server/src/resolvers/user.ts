@@ -290,6 +290,28 @@ export async function update_userinfo(access_token: string, info: UserInfo) {
       message: "data updated successfully",
     };
   } catch (error) {
+    if (!(error instanceof DrizzleQueryError)) {
+      throw error;
+    }
+
+    // If entry already exist then update the row
+    if (error.cause?.message.includes("Duplicate entry")) {
+      try {
+        await db.update(users_info).set({
+          phone_number_cc: info.phone_country_code,
+          phone_number: info.phone,
+          whatsapp_number_cc: info.whatsapp_country_code,
+          whatsapp_number: info.whatsapp,
+          qualification: info.qualification,
+        }).where(eq(users_info.users_id, accessToken.getSub()));
+
+        return {
+          success: true,
+          message: "data updated successfully",
+        };
+      } catch (error) {}
+    }
+
     return {
       success: false,
       message: "failed to update data",
