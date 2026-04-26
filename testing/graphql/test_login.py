@@ -6,13 +6,13 @@ def test_login_email_not_exist(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Login($email: String!, $password: String!) {
-              loginUser(email: $email, password: $password) {
-                role {
+            query Login($email: String!, $password: String!) {
+              login(email: $email, password: $password) {
+                success
+                message
+                data {
                   email
-                }
-                jwt {
-                  accessToken
+                  role
                 }
               }
             }
@@ -21,13 +21,21 @@ def test_login_email_not_exist(api_request_context: APIRequestContext):
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
 
   if "errors" in res_json:
-    assert True
-  else:
-    assert res_json["data"]["loginUser"] is None
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("login")
+
+  assert result is not None, f"Login result was null. Errors: {res_json.get('errors')}"
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str success message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_login_wrong_password(api_request_context: APIRequestContext):
