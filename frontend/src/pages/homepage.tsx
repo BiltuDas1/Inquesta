@@ -12,8 +12,9 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-none shadow-2xl shadow-black/40">
         <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto font-headline tracking-tight relative">
-          <div className="text-2xl font-bold tracking-tighter text-on-surface">
-            inquesta<span className="text-gradient">.org</span>
+          <div className="text-2xl font-bold tracking-tighter text-on-surface flex gap-2">
+            <img className="h-8" src="/inquesta.svg" />
+            <span className="text-white">Inquesta</span>
           </div>
 
           {/* 2. Hamburger Menu Button (Visible only on mobile) */}
@@ -121,7 +122,7 @@ export default function Home() {
                 />
 
                 {/* Floating Data Card */}
-                <div className="absolute bottom-10 left-10 glass-card p-6 rounded-2xl border border-primary/20 shadow-xl max-w-[240px]">
+                {/* <div className="absolute bottom-10 left-10 glass-card p-6 rounded-2xl border border-primary/20 shadow-xl max-w-[240px]">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                       <span className="material-symbols-outlined">
@@ -138,7 +139,7 @@ export default function Home() {
                   <div className="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
                     <div className="bg-primary h-full w-[85%]" />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -412,8 +413,8 @@ export default function Home() {
             ))}
           </div>
           <div className="flex flex-col justify-center items-center">
-            <p className="text-on-surface-variant">
-              © {currentYear} Inquesta. All rights reserved.
+            <p className="text-on-surface-variant text-center">
+              © {currentYear} Inquesta Solutions LLP. All rights reserved.
             </p>
             <p className="text-on-surface-variant flex items-center gap-1 justify-end">
               <span className="material-symbols-outlined text-[14px] opacity-70">
