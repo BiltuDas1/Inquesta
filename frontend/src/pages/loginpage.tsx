@@ -382,7 +382,7 @@ export default function LoginPage() {
           <p className="text-center text-[#3a6060] text-[12.5px] mb-3">
             New to Inquesta?{" "}
             <a
-              href="#"
+              href="/register"
               className="text-[#00d4aa] hover:text-[#00bfa0] font-semibold transition-colors"
             >
               Create a free account
