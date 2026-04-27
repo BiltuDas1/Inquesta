@@ -6,27 +6,40 @@ def test_register_email_empty(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Rohit",
-          "lastname": "Sharma",
           "email": "",
           "password": "Password@123",
+          "firstName": "sameer",
+          "lastName": "Ali",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json or res_json["data"]["registerUser"]["success"] is False
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None
+  assert result.get("success") is False
+  assert isinstance(result.get("message"), str)
+  assert result.get("data") is None
 
 
 def test_register_invalid_email(api_request_context: APIRequestContext):
@@ -34,27 +47,44 @@ def test_register_invalid_email(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Sachin",
-          "lastname": "Tendulkar",
           "email": "abc@",
           "password": "Password@123",
+          "firstName": "Ram",
+          "lastName": "Maity",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json or res_json["data"]["registerUser"]["success"] is False
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_password_empty(api_request_context: APIRequestContext):
@@ -62,27 +92,44 @@ def test_register_password_empty(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Virat",
-          "lastname": "Kohali",
-          "email": "test1@inquesta.org",
+          "email": "user1@test.com",
           "password": "",
+          "firstName": "Rohit",
+          "lastName": "Sharma",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json or res_json["data"]["registerUser"]["success"] is False
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_password_too_short(api_request_context: APIRequestContext):
@@ -90,27 +137,44 @@ def test_register_password_too_short(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Test",
-          "lastname": "User",
-          "email": "shortpass@inquesta.org",
-          "password": "12345",
+          "email": "user2@test.com",
+          "password": "123",
+          "firstName": "Test",
+          "lastName": "User",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_password_too_long(api_request_context: APIRequestContext):
@@ -118,26 +182,44 @@ def test_register_password_too_long(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Ram",
-          "lastname": "Gupta",
-          "email": "longpass@inquesta.org",
-          "password": "a" * 300,
+          "email": "user3@test.com",
+          "password": "A" * 100,
+          "firstName": "Test",
+          "lastName": "User",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_firstname_missing(api_request_context: APIRequestContext):
@@ -145,26 +227,43 @@ def test_register_firstname_missing(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "lastname": "Due",
-          "email": "test2@inquesta.org",
+          "email": "user2@test.com",
           "password": "Password@123",
+          "lastName": "User",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_lastname_missing(api_request_context: APIRequestContext):
@@ -172,139 +271,203 @@ def test_register_lastname_missing(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Jone",
-          "email": "test2@inquesta.org",
+          "email": "user3@test.com",
           "password": "Password@123",
+          "firstName": "Test",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json
+  result = res_json["data"].get("register")
+
+  assert result is not None
+  assert result.get("success") is False
+  assert isinstance(result.get("message"), str)
+  assert result.get("data") is None
 
 
-def test_register_extra_fields(api_request_context: APIRequestContext):
+def test_register_extra_field(api_request_context: APIRequestContext):
   response = api_request_context.post(
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {
         "input": {
-          "firstname": "Tushar",
-          "lastname": "Das",
-          "email": "extrafield@inquesta.org",
+          "email": "user6@test.com",
           "password": "Password@123",
-          "isAdmin": True,
+          "firstName": "Test",
+          "lastName": "User",
+          "role": "ADMIN",
         }
       },
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
-def test_register_data_null(api_request_context: APIRequestContext):
+def test_register_input_null(api_request_context: APIRequestContext):
   response = api_request_context.post(
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-              }
-            }
+                mutation Register($input: RegisterInput) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {"input": None},
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
-def test_register_email_already_exists(api_request_context: APIRequestContext):
+def test_register_duplicate_email(api_request_context: APIRequestContext):
   payload = {
-    "firstname": "Test",
-    "lastname": "User",
-    "email": "duplicate@inquesta.org",
+    "email": "duplicate@test.com",
     "password": "Password@123",
+    "firstName": "Test",
+    "lastName": "User",
   }
 
-  # First registration
   api_request_context.post(
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                  }
+                }
             """,
       "variables": {"input": payload},
     },
   )
 
-  # Second registration (duplicate)
   response = api_request_context.post(
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-                message
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {"input": payload},
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_same_email_before_verification(
   api_request_context: APIRequestContext,
 ):
   payload = {
-    "firstname": "Test",
-    "lastname": "User",
-    "email": "noverify@inquesta.org",
+    "email": "verify@test.com",
     "password": "Password@123",
+    "firstName": "Test",
+    "lastName": "User",
   }
 
   api_request_context.post(
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                  }
+                }
             """,
       "variables": {"input": payload},
     },
@@ -314,16 +477,34 @@ def test_register_same_email_before_verification(
     "/",
     data={
       "query": """
-            mutation Register($input: RegisterInput!) {
-              registerUser(input: $input) {
-                success
-              }
-            }
+                mutation Register($input: RegisterInput!) {
+                  register(input: $input) {
+                    success
+                    message
+                    data {
+                      email
+                    }
+                  }
+                }
             """,
       "variables": {"input": payload},
     },
   )
 
-  assert response.ok
+  assert response.ok, f"API failed with status {response.status}"
   res_json = response.json()
-  assert "errors" in res_json
+
+  if "errors" in res_json:
+    print(f"GraphQL Errors: {res_json['errors']}")
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
