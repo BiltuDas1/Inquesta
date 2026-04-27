@@ -36,10 +36,14 @@ def test_register_email_empty(api_request_context: APIRequestContext):
   assert "data" in res_json, "Response missing 'data' field"
   result = res_json["data"].get("register")
 
-  assert result is not None
-  assert result.get("success") is False
-  assert isinstance(result.get("message"), str)
-  assert result.get("data") is None
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_invalid_email(api_request_context: APIRequestContext):
@@ -297,13 +301,17 @@ def test_register_lastname_missing(api_request_context: APIRequestContext):
   if "errors" in res_json:
     print(f"GraphQL Errors: {res_json['errors']}")
 
-  assert "data" in res_json
+  assert "data" in res_json, "Response missing 'data' field"
   result = res_json["data"].get("register")
 
-  assert result is not None
-  assert result.get("success") is False
-  assert isinstance(result.get("message"), str)
-  assert result.get("data") is None
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+  assert result.get("data") is None, f"Expected null, got {result.get('data')}"
 
 
 def test_register_extra_field(api_request_context: APIRequestContext):
