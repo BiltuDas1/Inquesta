@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-/* ─── Reusable pieces ─────────────────────────────────────────────────────── */
 const Logo = () => (
   <a href="/" className="flex items-center gap-3 no-underline shrink-0">
     <div className="w-10 h-10 rounded-xl bg-[#1a3a35] flex items-center justify-center shrink-0">
@@ -14,22 +13,22 @@ const Logo = () => (
   </a>
 );
 
-function NavLink({
-  children,
-  href = "#",
-}: {
-  children: React.ReactNode;
-  href?: string;
-}) {
-  return (
-    <a
-      href={href}
-      className="text-[#b9cac3] hover:text-[#dfe2eb] hover:bg-[#262a31] text-[16px] font-medium px-3 py-1.5 rounded-lg no-underline transition-colors whitespace-nowrap"
-    >
-      {children}
-    </a>
-  );
-}
+// function NavLink({
+//   children,
+//   href = "#",
+// }: {
+//   children: React.ReactNode;
+//   href?: string;
+// }) {
+//   return (
+//     <a
+//       href={href}
+//       className="text-[#b9cac3] hover:text-[#dfe2eb] hover:bg-[#262a31] text-[16px] font-medium px-3 py-1.5 rounded-lg no-underline transition-colors whitespace-nowrap"
+//     >
+//       {children}
+//     </a>
+//   );
+// }
 
 /* ─── Sidebar ─────────────────────────────────────────────────────────────── */
 type Panel = "main" | "menu";
