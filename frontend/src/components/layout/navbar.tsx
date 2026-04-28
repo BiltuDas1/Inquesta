@@ -1,129 +1,6 @@
-// *************************
-
 "use client";
 
 import { useState, useEffect } from "react";
-
-/* ─── Icons ───────────────────────────────────────────────────────────────── */
-const SearchIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-const HeartIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-);
-const CartIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="9" cy="21" r="1" />
-    <circle cx="20" cy="21" r="1" />
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-  </svg>
-);
-const BellIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-  </svg>
-);
-const MenuIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="12" x2="21" y2="12" />
-    <line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-const XIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-const ChevronRightIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="9 18 15 12 9 6" />
-  </svg>
-);
-const ChevronLeftIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="15 18 9 12 15 6" />
-  </svg>
-);
 
 /* ─── Reusable pieces ─────────────────────────────────────────────────────── */
 const Logo = () => (
@@ -147,35 +24,10 @@ function NavLink({
   return (
     <a
       href={href}
-      className="text-[#b9cac3] hover:text-[#dfe2eb] hover:bg-[#262a31]  text-[16px] font-medium px-3 py-1.5 rounded-lg no-underline transition-colors whitespace-nowrap"
+      className="text-[#b9cac3] hover:text-[#dfe2eb] hover:bg-[#262a31] text-[16px] font-medium px-3 py-1.5 rounded-lg no-underline transition-colors whitespace-nowrap"
     >
       {children}
     </a>
-  );
-}
-
-function IconBtn({
-  children,
-  label,
-  badge = false,
-  onClick,
-}: {
-  children: React.ReactNode;
-  label: string;
-  badge?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      aria-label={label}
-      onClick={onClick}
-      className="relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors"
-    >
-      {children}
-      {badge && (
-        <span className="absolute top-[5px] right-[5px] w-2 h-2 rounded-full bg-[#6fffd9] border-2 border-[#181c22]" />
-      )}
-    </button>
   );
 }
 
@@ -191,6 +43,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
       return () => clearTimeout(t);
     }
   }, [open]);
+  
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -225,7 +78,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         {label}
         {arrow && (
           <span className="text-[#b9cac3] flex">
-            <ChevronRightIcon />
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_forward_ios</span>
           </span>
         )}
       </button>
@@ -250,7 +103,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           onClick={onClose}
           className="bg-[#1c2026] border-none rounded-full w-8 h-8 flex items-center justify-center cursor-pointer text-[#b9cac3] shrink-0 hover:bg-[#262a31] transition-colors"
         >
-          <XIcon />
+          <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'wght' 400" }}>close</span>
         </button>
       </div>
 
@@ -281,7 +134,9 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           </svg>
           Learn AI with Google
           <span className="ml-auto text-[#b9cac3] flex">
-            <ChevronRightIcon />
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+              arrow_forward_ios
+            </span>
           </span>
         </button>
         <Divider />
@@ -316,7 +171,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           onClick={() => setPanel("main")}
           className="bg-transparent border-none cursor-pointer text-[#b9cac3] hover:text-[#dfe2eb] flex items-center pr-2 gap-0.5 transition-colors"
         >
-          <ChevronLeftIcon />
+          <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>keyboard_arrow_left</span>
         </button>
         <span className="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-base text-[#dfe2eb]">
           Menu
@@ -384,7 +239,6 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 /* ─── Navbar ──────────────────────────────────────────────────────────────── */
-/* ─── Navbar ──────────────────────────────────────────────────────────────── */
 export default function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -402,29 +256,32 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Shared button class for icons
+  const iconBtnClass = "relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors";
+
   return (
     <>
       <nav className="sticky top-0 z-50 text-on-surface font-headline flex items-center h-16 px-4 bg-[#181c22] border-b border-[#3b4a44] overflow-hidden w-full">
         {/* ── Mobile Layout (hidden on md and up) ── */}
         <div className="flex md:hidden items-center justify-between w-full">
-          <IconBtn label="Open menu" onClick={() => setSidebarOpen(true)}>
-            <MenuIcon />
-          </IconBtn>
+          <button aria-label="Open menu" onClick={() => setSidebarOpen(true)} className={iconBtnClass}>
+            <span className="material-symbols-outlined" style={{ fontSize: '24px', fontVariationSettings: "'wght' 300" }}>menu</span>
+          </button>
           <div className="flex-1 flex justify-center">
             <Logo />
           </div>
           <div className="flex items-center gap-1">
-            <IconBtn label="Search">
-              <SearchIcon />
-            </IconBtn>
-            <IconBtn label="Cart" badge>
-              <CartIcon />
-            </IconBtn>
+            <button aria-label="Search" className={iconBtnClass}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>search</span>
+            </button>
+            <button aria-label="Cart" className={iconBtnClass}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>shopping_cart</span>
+              <span className="absolute top-[5px] right-[5px] w-2 h-2 rounded-full bg-[#6fffd9] border-2 border-[#181c22]" />
+            </button>
           </div>
         </div>
 
         {/* ── Tablet & Desktop Layout (hidden on mobile) ── */}
-        {/* Changed from lg:flex to md:flex */}
         <div className="hidden md:flex items-center w-full justify-between gap-2 lg:gap-4">
           {/* 1. LEFT GROUP: Logo and Main Links */}
           <div className="flex items-center gap-3 lg:gap-6 shrink-0">
@@ -432,14 +289,13 @@ export default function Navbar() {
             {/* Show main links on tablet and up */}
             <div className="flex items-center gap-1">
               <NavLink>Explore</NavLink>
-              <NavLink>Subscribe</NavLink>
             </div>
           </div>
 
           {/* 2. CENTER: Search bar (Flexible) */}
           <div className="flex-1 min-w-[200px] max-w-[640px] relative mx-2 lg:mx-6">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#84948e] pointer-events-none flex">
-              <SearchIcon />
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'wght' 300" }}>search</span>
             </span>
             <input
               type="text"
@@ -458,19 +314,21 @@ export default function Navbar() {
           <div className="flex items-center gap-1 shrink-0">
             {/* HIDE these specific text links on tablet to save space, SHOW them on lg (1024px+) */}
             <div className="hidden lg:flex items-center gap-1 mr-2">
-              <NavLink>Teach on Luminary</NavLink>
               <NavLink>My learning</NavLink>
             </div>
 
-            <IconBtn label="Wishlist">
-              <HeartIcon />
-            </IconBtn>
-            <IconBtn label="Cart" badge>
-              <CartIcon />
-            </IconBtn>
-            <IconBtn label="Notifications">
-              <BellIcon />
-            </IconBtn>
+            <button aria-label="Wishlist" className={iconBtnClass}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>favorite</span>
+            </button>
+            
+            <button aria-label="Cart" className={iconBtnClass}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>shopping_cart</span>
+              <span className="absolute top-[5px] right-[5px] w-2 h-2 rounded-full bg-[#6fffd9] border-2 border-[#181c22]" />
+            </button>
+
+            <button aria-label="Notifications" className={iconBtnClass}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>notifications</span>
+            </button>
 
             {/* Avatar */}
             <button
