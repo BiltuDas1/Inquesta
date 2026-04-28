@@ -4,7 +4,6 @@ import { Footer } from "../components/layout/footer";
 // import { Link } from "react-router";
 
 export default function Home() {
-  const currentYear = new Date().getFullYear();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
