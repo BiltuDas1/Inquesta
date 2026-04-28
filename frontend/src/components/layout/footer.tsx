@@ -4,7 +4,7 @@ export const Footer = () => {
     <footer className="w-full py-12 bg-background border-t border-outline-variant text-sm">
       <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto space-y-8 md:space-y-0">
         <div className="flex justify-center items-center gap-2">
-          <img className="h-8" src="/inquesta.svg" />
+          <img className="h-8" src="/favicon.svg" />
           <span className="text-xl font-bold text-on-surface">Inquesta</span>
         </div>
         <div className="flex flex-wrap justify-center gap-8 text-on-surface-variant">

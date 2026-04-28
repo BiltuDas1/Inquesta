@@ -159,7 +159,7 @@ export default function LoginPage() {
                 boxShadow: "0 0 16px rgba(0,212,170,0.14)",
               }}
             >
-              <img className="h-8" src="/inquesta.svg" />
+              <img className="h-8" src="/favicon.svg" />
             </div>
             <div>
               <div className="text-white text-[18px] font-bold tracking-tight">
