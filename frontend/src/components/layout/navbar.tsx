@@ -37,13 +37,15 @@ type Panel = "main" | "menu";
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [panel, setPanel] = useState<Panel>("main");
 
+  // It is for jump one panel to another panel
   useEffect(() => {
     if (!open) {
       const t = setTimeout(() => setPanel("main"), 320);
       return () => clearTimeout(t);
     }
   }, [open]);
-  
+
+  // Prevent background scrolling when mobile search is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -78,7 +80,12 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         {label}
         {arrow && (
           <span className="text-[#b9cac3] flex">
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_forward_ios</span>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "16px" }}
+            >
+              arrow_forward_ios
+            </span>
           </span>
         )}
       </button>
@@ -103,7 +110,12 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           onClick={onClose}
           className="bg-[#1c2026] border-none rounded-full w-8 h-8 flex items-center justify-center cursor-pointer text-[#b9cac3] shrink-0 hover:bg-[#262a31] transition-colors"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'wght' 400" }}>close</span>
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: "18px", fontVariationSettings: "'wght' 400" }}
+          >
+            close
+          </span>
         </button>
       </div>
 
@@ -134,7 +146,10 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           </svg>
           Learn AI with Google
           <span className="ml-auto text-[#b9cac3] flex">
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "16px" }}
+            >
               arrow_forward_ios
             </span>
           </span>
@@ -171,7 +186,12 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           onClick={() => setPanel("main")}
           className="bg-transparent border-none cursor-pointer text-[#b9cac3] hover:text-[#dfe2eb] flex items-center pr-2 gap-0.5 transition-colors"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>keyboard_arrow_left</span>
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: "20px" }}
+          >
+            keyboard_arrow_left
+          </span>
         </button>
         <span className="font-['Plus_Jakarta_Sans',sans-serif] font-bold text-base text-[#dfe2eb]">
           Menu
@@ -242,13 +262,14 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 export default function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
-
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   // Close sidebar automatically when switching to tablet/desktop view
   useEffect(() => {
     const handleResize = () => {
       // Changed back to 768px (md breakpoint) so the full navbar shows on tablets
       if (window.innerWidth >= 768) {
         setSidebarOpen(false);
+        setIsMobileSearchOpen(false);
       }
     };
 
@@ -257,45 +278,74 @@ export default function Navbar() {
   }, []);
 
   // Shared button class for icons
-  const iconBtnClass = "relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors";
+  const iconBtnClass =
+    "relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors";
 
   return (
     <>
       <nav className="sticky top-0 z-50 text-on-surface font-headline flex items-center h-16 px-4 bg-[#181c22] border-b border-[#3b4a44] overflow-hidden w-full">
         {/* ── Mobile Layout (hidden on md and up) ── */}
         <div className="flex md:hidden items-center justify-between w-full">
-          <button aria-label="Open menu" onClick={() => setSidebarOpen(true)} className={iconBtnClass}>
-            <span className="material-symbols-outlined" style={{ fontSize: '24px', fontVariationSettings: "'wght' 300" }}>menu</span>
+          <button
+            aria-label="Open menu"
+            onClick={() => setSidebarOpen(true)}
+            className={iconBtnClass}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "24px", fontVariationSettings: "'wght' 300" }}
+            >
+              menu
+            </span>
           </button>
           <div className="flex-1 flex justify-center">
             <Logo />
           </div>
           <div className="flex items-center gap-1">
-            <button aria-label="Search" className={iconBtnClass}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>search</span>
+            <button
+              onClick={() => setIsMobileSearchOpen(true)}
+              aria-label="Search"
+              className={iconBtnClass}
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{
+                  fontSize: "25px",
+                  fontVariationSettings: "'wght' 300",
+                }}
+              >
+                search
+              </span>
             </button>
-            <button aria-label="Cart" className={iconBtnClass}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>shopping_cart</span>
-              <span className="absolute top-[5px] right-[5px] w-2 h-2 rounded-full bg-[#6fffd9] border-2 border-[#181c22]" />
+            {/* Avatar */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="w-9 h-9 rounded-full bg-[#343d96] text-[#bdc2ff] font-['Plus_Jakarta_Sans',sans-serif] font-bold text-xs border-2 border-[#3b4a44] hover:border-[#6fffd9] cursor-pointer flex items-center justify-center transition-colors shrink-0 ml-2"
+            >
+              SP
             </button>
           </div>
         </div>
 
         {/* ── Tablet & Desktop Layout (hidden on mobile) ── */}
-        <div className="hidden md:flex items-center w-full justify-between gap-2 lg:gap-4">
+        <div className="hidden md:flex items-center w-full justify-center gap-2 lg:gap-45 ">
           {/* 1. LEFT GROUP: Logo and Main Links */}
           <div className="flex items-center gap-3 lg:gap-6 shrink-0">
             <Logo />
-            {/* Show main links on tablet and up */}
-            <div className="flex items-center gap-1">
-              <NavLink>Explore</NavLink>
-            </div>
           </div>
 
           {/* 2. CENTER: Search bar (Flexible) */}
           <div className="flex-1 min-w-[200px] max-w-[640px] relative mx-2 lg:mx-6">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#84948e] pointer-events-none flex">
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'wght' 300" }}>search</span>
+              <span
+                className="material-symbols-outlined"
+                style={{
+                  fontSize: "18px",
+                  fontVariationSettings: "'wght' 300",
+                }}
+              >
+                search
+              </span>
             </span>
             <input
               type="text"
@@ -312,24 +362,6 @@ export default function Navbar() {
 
           {/* 3. RIGHT GROUP: Teacher Links, Icons, and Avatar */}
           <div className="flex items-center gap-1 shrink-0">
-            {/* HIDE these specific text links on tablet to save space, SHOW them on lg (1024px+) */}
-            <div className="hidden lg:flex items-center gap-1 mr-2">
-              <NavLink>My learning</NavLink>
-            </div>
-
-            <button aria-label="Wishlist" className={iconBtnClass}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>favorite</span>
-            </button>
-            
-            <button aria-label="Cart" className={iconBtnClass}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>shopping_cart</span>
-              <span className="absolute top-[5px] right-[5px] w-2 h-2 rounded-full bg-[#6fffd9] border-2 border-[#181c22]" />
-            </button>
-
-            <button aria-label="Notifications" className={iconBtnClass}>
-              <span className="material-symbols-outlined" style={{ fontSize: '20px', fontVariationSettings: "'wght' 300" }}>notifications</span>
-            </button>
-
             {/* Avatar */}
             <button
               onClick={() => setSidebarOpen(true)}
@@ -341,6 +373,39 @@ export default function Navbar() {
         </div>
       </nav>
 
+      {/* ── Mobile Search Fullscreen Overlay ── */}
+      {isMobileSearchOpen && (
+        <div className="fixed inset-0 z-[200] bg-[#181c22] flex flex-col md:hidden animate-in fade-in duration-200">
+          {/* Top Search Bar */}
+          <div className="flex items-center px-4 h-16 border-b border-[#3b4a44] gap-3 shrink-0">
+            <span
+              className="material-symbols-outlined text-[#84948e]"
+              style={{ fontSize: "22px" }}
+            >
+              search
+            </span>
+            <input
+              type="text"
+              placeholder="Search for anything"
+              autoFocus // Automatically brings up the mobile keyboard
+              className="flex-1 bg-transparent border-none outline-none text-[#dfe2eb] font-['Inter',sans-serif] text-base placeholder:text-[#84948e]"
+            />
+            <button
+              onClick={() => setIsMobileSearchOpen(false)}
+              className="flex items-center justify-center p-2 text-[#b9cac3] hover:text-[#dfe2eb] bg-transparent border-none cursor-pointer transition-colors"
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: "24px" }}
+              >
+                close
+              </span>
+            </button>
+          </div>
+
+          {/* Trending Suggestions */}
+        </div>
+      )}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </>
   );
