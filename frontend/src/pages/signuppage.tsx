@@ -132,7 +132,7 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex items-center justify-start gap-3 mb-10">
             <div className="w-10 h-10 rounded-xl bg-[#1a3a35] flex items-center justify-center">
-              <img className="h-8" src="/inquesta.svg" />
+              <img className="h-8" src="/favicon.svg" />
             </div>
             <span className="text-white text-xl font-semibold tracking-wide">
               Inquesta

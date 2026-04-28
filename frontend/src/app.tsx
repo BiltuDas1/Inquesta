@@ -13,6 +13,7 @@ import CheckEmailPage from "./pages/checkemailpage";
 import VerifyEmailPage from "./pages/verifyemailpage";
 import { useEffect } from "react";
 import { client } from "./lib/apolloclient";
+import { CoursesPage1 } from "./pages/coursespage1";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -48,7 +49,7 @@ function App() {
         <GlobalSessionHandler />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<CoursePage></CoursePage>} />
+          <Route path="/courses" element={<CoursesPage1></CoursesPage1>} />
 
           {/* Block if already logged in */}
           <Route element={<PublicRoute />}>
