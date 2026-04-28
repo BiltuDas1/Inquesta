@@ -3,7 +3,6 @@ import Home from "./pages/homepage";
 import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
 import DashboardPage from "./pages/dashboardpage";
-import CoursePage from "./pages/coursepage";
 import ProtectedRoute from "./components/middleware/protectedroute";
 import PublicRoute from "./components/middleware/publicroute";
 import NotFoundPage from "./pages/notfoundpage";
