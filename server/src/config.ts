@@ -8,8 +8,8 @@ import { OAuth2Client } from "google-auth-library";
 import { importPKCS8, importSPKI } from "jose";
 import * as crypto from "crypto";
 import mysql from "mysql2/promise";
+import { isProduction, isMockTestingEnabled } from "./environment.ts";
 
-export const isProduction = process.env.PRODUCTION !== undefined;
 export const serverConfig = {
   host: isProduction ? "0.0.0.0" : "127.0.0.1",
   port: 4000,
@@ -25,7 +25,7 @@ const poolConnection = mysql.createPool({
   idleTimeout: 15000,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
 });
 
 export const db = drizzle(poolConnection);
@@ -41,7 +41,9 @@ if (process.env.ORIGINS !== undefined) {
 }
 
 export const FRONTEND_FQDN = requireEnv("FRONTEND_FQDN");
-export const emailObj = new Email(requireEnv("RESEND_API_KEY"));
+export const emailObj = isMockTestingEnabled
+  ? new Email()
+  : new Email(requireEnv("RESEND_API_KEY"));
 export const templateObj = new Template();
 
 // Redis connection
@@ -53,7 +55,6 @@ redis.on("error", (err) => console.error("Redis Client Error", err));
 // JWT Token Expiry
 export const ACCESS_TOKEN_EXPIRY = 900;
 export const REFRESH_TOKEN_EXPIRY = 3600 * 24 * 30;
-
 
 // Google Authentication
 export const GOOGLE_CLIENT = new OAuth2Client({

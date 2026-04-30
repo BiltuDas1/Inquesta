@@ -2,14 +2,9 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { createYoga } from "graphql-yoga";
 import { schema } from "./schemas/schema.ts";
-import {
-  allowedOrigins,
-  isProduction,
-  loadEdDSAKey,
-  redis,
-  serverConfig,
-} from "./config.ts";
+import { allowedOrigins, loadEdDSAKey, redis, serverConfig } from "./config.ts";
 import type { FastifyContext } from "./types/fastify.ts";
+import { isProduction } from "./environment.ts";
 
 // Create the Fastify server and turn on the pretty logger
 const server = Fastify({

@@ -9,12 +9,22 @@ type EmailData = {
 };
 
 export class Email {
-  private readonly resend: Resend;
-  constructor(api_key: string) {
-    this.resend = new Resend(api_key);
+  private readonly resend: Resend | null;
+  constructor(api_key?: string) {
+    if (api_key !== undefined) {
+      this.resend = new Resend(api_key);
+    } else {
+      this.resend = null;
+    }
   }
 
   async send_email(params: EmailData) {
+    if (this.resend === null) {
+      // It is a fake logic of sending email
+      const error = null;
+      return { error };
+    }
+
     return await this.resend.emails.send({
       from: `${params.name} <${params.sender_email}>`,
       to: params.receiver_emails,
