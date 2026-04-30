@@ -2,6 +2,7 @@ import { GOOGLE_CLIENT, isProduction } from "../config.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import {
+  get_userinfo,
   googleLogin,
   loginUser,
   registerUser,
@@ -9,6 +10,7 @@ import {
   verify_email,
 } from "../resolvers/user.ts";
 import {
+  UserInfoObject,
   UserRoleObject,
   type User,
   type UserInfo,
@@ -389,6 +391,51 @@ builder.mutationField("updateUserInfo", (t) =>
       };
 
       return await update_userinfo(cookieObj["access_token"], userinfo);
+    },
+  }),
+);
+
+const getUserInfoResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: UserInfo;
+  }>("GetUserInfoResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: UserInfoObject,
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getUserInfo", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: getUserInfoResponse,
+    args: {},
+    resolve: async (_parent, {}, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await get_userinfo(cookieObj["access_token"], context);
     },
   }),
 );

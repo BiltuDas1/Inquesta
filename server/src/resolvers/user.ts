@@ -297,13 +297,16 @@ export async function update_userinfo(access_token: string, info: UserInfo) {
     // If entry already exist then update the row
     if (error.cause?.message.includes("Duplicate entry")) {
       try {
-        await db.update(users_info).set({
-          phone_number_cc: info.phone_country_code,
-          phone_number: info.phone,
-          whatsapp_number_cc: info.whatsapp_country_code,
-          whatsapp_number: info.whatsapp,
-          qualification: info.qualification,
-        }).where(eq(users_info.users_id, accessToken.getSub()));
+        await db
+          .update(users_info)
+          .set({
+            phone_number_cc: info.phone_country_code,
+            phone_number: info.phone,
+            whatsapp_number_cc: info.whatsapp_country_code,
+            whatsapp_number: info.whatsapp,
+            qualification: info.qualification,
+          })
+          .where(eq(users_info.users_id, accessToken.getSub()));
 
         return {
           success: true,
@@ -316,5 +319,53 @@ export async function update_userinfo(access_token: string, info: UserInfo) {
       success: false,
       message: "failed to update data",
     };
+  }
+}
+
+type UserInfoResponse = {
+  success: boolean;
+  message: string;
+  data?: UserInfo;
+};
+
+export async function get_userinfo(
+  access_token: string,
+  context: FastifyContext,
+): Promise<UserInfoResponse> {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token",
+    };
+  }
+
+  try {
+    const [user] = await db
+      .selectDistinct()
+      .from(users_info)
+      .where(eq(users_info.users_id, accessToken.getSub()));
+
+    if (!user) {
+      return {
+        success: false,
+        message: "no records found",
+      };
+    }
+
+    return {
+      success: true,
+      message: "data fetched successfully",
+      data: {
+        phone_country_code: user.phone_number_cc,
+        phone: user.phone_number,
+        whatsapp_country_code: user.whatsapp_number_cc,
+        whatsapp: user.whatsapp_number,
+        qualification: user.qualification,
+      },
+    };
+  } catch (error) {
+    context.logger.error("get_userinfo: " + error);
+    throw error;
   }
 }
