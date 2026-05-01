@@ -265,7 +265,7 @@ export default function DashboardPage() {
           !c.instructorName.toLowerCase().includes(search.toLowerCase())
         )
           return false;
-        if (filterLevel && c.level !== filterLevel) return false;
+        if (filterLevel && formatLevel(c.level) !== filterLevel) return false;
         return true;
       }),
     [courses, search, filterLevel],

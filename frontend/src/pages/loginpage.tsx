@@ -33,6 +33,22 @@ interface LoginData {
   };
 }
 
+// Query for check if the user fill-up the user-data collection form or not
+const GET_USER_INFO = gql`
+  query getUserInfo {
+    getUserInfo {
+      success
+    }
+  }
+`;
+
+// Response type of USER INFO
+interface UserInfoData {
+  getUserInfo: {
+    success: boolean;
+  };
+}
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -46,6 +62,12 @@ export default function LoginPage() {
 
   // Initialize Apollo Lazy Query
   const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
+  const [fetchUserInfo] = useLazyQuery<UserInfoData>(
+    GET_USER_INFO,
+    {
+      fetchPolicy: "network-only",
+    },
+  );
 
   // Triggered when the input will be changed
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +102,18 @@ export default function LoginPage() {
         toast.success(data.login.message || "Logged in successfully!");
         const userData = data.login.data;
 
+        // Fetch User Info to check onboarding status
+        const { data: userInfoData, error: userInfoError } =
+          await fetchUserInfo();
+
+        if (userInfoError || !userInfoData?.getUserInfo) {
+          toast.error("Failed to verify user details.");
+          return;
+        }
+
+        // Extract the success boolean from the new query
+        const isDetailsFilled = userInfoData.getUserInfo.success;
+
         // Save user session (localStorage or Context/Redux)
         localStorage.setItem(
           "user",
@@ -89,8 +123,11 @@ export default function LoginPage() {
           }),
         );
 
+        if (!isDetailsFilled) {
+          navigate("/onboard");
+        }
         // Role-based redirection
-        if (userData.role === "admin") {
+        else if (userData.role === "admin") {
           navigate("/dashboard");
         } else {
           // Assuming default users go to courses
@@ -159,7 +196,7 @@ export default function LoginPage() {
                 boxShadow: "0 0 16px rgba(0,212,170,0.14)",
               }}
             >
-              <img className="h-8" src="/inquesta.svg" />
+              <img className="h-8" src="/favicon.svg" />
             </div>
             <div>
               <div className="text-white text-[18px] font-bold tracking-tight">
@@ -382,7 +419,7 @@ export default function LoginPage() {
           <p className="text-center text-[#3a6060] text-[12.5px] mb-3">
             New to Inquesta?{" "}
             <a
-              href="#"
+              href="/register"
               className="text-[#00d4aa] hover:text-[#00bfa0] font-semibold transition-colors"
             >
               Create a free account

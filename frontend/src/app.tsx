@@ -3,7 +3,6 @@ import Home from "./pages/homepage";
 import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
 import DashboardPage from "./pages/dashboardpage";
-import CoursePage from "./pages/coursepage";
 import ProtectedRoute from "./components/middleware/protectedroute";
 import PublicRoute from "./components/middleware/publicroute";
 import NotFoundPage from "./pages/notfoundpage";
@@ -13,7 +12,9 @@ import CheckEmailPage from "./pages/checkemailpage";
 import VerifyEmailPage from "./pages/verifyemailpage";
 import { useEffect } from "react";
 import { client } from "./lib/apolloclient";
+import { CoursesPage1 } from "./pages/coursespage1";
 import UserDataCollectionForm from "./pages/userdatacollectionform";
+import OnboardingRoute from "./components/middleware/onboardingroute";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -49,7 +50,8 @@ function App() {
         <GlobalSessionHandler />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<CoursePage></CoursePage>} />
+          <Route path="/courses" element={<CoursesPage1></CoursesPage1>} />
+
           {/* Block if already logged in */}
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<LoginPage />} />
@@ -64,9 +66,12 @@ function App() {
               path="/dashboard"
               element={<DashboardPage></DashboardPage>}
             />
-            <Route path="/onboarding" element={<UserDataCollectionForm />} />
           </Route>
-
+    
+          {/* Onboard route */}
+          <Route element={<OnboardingRoute />}>
+          <Route path="/onboard" element={<UserDataCollectionForm />} />
+        </Route>
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
