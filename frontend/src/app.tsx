@@ -13,6 +13,8 @@ import VerifyEmailPage from "./pages/verifyemailpage";
 import { useEffect } from "react";
 import { client } from "./lib/apolloclient";
 import { CoursesPage1 } from "./pages/coursespage1";
+import UserDataCollectionForm from "./pages/userdatacollectionform";
+import OnboardingRoute from "./components/middleware/onboardingroute";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -58,7 +60,6 @@ function App() {
             <Route path="/check-email" element={<CheckEmailPage />} />
             <Route path="/email/verify" element={<VerifyEmailPage />} />
           </Route>
-
           {/* Protected Route */}
           <Route element={<ProtectedRoute />}>
             <Route
@@ -66,7 +67,11 @@ function App() {
               element={<DashboardPage></DashboardPage>}
             />
           </Route>
-
+    
+          {/* Onboard route */}
+          <Route element={<OnboardingRoute />}>
+          <Route path="/onboard" element={<UserDataCollectionForm />} />
+        </Route>
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
