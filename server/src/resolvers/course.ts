@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq, lte } from "drizzle-orm";
 import { db, redis, s3PublicEndpoint } from "../config.ts";
 import { courses } from "../databases/schema.ts";
 import type { Course } from "../types/course.ts";
@@ -9,22 +9,23 @@ export async function addCourse(data: Course) {
   return true;
 }
 
-export async function getCourse() {
-  let result = await redis.get("inquesta:courses:list");
-  if (result === null) {
-    const response = await db.select().from(courses);
-
-    for (const data of response) {
-      if (data.iconName) {
-        data.iconName = `${s3PublicEndpoint}${data.iconName}`;
-      }
-    }
-
-    result = JSON.stringify(response);
-    await redis.set("inquesta:courses:list", result);
+export async function getCourses(limit: number, lastID?: string | null) {
+  if (lastID) {
+    const response = await db
+      .select()
+      .from(courses)
+      .where(lte(courses.id, lastID))
+      .orderBy(desc(courses.id))
+      .limit(limit);
+    return response;
+  } else {
+    const response = await db
+      .select()
+      .from(courses)
+      .orderBy(desc(courses.id))
+      .limit(limit);
+    return response;
   }
-
-  return JSON.parse(result);
 }
 
 export async function updateCourse(uuid: string, data: Course) {
