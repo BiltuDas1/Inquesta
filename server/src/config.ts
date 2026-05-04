@@ -8,6 +8,7 @@ import { OAuth2Client } from "google-auth-library";
 import { importPKCS8, importSPKI } from "jose";
 import * as crypto from "crypto";
 import mysql from "mysql2/promise";
+import { S3Client } from "@aws-sdk/client-s3";
 
 export const isProduction = process.env.PRODUCTION !== undefined;
 export const serverConfig = {
@@ -77,3 +78,13 @@ export async function loadEdDSAKey() {
   });
   EDDSA_PUBLIC_KEY = await importSPKI(public_key_str, "EdDSA");
 }
+
+export const s3Bucket = new S3Client({
+  region: "auto",
+  endpoint: requireEnv("SUPERBASE_S3_ENDPOINT"),
+  credentials: {
+    accessKeyId: requireEnv("SUPERBASE_S3_ACCESS_KEY"),
+    secretAccessKey: requireEnv("SUPERBASE_S3_SECRET_ACCESS_KEY"),
+  },
+  forcePathStyle: true,
+});

@@ -41,9 +41,7 @@
       "compositePrimaryKeys": {
         "countries_code": {
           "name": "countries_code",
-          "columns": [
-            "code"
-          ]
+          "columns": ["code"]
         }
       },
       "uniqueConstraints": {},
@@ -107,9 +105,7 @@
       "compositePrimaryKeys": {
         "courses_id": {
           "name": "courses_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -173,9 +169,7 @@
       "indexes": {
         "active_status_idx": {
           "name": "active_status_idx",
-          "columns": [
-            "is_active"
-          ],
+          "columns": ["is_active"],
           "isUnique": false
         }
       },
@@ -183,17 +177,13 @@
       "compositePrimaryKeys": {
         "users_id": {
           "name": "users_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "checkConstraint": {}
@@ -250,12 +240,8 @@
           "name": "users_info_users_id_users_id_fk",
           "tableFrom": "users_info",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -263,9 +249,7 @@
       "compositePrimaryKeys": {
         "users_info_users_id": {
           "name": "users_info_users_id",
-          "columns": [
-            "users_id"
-          ]
+          "columns": ["users_id"]
         }
       },
       "uniqueConstraints": {},
