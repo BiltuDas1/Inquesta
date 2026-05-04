@@ -3,13 +3,13 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Bucket } from "../config.ts";
 
 export async function getUploadToken(
-  fileName: string,
+  filePath: string,
   fileType: string,
   expireIn: number,
 ) {
   const command = new PutObjectCommand({
     Bucket: "Inquesta",
-    Key: `uploads/${fileName}`,
+    Key: filePath,
     ContentType: fileType,
   });
 

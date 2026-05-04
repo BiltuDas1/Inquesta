@@ -29,6 +29,13 @@
       "when": 1777044581562,
       "tag": "0003_acoustic_piledriver",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1777891336193,
+      "tag": "0004_exotic_hannibal_king",
+      "breakpoints": true
     }
   ]
 }

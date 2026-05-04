@@ -88,3 +88,8 @@ export const s3Bucket = new S3Client({
   },
   forcePathStyle: true,
 });
+
+const pubEndpoint = requireEnv("SUPERBASE_S3_PUBLIC_ENDPOINT");
+export const s3PublicEndpoint = pubEndpoint.endsWith("/")
+  ? pubEndpoint
+  : `${pubEndpoint}/`;

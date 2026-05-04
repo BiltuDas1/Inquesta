@@ -1,11 +1,15 @@
 import { builder } from "../libraries/builder.ts";
 import { getUploadToken } from "../resolvers/file.ts";
+import { generateUrlSafeToken } from "../utils/token.ts";
 
 const uploadResponse = builder
   .objectRef<{
     success: boolean;
     message: string;
-    data?: { url: string };
+    data?: {
+      url: string;
+      filename: string;
+    };
   }>("UploadResponse")
   .implement({
     fields: (t) => ({
@@ -13,10 +17,11 @@ const uploadResponse = builder
       message: t.exposeString("message"),
       data: t.expose("data", {
         type: builder
-          .objectRef<{ url: string }>("UploadResponseData")
+          .objectRef<{ url: string; filename: string }>("UploadResponseData")
           .implement({
             fields: (t) => ({
               url: t.exposeString("url"),
+              filename: t.exposeString("filename"),
             }),
           }),
         nullable: true,
@@ -28,17 +33,18 @@ builder.mutationField("request_upload", (t) =>
   t.field({
     type: uploadResponse,
     args: {
-      filename: t.arg.string({ required: true }),
       mimetype: t.arg.string({ required: true }),
     },
     resolve: async (_parent, args, context) => {
       try {
-        const url = await getUploadToken(args.filename, args.mimetype, 5 * 60); // Expire the token in 5 min
+        const filename = `uploads/${generateUrlSafeToken()}`;
+        const url = await getUploadToken(filename, args.mimetype, 5 * 60); // Expire the token in 5 min
         return {
           success: true,
           message: "successfully generated the url",
           data: {
             url: url,
+            filename: filename,
           },
         };
       } catch (error) {
