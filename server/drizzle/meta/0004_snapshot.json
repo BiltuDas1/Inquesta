@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "e3580791-3c80-431a-95eb-f814705ecf31",
-  "prevId": "3d3eea26-5e37-4f48-a667-2de4cb6c587c",
+  "id": "9c245425-2042-4b8a-af38-2cde5627b9d8",
+  "prevId": "e3580791-3c80-431a-95eb-f814705ecf31",
   "tables": {
     "countries": {
       "name": "countries",
@@ -97,6 +97,13 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "icon_name": {
+          "name": "icon_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },

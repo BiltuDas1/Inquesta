@@ -24,6 +24,7 @@ builder.mutationField("courseAdd", (t) =>
       level: t.arg.string({ required: true }),
       duration: t.arg.string({ required: true }),
       instructor_name: t.arg.string({ required: true }),
+      icon_name: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -31,6 +32,7 @@ builder.mutationField("courseAdd", (t) =>
           ...args,
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
+          iconName: args.icon_name,
         });
         return {
           success: true,
@@ -69,7 +71,8 @@ builder.queryField("courseGet", (t) =>
     args: {},
     resolve: async (_parent, args, context) => {
       try {
-        const result = await getCourse();
+        const result: (Course & { id: string })[] = await getCourse();
+
         return {
           success: true,
           message: "course list has been fetched successfully",

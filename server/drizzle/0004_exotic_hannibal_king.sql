@@ -1,0 +1,1 @@
+ALTER TABLE `courses` ADD `icon_name` varchar(255);

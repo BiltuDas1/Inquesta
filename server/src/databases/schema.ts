@@ -38,6 +38,7 @@ export const courses = mysqlTable("courses", {
   level: mysqlEnum("level", CourseLevels).notNull(),
   duration: varchar({ length: 255 }).notNull(),
   instructorName: varchar("instructor_name", { length: 255 }).notNull(),
+  iconName: varchar("icon_name", { length: 255 }),
 });
 
 export const users_info = mysqlTable("users_info", {

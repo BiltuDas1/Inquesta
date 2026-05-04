@@ -10,6 +10,7 @@ export type Course = {
   level: CourseLevel;
   duration: string;
   instructorName: string;
+  iconName?: string | null | undefined;
 };
 
 export const CourseObject = builder
@@ -18,6 +19,7 @@ export const CourseObject = builder
     fields: (t) => ({
       id: t.exposeString("id"),
       title: t.exposeString("title"),
+      icon: t.exposeString("iconName"),
       description: t.exposeString("description", { nullable: true }),
       price: t.exposeFloat("price"),
       level: t.exposeString("level"),
