@@ -12,10 +12,11 @@ import CheckEmailPage from "./pages/checkemailpage";
 import VerifyEmailPage from "./pages/verifyemailpage";
 import { useEffect } from "react";
 import { client } from "./lib/apolloclient";
-import { CoursesPage1 } from "./pages/coursespage1";
 import UserDataCollectionForm from "./pages/userdatacollectionform";
 import OnboardingRoute from "./components/middleware/onboardingroute";
 import CourseDetails from "./components/courses/coursedetails";
+import MainLayout from "./components/layout/mainlayout";
+import CourseListingPage from "./components/layout/courselistingpage";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -51,8 +52,12 @@ function App() {
         <GlobalSessionHandler />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<CoursesPage1></CoursesPage1>} />
-            <Route path="/course/:courseId" element={<CourseDetails/>} />
+  
+          {/* LAYOUT */}
+          <Route element={<MainLayout />}>
+            <Route path="/courses" element={<CourseListingPage />} />
+               <Route path="/course/:courseID" element={<CourseDetails />} />
+          </Route>
 
           {/* Block if already logged in */}
           <Route element={<PublicRoute />}>
