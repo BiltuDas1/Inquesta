@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { useApolloClient, useQuery } from "@apollo/client/react";
+import { useApolloClient, useQuery, useMutation } from "@apollo/client/react";
 import {
   createContext,
   useContext,
@@ -11,11 +11,13 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
+
 // ── Types ──
 export interface User {
   firstname: string;
   lastname: string;
   role: string;
+  email: string;
 }
 
 interface AuthContextType {
@@ -25,22 +27,28 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// ── GraphQL Query ──
+// ── GraphQL Operations ──
+// We now ONLY ask for success to verify the session
 const IS_LOGGED_IN = gql`
-  query IsLoggedIn {
+  query isLoggedIn {
     isLoggedIn {
-      data {
-        firstname
-        lastname
-        role
-      }
+      success
+    }
+  }
+`;
+
+const LOGOUT_MUTATION = gql`
+  mutation logoutUser {
+   logoutUser {
+      success
+      message
     }
   }
 `;
 
 interface IsLoggedInResponse {
   isLoggedIn: {
-    data: User | null;
+    success: boolean;
   };
 }
 
@@ -54,6 +62,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const client = useApolloClient();
 
+  const [logoutUser] = useMutation(LOGOUT_MUTATION);
+
+  // 1. Initial load from LocalStorage to keep UI fast
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+
   const {
     data,
     loading: queryLoading,
@@ -62,45 +81,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchPolicy: "network-only",
   });
 
-  // Handle Success / Data Changes
+  // Handle Success / Session Check
   useEffect(() => {
     if (!queryLoading) {
-      if (data?.isLoggedIn?.data) {
-        setUser(data.isLoggedIn.data);
+      if (data?.isLoggedIn?.success) {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
       } else {
         setUser(null);
+        localStorage.removeItem("user");
       }
       setLoading(false);
     }
   }, [data, queryLoading]);
 
-  // Handle Errors
+  // Handle Errors 
   useEffect(() => {
     if (error) {
-      console.error("Auth verification failed:", error);
       setUser(null);
+      localStorage.removeItem("user");
       setLoading(false);
     }
   }, [error]);
 
-  // Call this function after a successful Login Mutation
+  // ── Actions ──
+
+  // The ONLY place user data is set (from the parameter)
   const login = (userData: User) => {
     setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  // Call this function when the user clicks "Logout"
   const logout = async () => {
+    const loadingToast = toast.loading("Logging out...");
     try {
-      setUser(null);
+      await logoutUser();
 
-      // Clear Apollo Cache so the next user doesn't see cached private data
+      setUser(null);
+      localStorage.removeItem("user");
       await client.clearStore();
 
-      toast.success("Logged out successfully");
+      toast.success("Logged out successfully", { id: loadingToast });
       navigate("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("Failed to log out properly.");
+    } catch (err: any) {
+      console.error("Logout error:", err);
+      toast.error(err.message || "Failed to log out properly.", { id: loadingToast });
+      
+      setUser(null);
+      localStorage.removeItem("user");
+      navigate("/login");
     }
   };
 
@@ -111,7 +142,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ── Custom Hook ──
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

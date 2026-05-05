@@ -8,6 +8,8 @@ export type User = {
 };
 
 export type UserRole = {
+  firstname: string,
+  lastname: string | null,
   email: string;
   role: string;
 };
@@ -24,6 +26,8 @@ export const UserRoleObject = builder
   .objectRef<UserRole>("UserRole")
   .implement({
     fields: (t) => ({
+      firstname: t.exposeString("firstname"),
+      lastname: t.exposeString("lastname"),
       email: t.exposeString("email"),
       role: t.exposeString("role"),
     }),

@@ -55,7 +55,7 @@ function App() {
       {/* For toast message */}
       <Toaster position="top-right"></Toaster>
 
-      <BrowserRouter>
+     
         <GlobalSessionHandler />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -105,7 +105,7 @@ function App() {
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </BrowserRouter>
+    
     </>
   );
 }

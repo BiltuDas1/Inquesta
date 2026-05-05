@@ -6,12 +6,15 @@ import { useNavigate } from "react-router";
 import GoogleSVG from "../components/svg/google";
 import { google_login } from "../utils/googleauth";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/authcontext";
 
 // QUERY to get user data
 const LOGIN_QUERY = gql`
   query login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       data {
+        firstname
+        lastname
         email
         role
       }
@@ -25,6 +28,8 @@ const LOGIN_QUERY = gql`
 interface LoginData {
   login: {
     data: {
+      firstname: string;
+      lastname: string;
       email: string;
       role: string;
     } | null;
@@ -52,6 +57,8 @@ interface UserInfoData {
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -112,13 +119,19 @@ export default function LoginPage() {
         const isDetailsFilled = userInfoData.getUserInfo.success;
 
         // Save user session (localStorage or Context/Redux)
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            email: userData.email,
-            role: userData.role,
-          }),
-        );
+        // localStorage.setItem(
+        //   "user",
+        //   JSON.stringify({
+        //     email: userData.email,
+        //     role: userData.role,
+        //   }),
+        // );
+        login({
+          firstname: userData.firstname || "",
+          lastname: userData.lastname || "",
+          email: userData.email,
+          role: userData.role,
+        });
 
         if (!isDetailsFilled) {
           navigate("/onboard");
