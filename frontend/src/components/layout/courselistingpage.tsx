@@ -255,6 +255,7 @@ export default function CourseListingPage() {
                 onNext={handleNextPage}
                 onPrevious={handlePreviousPage}
                 onJumpToFirst={handleJumpToFirst}
+              
               />
             )}
           </main>

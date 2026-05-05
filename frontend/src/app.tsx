@@ -15,6 +15,7 @@ import { client } from "./lib/apolloclient";
 import { CoursesPage1 } from "./pages/coursespage1";
 import UserDataCollectionForm from "./pages/userdatacollectionform";
 import OnboardingRoute from "./components/middleware/onboardingroute";
+import CourseDetails from "./components/courses/coursedetails";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -51,6 +52,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursesPage1></CoursesPage1>} />
+            <Route path="/course/:courseId" element={<CourseDetails/>} />
 
           {/* Block if already logged in */}
           <Route element={<PublicRoute />}>
