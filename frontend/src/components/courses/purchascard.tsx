@@ -22,7 +22,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
         {/* Course Thumbnail with Fallback */}
         <div className="w-full h-40 sm:h-48 mb-6 rounded-lg overflow-hidden border border-[#3b4a44] bg-[#181c22]">
           <img 
-            src={course.icon} 
+              src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
             alt={course.title} 
             className="w-full h-full object-cover"
             onError={(e) => {
