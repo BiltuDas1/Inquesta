@@ -93,6 +93,8 @@ export async function loginUser(
       id: users.id,
       password: users.password,
       role: users.role,
+      firstname: users.firstname,
+      lastname: users.lastname
     })
     .from(users)
     .where(and(eq(users.isActive, true), eq(users.email, email)))
@@ -122,6 +124,8 @@ export async function loginUser(
 
   return {
     role: {
+      firstname: userRecord.firstname,
+      lastname: userRecord.lastname,
       email: email,
       role: userRecord.role,
     },
@@ -161,6 +165,8 @@ export async function googleLogin(payload: GoogleUser) {
       .selectDistinct({
         id: users.id,
         role: users.role,
+        firstname: users.firstname,
+        lastname: users.lastname
       })
       .from(users)
       .where(eq(users.email, payload.email))
@@ -186,8 +192,10 @@ export async function googleLogin(payload: GoogleUser) {
       success: true,
       message: "login successful",
       role: {
+        firstname: result[0].firstname,
+        lastname: result[0].lastname,
         email: payload.email,
-        role: result[0]?.role,
+        role: result[0].role,
       },
       jwt: jwtObj,
     };
@@ -202,6 +210,8 @@ export async function googleLogin(payload: GoogleUser) {
         .selectDistinct({
           id: users.id,
           role: users.role,
+          firstname: users.firstname,
+          lastname: users.lastname
         })
         .from(users)
         .where(eq(users.email, payload.email))
@@ -227,8 +237,10 @@ export async function googleLogin(payload: GoogleUser) {
         success: true,
         message: "login successful",
         role: {
+          firstname: result[0].firstname,
+          lastname: result[0].lastname,
           email: payload.email,
-          role: result[0]?.role,
+          role: result[0].role,
         },
         jwt: jwtObj,
       };
