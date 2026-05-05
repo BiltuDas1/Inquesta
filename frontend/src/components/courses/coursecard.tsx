@@ -172,7 +172,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         <span className="text-lg font-bold text-[#dfe2eb]">
           ₹{course.price}
         </span>
-        <button
+        {/* <button
           onClick={(e) => {
             e.preventDefault();
             console.log(`Enrolling in ID: ${course.id}`);
@@ -180,7 +180,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           className="relative z-20 mt-auto border border-[#00e5bc] text-[#00e5bc] text-xs font-bold px-4 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity"
         >
           Enroll
-        </button>
+        </button> */}
       </div>
     </div>
   );
