@@ -175,7 +175,7 @@
 //   );
 // }
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router"; // Ensure this matches your router package
 import { Logo } from "../ui/logo";
 
@@ -188,11 +188,11 @@ export default function DashboardLayout() {
 
   // Exact paths matching your nested route setup
   const navItems = [
-    { name: "Dashboard", icon: "grid_view", path: "/dashboard" },
+    // { name: "Dashboard", icon: "grid_view", path: "/dashboard" },
     { name: "Courses", icon: "library_books", path: "/dashboard/courses" },
     { name: "Students", icon: "group", path: "/dashboard/students" },
-    { name: "Analytics", icon: "bar_chart", path: "/dashboard/analytics" },
-    { name: "Settings", icon: "settings", path: "/dashboard/settings" },
+    // { name: "Analytics", icon: "bar_chart", path: "/dashboard/analytics" },
+    // { name: "Settings", icon: "settings", path: "/dashboard/settings" },
   ];
 
   // Helper to get the page title for the Topbar based on the current URL
