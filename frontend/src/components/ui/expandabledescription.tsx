@@ -27,7 +27,7 @@ export const ExpandableDescription: React.FC<ExpandableDescriptionProps> = ({ ch
       {/* 3. The Toggle Button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-2 flex items-center gap-1 text-sm font-bold text-[#a8afff] hover:text-[#bdc2ff] transition-colors cursor-pointer"
+        className="mt-2 flex items-center gap-1 text-sm font-bold text-[#6fffd9] hover:text-[#6fffe9] transition-colors cursor-pointer"
       >
         <span>{isExpanded ? 'Show less' : 'Show more'}</span>
         <span className="material-symbols-outlined text-base leading-none">
