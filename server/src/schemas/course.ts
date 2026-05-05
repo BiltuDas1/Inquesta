@@ -2,7 +2,7 @@ import { builder, GQLResponse } from "../libraries/builder.ts";
 import {
   addCourse,
   deleteCourse,
-  getCourse,
+  getCourses,
   updateCourse,
 } from "../resolvers/course.ts";
 import {
@@ -68,10 +68,16 @@ const courseResponse = builder
 builder.queryField("courseGet", (t) =>
   t.field({
     type: courseResponse,
-    args: {},
+    args: {
+      lastID: t.arg.string({ required: false }),
+      limit: t.arg.int({ required: true }),
+    },
     resolve: async (_parent, args, context) => {
       try {
-        const result: (Course & { id: string })[] = await getCourse();
+        const result: (Course & { id: string })[] = await getCourses(
+          args.limit,
+          args.lastID,
+        );
 
         return {
           success: true,
