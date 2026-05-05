@@ -1,17 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Logo } from "../ui/logo";
 
-const Logo = () => (
-  <a href="/" className="flex items-center gap-3 no-underline shrink-0">
-    <div className="w-10 h-10 rounded-xl bg-[#1a3a35] flex items-center justify-center shrink-0">
-      <img className="h-8" src="/favicon.svg" alt="Inquesta Logo" />
-    </div>
-    <span className="text-white text-xl font-semibold tracking-wide">
-      Inquesta
-    </span>
-  </a>
-);
+
 
 export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
@@ -39,7 +31,7 @@ export default function Navbar() {
         {/* ── Mobile Layout (hidden on md and up) ── */}
         <div className="flex md:hidden items-center justify-between w-full">
           <div className="flex items-center">
-            <Logo />
+            <Logo/>
           </div>
           <div className="flex items-center gap-1">
             <button

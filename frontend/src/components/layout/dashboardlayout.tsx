@@ -177,6 +177,7 @@
 
 import React, { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router"; // Ensure this matches your router package
+import { Logo } from "../ui/logo";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -214,9 +215,8 @@ export default function DashboardLayout() {
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1c2026] border-r border-[#3b4a44] transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto flex flex-col ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-[#3b4a44] shrink-0">
-          <span className="material-symbols-outlined text-[#6fffd9] mr-3 text-3xl">school</span>
-          <span className="font-headline font-black text-xl tracking-tight text-[#dfe2eb]">Inquesta</span>
+        <div className="h-16 flex items-center px-6 shrink-0">
+        <Logo/>
         </div>
 
         {/* Navigation Links */}

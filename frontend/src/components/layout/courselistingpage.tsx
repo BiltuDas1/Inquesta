@@ -53,7 +53,7 @@ export default function CourseListingPage() {
   const [cursorHistory, setCursorHistory] = useState<string[]>([]);
 
   // ---  URL Update Helper ---
-  const updateURL = (newPage: number, newCursor: string | null) => {
+  const updateURL = (newPage: number) => {
     const url = new URL(window.location.href);
     url.searchParams.set("p", newPage.toString());
 
@@ -91,7 +91,7 @@ export default function CourseListingPage() {
       setCursorHistory((prev) => [...prev, lastID || ""]);
       setLastID(newCursor);
       setPage((p) => p + 1);
-      updateURL(page + 1, newCursor);
+      updateURL(page + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -101,7 +101,7 @@ export default function CourseListingPage() {
     setLastID(null); // Reset cursor
     setCursorHistory([]); // Clear history
     setPage(1); // Reset page number
-    updateURL(1, null); // Update URL
+    updateURL(1); // Update URL
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -112,7 +112,7 @@ export default function CourseListingPage() {
       setCursorHistory(newHistory);
       setLastID(prevCursor === "" ? null : prevCursor);
       setPage((p) => p - 1);
-      updateURL(page - 1, prevCursor === "" ? null : prevCursor);
+      updateURL(page - 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
