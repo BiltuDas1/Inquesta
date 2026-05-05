@@ -408,3 +408,7 @@ export async function get_user_role(access_token: string) {
     },
   };
 }
+
+export async function delete_refresh_token(refresh_token: string) {
+  await redis.del(refresh_token);
+}

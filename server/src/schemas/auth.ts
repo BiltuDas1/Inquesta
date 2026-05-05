@@ -2,6 +2,7 @@ import { GOOGLE_CLIENT, isProduction } from "../config.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import {
+  delete_refresh_token,
   get_user_role,
   get_userinfo,
   googleLogin,
@@ -495,6 +496,65 @@ builder.queryField("isLoggedIn", (t) =>
       }
 
       return await get_user_role(cookieObj["access_token"]);
+    },
+  }),
+);
+
+builder.mutationField("logoutUser", (t) =>
+  t.field({
+    type: GQLResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["refresh_token"] === undefined) {
+        return {
+          success: false,
+          message: "no refresh_token cookie",
+        };
+      }
+
+      await delete_refresh_token(cookieObj["refresh_token"]);
+
+      // Passing Cookies via HTTP Response
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
+          name: "access_token",
+          value: "",
+          expires: 0,
+          path: "/",
+          samesite: "Lax",
+          httponly: true,
+          secure: isProduction,
+        }),
+      );
+
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
+          name: "refresh_token",
+          value: "",
+          expires: 0,
+          path: "/",
+          samesite: "Strict",
+          httponly: true,
+          secure: isProduction,
+        }),
+      );
+
+      context.reply.header("Set-Login", "logged-out");
+
+      return {
+        success: true,
+        message: "successfully logged out",
+      };
     },
   }),
 );
