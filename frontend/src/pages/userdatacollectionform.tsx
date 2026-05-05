@@ -62,11 +62,11 @@ export default function UserDataCollectionForm() {
     try {
       const phoneCodeInt = parseInt(
         dataToSave.phoneCountryCode.replace("+", ""),
-        10
+        10,
       );
       const whatsappCodeInt = parseInt(
         dataToSave.whatsappCountryCode.replace("+", ""),
-        10
+        10,
       );
 
       const { data } = await updateUserInfo({
@@ -84,7 +84,9 @@ export default function UserDataCollectionForm() {
         if (isAutoSave) {
           toast.success("Number auto-saved!");
         } else {
-          toast.success(data.updateUserInfo.message || "Details saved successfully!");
+          toast.success(
+            data.updateUserInfo.message || "Details saved successfully!",
+          );
           navigate("/courses");
         }
       } else {
@@ -97,7 +99,7 @@ export default function UserDataCollectionForm() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -112,7 +114,6 @@ export default function UserDataCollectionForm() {
 
       setFormData(updatedFormData);
 
-     
       if (numericValue.length === 10) {
         executeSave(updatedFormData, true);
       }

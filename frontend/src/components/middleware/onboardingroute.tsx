@@ -2,7 +2,6 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { Navigate, Outlet } from "react-router";
 
-
 const GET_USER_INFO = gql`
   query getUserInfo {
     getUserInfo {
@@ -17,7 +16,6 @@ interface UserInfoData {
     success: boolean;
   } | null;
 }
-
 
 export default function OnboardingRoute() {
   const { data, loading, error } = useQuery<UserInfoData>(GET_USER_INFO, {
@@ -43,7 +41,7 @@ export default function OnboardingRoute() {
   if (isDetailsFilled) {
     const storedUser = localStorage.getItem("user");
     let targetRoute = "/courses"; // Default
-    
+
     if (storedUser) {
       try {
         const { role } = JSON.parse(storedUser);

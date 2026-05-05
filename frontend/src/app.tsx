@@ -67,11 +67,11 @@ function App() {
               element={<DashboardPage></DashboardPage>}
             />
           </Route>
-    
+
           {/* Onboard route */}
           <Route element={<OnboardingRoute />}>
-          <Route path="/onboard" element={<UserDataCollectionForm />} />
-        </Route>
+            <Route path="/onboard" element={<UserDataCollectionForm />} />
+          </Route>
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

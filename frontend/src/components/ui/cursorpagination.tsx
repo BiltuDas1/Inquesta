@@ -9,14 +9,9 @@ interface NumberedCursorPaginationProps {
   onJumpToFirst: () => void;
 }
 
-export const NumberedCursorPagination: React.FC<NumberedCursorPaginationProps> = ({
-  page,
-  hasNext,
-  hasPrevious,
-  onNext,
-  onPrevious,
-  onJumpToFirst,
-}) => {
+export const NumberedCursorPagination: React.FC<
+  NumberedCursorPaginationProps
+> = ({ page, hasNext, hasPrevious, onNext, onPrevious, onJumpToFirst }) => {
   return (
     <div className="flex items-center justify-center gap-2 sm:gap-3 mt-10 font-bold text-[#dfe2eb]">
       {/* Previous Arrow Button */}
@@ -30,7 +25,9 @@ export const NumberedCursorPagination: React.FC<NumberedCursorPaginationProps> =
               : "border-[#3b4a44] text-[#3b4a44] opacity-50 cursor-not-allowed"
           }`}
       >
-        <span className="material-symbols-outlined text-sm">arrow_back_ios_new</span>
+        <span className="material-symbols-outlined text-sm">
+          arrow_back_ios_new
+        </span>
       </button>
 
       {/* Page 1 & Ellipsis (Shows up if we are far ahead) */}
@@ -84,7 +81,9 @@ export const NumberedCursorPagination: React.FC<NumberedCursorPaginationProps> =
               : "border-[#3b4a44] text-[#3b4a44] opacity-50 cursor-not-allowed"
           }`}
       >
-        <span className="material-symbols-outlined text-sm">arrow_forward_ios</span>
+        <span className="material-symbols-outlined text-sm">
+          arrow_forward_ios
+        </span>
       </button>
     </div>
   );

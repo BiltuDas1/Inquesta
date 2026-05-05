@@ -62,12 +62,9 @@ export default function LoginPage() {
 
   // Initialize Apollo Lazy Query
   const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
-  const [fetchUserInfo] = useLazyQuery<UserInfoData>(
-    GET_USER_INFO,
-    {
-      fetchPolicy: "network-only",
-    },
-  );
+  const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
+    fetchPolicy: "network-only",
+  });
 
   // Triggered when the input will be changed
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

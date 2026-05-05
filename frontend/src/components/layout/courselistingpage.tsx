@@ -4,7 +4,7 @@ import { FilterPanel } from "../courses/filterpanel";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import type { Course } from "../../types/courses";
-import {  NumberedCursorPagination } from "../ui/cursorpagination";
+import { NumberedCursorPagination } from "../ui/cursorpagination";
 
 // Query to get courses
 const GET_COURSES = gql`
@@ -40,8 +40,11 @@ export default function CourseListingPage() {
   const [desktopFilterOpen, setDesktopFilterOpen] = useState<boolean>(true); // Desktop sidebar state
   const [sortBy, setSortBy] = useState<string>("Most Popular");
 
-// --- 1. Init from URL Params ---
-  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  // --- 1. Init from URL Params ---
+  const searchParams = useMemo(
+    () => new URLSearchParams(window.location.search),
+    [],
+  );
   const initialCursor = searchParams.get("cursor");
   const initialPage = parseInt(searchParams.get("p") || "1", 10);
 
@@ -53,7 +56,7 @@ export default function CourseListingPage() {
   const updateURL = (newPage: number, newCursor: string | null) => {
     const url = new URL(window.location.href);
     url.searchParams.set("p", newPage.toString());
-    
+
     if (newCursor) {
       url.searchParams.set("cursor", newCursor);
     } else {
@@ -95,10 +98,10 @@ export default function CourseListingPage() {
 
   // --- Add this beneath handlePreviousPage ---
   const handleJumpToFirst = () => {
-    setLastID(null);           // Reset cursor
-    setCursorHistory([]);      // Clear history
-    setPage(1);                // Reset page number
-    updateURL(1, null);        // Update URL
+    setLastID(null); // Reset cursor
+    setCursorHistory([]); // Clear history
+    setPage(1); // Reset page number
+    updateURL(1, null); // Update URL
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -113,9 +116,6 @@ export default function CourseListingPage() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
-
-
-  
 
   return (
     <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] pb-12">
@@ -185,10 +185,6 @@ export default function CourseListingPage() {
               </span>
             </div>
           </div>
-
-          <span className="ml-auto text-sm text-[#84948e] font-medium hidden sm:block">
-            10,000 results
-          </span>
         </div>
 
         {/* Main Content Area
@@ -208,27 +204,36 @@ export default function CourseListingPage() {
           </aside>
 
           {/* Course List */}
-         <main className="flex-1 min-w-0">
-            {page > 1 && !loading && displayCourses.length > 0 && (
-              <p className="text-[#84948e] text-sm mb-4">Page {page}</p>
+          <main className="flex-1 min-w-0">
+            {loading && (
+              <p className="text-[#84948e] py-4 text-center">
+                Loading courses...
+              </p>
             )}
 
-            {loading && <p className="text-[#84948e] py-4 text-center">Loading courses...</p>}
-            
             {(error || appError) && (
               <p className="text-red-400 py-4 text-center bg-red-900/20 rounded border border-red-500/50">
                 Error: {error?.message || appError}
               </p>
             )}
-            
+
             {/* The Ghost Page Fallback UI */}
             {!loading && !error && !appError && displayCourses.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16">
-                <span className="material-symbols-outlined text-[#84948e] text-5xl mb-4">inventory_2</span>
-                <p className="text-[#dfe2eb] font-bold text-lg mb-2">End of the Line!</p>
-                <p className="text-[#84948e] mb-6">You have reached the end of the courses list.</p>
+                <span className="material-symbols-outlined text-[#84948e] text-5xl mb-4">
+                  inventory_2
+                </span>
+                <p className="text-[#dfe2eb] font-bold text-lg mb-2">
+                  End of the Line!
+                </p>
+                <p className="text-[#84948e] mb-6">
+                  You have reached the end of the courses list.
+                </p>
                 {cursorHistory.length > 0 && (
-                  <button onClick={handlePreviousPage} className="px-6 py-2 bg-[#6a35ff] text-white font-bold rounded hover:bg-[#5a2ce0] transition-colors">
+                  <button
+                    onClick={handlePreviousPage}
+                    className="px-6 py-2 bg-[#6a35ff] text-white font-bold rounded hover:bg-[#5a2ce0] transition-colors"
+                  >
                     Go Back to Previous Page
                   </button>
                 )}
@@ -236,14 +241,14 @@ export default function CourseListingPage() {
             )}
 
             {/* Render Courses */}
-            {!loading && displayCourses.map((course: Course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
+            {!loading &&
+              displayCourses.map((course: Course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
 
             {/* Pagination controls only show if there are courses on screen */}
-           {/* Pagination controls only show if there are courses on screen */}
             {!loading && displayCourses.length > 0 && (
-              <NumberedCursorPagination 
+              <NumberedCursorPagination
                 page={page}
                 hasNext={hasNextPage}
                 hasPrevious={cursorHistory.length > 0}
