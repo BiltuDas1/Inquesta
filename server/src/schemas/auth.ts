@@ -2,6 +2,7 @@ import { GOOGLE_CLIENT, isProduction } from "../config.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import {
+  get_user_role,
   get_userinfo,
   googleLogin,
   loginUser,
@@ -436,6 +437,64 @@ builder.queryField("getUserInfo", (t) =>
       }
 
       return await get_userinfo(cookieObj["access_token"], context);
+    },
+  }),
+);
+
+const UserLoginResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: { firstname: string; lastname: string | null; role: string };
+  }>("UserLoginResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.field({
+        nullable: true,
+        type: builder
+          .objectRef<{
+            firstname: string;
+            lastname: string | null;
+            role: string;
+          }>("UserLoginResponseData")
+          .implement({
+            fields: (tInner) => ({
+              firstname: tInner.exposeString("firstname"),
+              lastname: tInner.exposeString("lastname"),
+              role: tInner.exposeString("role"),
+            }),
+          }),
+        resolve: (parent) => parent.data,
+      }),
+    }),
+  });
+
+builder.queryField("isLoggedIn", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: UserLoginResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await get_user_role(cookieObj["access_token"]);
     },
   }),
 );

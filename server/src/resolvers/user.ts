@@ -369,3 +369,42 @@ export async function get_userinfo(
     throw error;
   }
 }
+
+export async function get_user_role(access_token: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+    };
+  }
+
+  const result = await db
+    .selectDistinct()
+    .from(users)
+    .where(eq(users.id, accessToken.getSub()));
+  if (result.length === 0) {
+    return {
+      success: false,
+      message: "no record found",
+    };
+  }
+
+  const userinfo = result[0];
+  if (userinfo === undefined) {
+    return {
+      success: false,
+      message: "no record found",
+    };
+  }
+
+  return {
+    success: true,
+    message: "valid login",
+    data: {
+      firstname: userinfo.firstname,
+      lastname: userinfo.lastname,
+      role: userinfo.role,
+    },
+  };
+}
