@@ -39,3 +39,14 @@ export async function deleteCourse(uuid: string) {
   await redis.del("inquesta:courses:list");
   return true;
 }
+
+export async function getCourseInfo(id: string) {
+  const result = await db
+    .selectDistinct()
+    .from(courses)
+    .where(eq(courses.id, id));
+  if (result !== undefined) {
+    return result[0];
+  }
+  return null;
+}

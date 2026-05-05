@@ -2,6 +2,7 @@ import { builder, GQLResponse } from "../libraries/builder.ts";
 import {
   addCourse,
   deleteCourse,
+  getCourseInfo,
   getCourses,
   updateCourse,
 } from "../resolvers/course.ts";
@@ -150,6 +151,54 @@ builder.mutationField("courseUpdate", (t) =>
         return {
           success: false,
           message: "failed to update course details",
+        };
+      }
+    },
+  }),
+);
+
+const singleCourseResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: Course & { id: string };
+  }>("SingleCourseResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: CourseObject,
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getCourseInfo", (t) =>
+  t.field({
+    type: singleCourseResponse,
+    args: {
+      courseID: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      try {
+        const result = await getCourseInfo(args.courseID);
+        if (!result) {
+          return {
+            success: false,
+            message: "course not found",
+          };
+        }
+
+        return {
+          success: true,
+          message: "course information fetched successfully",
+          data: result,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "internal server error",
         };
       }
     },
