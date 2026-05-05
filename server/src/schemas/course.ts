@@ -85,6 +85,7 @@ builder.queryField("courseGet", (t) =>
           data: result,
         };
       } catch (error) {
+        console.error("Error fetching courses:", error);
         return {
           success: false,
           message: "unable to fetch courses list",
