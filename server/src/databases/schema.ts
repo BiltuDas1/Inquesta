@@ -62,8 +62,13 @@ export const countries = mysqlTable("countries", {
 
 export const courseEnrollments = mysqlTable("course_enrollments", {
   id: int().autoincrement().primaryKey(),
-  course_id: varchar("courses_id", { length: 36 }).references(() => courses.id, { onDelete: "restrict" }),
-  user_id: varchar("user_id", { length: 36 }).references(() => users.id, { onDelete: "cascade" }),
+  course_id: varchar("courses_id", { length: 36 }).references(
+    () => courses.id,
+    { onDelete: "restrict" },
+  ),
+  user_id: varchar("user_id", { length: 36 }).references(() => users.id, {
+    onDelete: "cascade",
+  }),
   transaction_id: varchar("transaction_id", { length: 255 }).notNull().unique(),
-  enrolledAt: timestamp("enrolled_at").defaultNow().notNull()
+  enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });

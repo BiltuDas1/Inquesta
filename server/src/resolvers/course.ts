@@ -52,38 +52,45 @@ export async function getCourseInfo(id: string) {
   return null;
 }
 
-export async function enrollToCourse(access_token: string, courseID: string, transactionID: string) {
+export async function enrollToCourse(
+  access_token: string,
+  courseID: string,
+  transactionID: string,
+) {
   const accessToken = await JWT.toAccessToken(access_token);
   if (accessToken === null) {
     return {
       success: false,
-      message: "invalid access_token"
-    }
+      message: "invalid access_token",
+    };
   }
 
-  const result = await db.selectDistinct().from(users).where(eq(users.id, accessToken.getSub()));
+  const result = await db
+    .selectDistinct()
+    .from(users)
+    .where(eq(users.id, accessToken.getSub()));
   if (result.length === 0) {
     return {
       success: false,
-      message: "user not found"
-    }
+      message: "user not found",
+    };
   }
 
   try {
     await db.insert(courseEnrollments).values({
       course_id: courseID,
       user_id: accessToken.getSub(),
-      transaction_id: transactionID
-    })
+      transaction_id: transactionID,
+    });
 
     return {
       success: true,
-      message: "record added successfully"
-    }
+      message: "record added successfully",
+    };
   } catch (error) {
     return {
       success: false,
-      message: "failed to add record"
-    }
+      message: "failed to add record",
+    };
   }
 }
