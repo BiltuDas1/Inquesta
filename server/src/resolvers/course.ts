@@ -1,7 +1,8 @@
 import { desc, eq, lte } from "drizzle-orm";
 import { db, redis, s3PublicEndpoint } from "../config.ts";
-import { courses } from "../databases/schema.ts";
+import { courseEnrollments, courses, users } from "../databases/schema.ts";
 import type { Course } from "../types/course.ts";
+import { JWT } from "../utils/jwt/jwt.ts";
 
 export async function addCourse(data: Course) {
   await db.insert(courses).values(data);
@@ -49,4 +50,40 @@ export async function getCourseInfo(id: string) {
     return result[0];
   }
   return null;
+}
+
+export async function enrollToCourse(access_token: string, courseID: string, transactionID: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token"
+    }
+  }
+
+  const result = await db.selectDistinct().from(users).where(eq(users.id, accessToken.getSub()));
+  if (result.length === 0) {
+    return {
+      success: false,
+      message: "user not found"
+    }
+  }
+
+  try {
+    await db.insert(courseEnrollments).values({
+      course_id: courseID,
+      user_id: accessToken.getSub(),
+      transaction_id: transactionID
+    })
+
+    return {
+      success: true,
+      message: "record added successfully"
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: "failed to add record"
+    }
+  }
 }
