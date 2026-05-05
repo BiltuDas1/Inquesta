@@ -13,9 +13,9 @@
 //       : course.description;
 
 //   return (
-//     <Link 
-//       to={`/course/${course.id}`} 
-   
+//     <Link
+//       to={`/course/${course.id}`}
+
 //     >
 //     <div className="flex gap-3 md:gap-4 py-4 border-b border-[#3b4a44] group cursor-pointer hover:bg-[#181c22] rounded-lg px-2 -mx-2 transition-colors">
 //       {/* Thumbnail - Layout preserved exactly */}
@@ -106,10 +106,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
   return (
     <div className="relative flex gap-3 md:gap-4 py-4 border-b border-[#3b4a44] group cursor-pointer hover:bg-[#181c22] rounded-lg px-2 -mx-2 transition-colors">
-      
       <div className="flex-shrink-0 w-20 h-16 sm:w-28 sm:h-20 md:w-65 md:h-38 overflow-hidden rounded z-0">
         <img
-          src={course.icon}
+          src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
           alt={course.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -122,11 +121,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       </div>
 
       <div className="flex-1 min-w-0">
-        
         {/* THE CHANGE: Use course.id directly in the URL */}
         <h3 className="text-sm sm:text-base font-bold text-[#dfe2eb] leading-snug line-clamp-2 group-hover:text-[#6fffd9] transition-colors font-headline">
-          <Link 
-            to={`/course/${course.id}`} 
+          <Link
+            to={`/course/${course.id}`}
             className="outline-none before:absolute before:inset-0 before:z-10"
           >
             {course.title}
@@ -146,18 +144,22 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             {course.level}
           </span>
           <span className="text-xs text-[#84948e] flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]">schedule</span>
+            <span className="material-symbols-outlined text-[14px]">
+              schedule
+            </span>
             {course.duration}
           </span>
         </div>
 
         <div className="flex items-center gap-2 mt-2 md:hidden">
-          <span className="text-sm font-bold text-[#dfe2eb]">₹{course.price}</span>
+          <span className="text-sm font-bold text-[#dfe2eb]">
+            ₹{course.price}
+          </span>
         </div>
 
-        <button 
+        <button
           onClick={(e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             console.log(`Enrolling in ID: ${course.id}`);
           }}
           className="relative z-20 mt-3 md:hidden w-full border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
@@ -167,10 +169,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       </div>
 
       <div className="hidden md:flex flex-col items-end justify-start flex-shrink-0 w-24">
-        <span className="text-lg font-bold text-[#dfe2eb]">₹{course.price}</span>
-        <button 
+        <span className="text-lg font-bold text-[#dfe2eb]">
+          ₹{course.price}
+        </span>
+        <button
           onClick={(e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             console.log(`Enrolling in ID: ${course.id}`);
           }}
           className="relative z-20 mt-auto border border-[#00e5bc] text-[#00e5bc] text-xs font-bold px-4 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity"
