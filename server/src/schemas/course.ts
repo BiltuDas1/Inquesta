@@ -210,10 +210,13 @@ builder.queryField("getCourseInfo", (t) =>
 
 builder.mutationField("enrollCourse", (t) =>
   t.field({
+    authScopes: {
+      isValidSession: true,
+    },
     type: GQLResponse,
     args: {
       courseID: t.arg.string({ required: true }),
-      transactionID: t.arg.string({ required: true })
+      transactionID: t.arg.string({ required: true }),
     },
     resolve: async (_parent, args, context) => {
       if (context.req.headers.cookie === undefined) {
@@ -231,7 +234,11 @@ builder.mutationField("enrollCourse", (t) =>
         };
       }
 
-      return await enrollToCourse(cookieObj["access_token"], args.courseID, args.transactionID);
-    }
-  })
+      return await enrollToCourse(
+        cookieObj["access_token"],
+        args.courseID,
+        args.transactionID,
+      );
+    },
+  }),
 );

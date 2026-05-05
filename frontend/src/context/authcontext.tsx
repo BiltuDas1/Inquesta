@@ -1,3 +1,5 @@
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
   createContext,
   useContext,
@@ -6,14 +8,14 @@ import {
   type ReactNode,
 } from "react";
 
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 // ── Types ──
 export interface User {
   firstname: string;
   lastname: string;
-  email: string;
   role: string;
-
 }
 
 interface AuthContextType {
@@ -23,9 +25,24 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// ── GraphQL Operations ──
+// ── GraphQL Query ──
+const IS_LOGGED_IN = gql`
+  query IsLoggedIn {
+    isLoggedIn {
+      data {
+        firstname
+        lastname
+        role
+      }
+    }
+  }
+`;
 
-
+interface IsLoggedInResponse {
+  isLoggedIn: {
+    data: User | null;
+  };
+}
 
 // Create the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,73 +50,57 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setLoading] = useState(true);
-  
+
   const navigate = useNavigate();
-  const client = useApolloClient(); // Used to clear cache on logout
+  const client = useApolloClient();
 
-  // 1. Optimistic Load from LocalStorage (keeps UI snappy)
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  // 2. Network Verification (The Standard Approach)
-  // This runs on app load. If the server says we are logged in, update state.
-  // If the server returns an error (401), wipe the user and force them to login.
-  useQuery(GET_ME, {
-    fetchPolicy: "network-only", // Always ask the server, don't trust cache here
-    onCompleted: (data) => {
-      if (data?.me?.success && data?.me?.data) {
-        setUser(data.me.data);
-        localStorage.setItem("user", JSON.stringify(data.me.data));
-      } else {
-        // Token might be invalid or expired
-        handleSessionExpired();
-      }
-      setLoading(false);
-    },
-    onError: () => {
-      handleSessionExpired();
-      setLoading(false);
-    },
+  const {
+    data,
+    loading: queryLoading,
+    error,
+  } = useQuery<IsLoggedInResponse>(IS_LOGGED_IN, {
+    fetchPolicy: "network-only",
   });
 
-  const [logoutMutation] = useMutation(LOGOUT_USER);
+  // Handle Success / Data Changes
+  useEffect(() => {
+    if (!queryLoading) {
+      if (data?.isLoggedIn?.data) {
+        setUser(data.isLoggedIn.data);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    }
+  }, [data, queryLoading]);
 
-  // Helper to cleanly wipe session data
-  const handleSessionExpired = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
+  // Handle Errors
+  useEffect(() => {
+    if (error) {
+      console.error("Auth verification failed:", error);
+      setUser(null);
+      setLoading(false);
+    }
+  }, [error]);
 
-  // ── Actions ──
+  // Call this function after a successful Login Mutation
   const login = (userData: User) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
   };
 
+  // Call this function when the user clicks "Logout"
   const logout = async () => {
     try {
-      // 1. Tell backend to destroy the session/cookie
-      const { data } = await logoutMutation();
+      setUser(null);
 
-      if (data?.logout?.success) {
-        toast.success(data.logout.message || "Logged out successfully");
-      }
-    } catch (error: any) {
-      console.error("Logout failed on server:", error);
-      toast.error(error.message || "Failed to log out properly.");
-    } finally {
-      // 2. Wipe local state
-      handleSessionExpired();
-      
-      // 3. CRITICAL: Clear Apollo Cache so private data isn't exposed
-      await client.resetStore(); 
-      
-      // 4. Redirect
+      // Clear Apollo Cache so the next user doesn't see cached private data
+      await client.clearStore();
+
+      toast.success("Logged out successfully");
       navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out properly.");
     }
   };
 
@@ -110,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// ── Custom Hook ──
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
