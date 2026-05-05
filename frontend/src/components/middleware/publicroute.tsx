@@ -1,14 +1,29 @@
 import { Navigate, Outlet } from "react-router";
+import { useAuth } from "../../context/authcontext";
 
 const PublicRoute = () => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  // Grab the user and loading state from your global context
+  const { user, isLoading } = useAuth();
 
-  // ✅ If already logged in → redirect
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-[#6fffd9] font-body">
+        Checking session...
+      </div>
+    );
   }
 
-  // Not logged in → allow login/signup
+  if (user) {
+ 
+    if (user.role === "admin") {
+      return <Navigate to="/dashboard" replace />;
+    } else {
+      return <Navigate to="/courses" replace />;
+    }
+  }
+
+
   return <Outlet />;
 };
 
