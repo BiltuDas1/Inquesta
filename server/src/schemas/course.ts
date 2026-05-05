@@ -2,6 +2,7 @@ import { builder, GQLResponse } from "../libraries/builder.ts";
 import {
   addCourse,
   deleteCourse,
+  enrollToCourse,
   getCourseInfo,
   getCourses,
   updateCourse,
@@ -11,6 +12,7 @@ import {
   type Course,
   type CourseLevel,
 } from "../types/course.ts";
+import * as cookie from "cookie";
 
 builder.mutationField("courseAdd", (t) =>
   t.field({
@@ -204,4 +206,32 @@ builder.queryField("getCourseInfo", (t) =>
       }
     },
   }),
+);
+
+builder.mutationField("enrollCourse", (t) =>
+  t.field({
+    type: GQLResponse,
+    args: {
+      courseID: t.arg.string({ required: true }),
+      transactionID: t.arg.string({ required: true })
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await enrollToCourse(cookieObj["access_token"], args.courseID, args.transactionID);
+    }
+  })
 );

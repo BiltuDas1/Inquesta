@@ -214,7 +214,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               Buy individual course
             </p>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-[#6fffd9]">₹</span>
+              <span className="material-symbols-outlined">currency_rupee</span>
               <span className="text-3xl font-black text-[#dfe2eb] tracking-tight">
                 {course.price}
               </span>
