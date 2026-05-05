@@ -52,16 +52,16 @@ export default function CourseListingPage() {
   const [page, setPage] = useState<number>(initialPage);
   const [cursorHistory, setCursorHistory] = useState<string[]>([]);
 
-  // --- 2. URL Update Helper ---
+  // ---  URL Update Helper ---
   const updateURL = (newPage: number, newCursor: string | null) => {
     const url = new URL(window.location.href);
     url.searchParams.set("p", newPage.toString());
 
-    if (newCursor) {
-      url.searchParams.set("cursor", newCursor);
-    } else {
-      url.searchParams.delete("cursor");
-    }
+    // if (newCursor) {
+    //   url.searchParams.set("cursor", newCursor);
+    // } else {
+    //   url.searchParams.delete("cursor");
+    // }
     window.history.pushState({}, "", url.toString());
   };
 
@@ -74,7 +74,7 @@ export default function CourseListingPage() {
   const appError =
     data?.courseGet?.success === false ? data.courseGet.message : null;
 
-  // --- 4. Pagination Data Prep ---
+  // ---  Pagination Data Prep ---
   // Filter out the duplicate item caused by the backend's 'lte' logic
   const cleanCourses = courses.filter((course) => course.id !== lastID);
 
@@ -82,9 +82,9 @@ export default function CourseListingPage() {
   const displayCourses = cleanCourses.slice(0, 10);
 
   // If the backend gave us the max limit (11), we assume a next page MIGHT exist
-  const hasNextPage = courses.length > 10;
+  const hasNextPage = cleanCourses.length > 10;
 
-  // --- 5. Pagination Handlers ---
+  // ---  Pagination Handlers ---
   const handleNextPage = () => {
     if (hasNextPage && displayCourses.length > 0) {
       const newCursor = displayCourses[displayCourses.length - 1].id;

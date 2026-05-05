@@ -1,4 +1,10 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router";
 import Home from "./pages/homepage";
 import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
@@ -17,6 +23,7 @@ import OnboardingRoute from "./components/middleware/onboardingroute";
 import CourseDetails from "./components/courses/coursedetails";
 import MainLayout from "./components/layout/mainlayout";
 import CourseListingPage from "./components/layout/courselistingpage";
+import DashboardLayout from "./components/layout/dashboardlayout";
 
 // For handling global session
 const GlobalSessionHandler = () => {
@@ -52,11 +59,27 @@ function App() {
         <GlobalSessionHandler />
         <Routes>
           <Route path="/" element={<Home />} />
-  
+
           {/* LAYOUT */}
           <Route element={<MainLayout />}>
             <Route path="/courses" element={<CourseListingPage />} />
-               <Route path="/course/:courseID" element={<CourseDetails />} />
+            <Route path="/course/:courseID" element={<CourseDetails />} />
+          </Route>
+
+          {/* Dashboard */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+
+            <Route path="courses" element={<DashboardPage />} />
+            <Route
+              path="students"
+              element={<div>Students page coming soon !!</div>}
+            />
+            <Route
+              path="analytics"
+              element={<div>Analytics coming soon</div>}
+            />
+            <Route path="settings" element={<div>Settings coming soon</div>} />
           </Route>
 
           {/* Block if already logged in */}
