@@ -33,7 +33,6 @@ export default function GoogleLogin() {
         if (data.loginWithGoogle.success) {
           const userData = data.loginWithGoogle.data;
           console.log(userData);
-          // console.log(userData.email);
           if (userData) {
             login({
               firstname: userData.firstname || "",
@@ -42,12 +41,7 @@ export default function GoogleLogin() {
               role: userData.role,
             });
           }
-          // Route based on role
-          if (userData?.role === "admin") {
-            navigate("/dashboard");
-          } else {
-            navigate("/courses");
-          }
+          navigate("/onboard", { replace: true });
         }
         // Capture the specific GraphQL validation message (e.g., "Token expired")
         else {

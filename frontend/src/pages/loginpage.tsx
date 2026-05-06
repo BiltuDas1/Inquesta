@@ -54,6 +54,8 @@ interface UserInfoData {
   };
 }
 
+
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -116,16 +118,10 @@ export default function LoginPage() {
         }
 
         // Extract the success boolean from the new query
-        const isDetailsFilled = userInfoData.getUserInfo.success;
-
-        // Save user session (localStorage or Context/Redux)
-        // localStorage.setItem(
-        //   "user",
-        //   JSON.stringify({
-        //     email: userData.email,
-        //     role: userData.role,
-        //   }),
-        // );
+        // const isDetailsFilled = userInfoData.getUserInfo.success;
+        const isDetailsFilled = !userInfoError && userInfoData?.getUserInfo?.success === true;
+        console.log("Isfilled",isDetailsFilled)
+      
         login({
           firstname: userData.firstname || "",
           lastname: userData.lastname || "",
@@ -421,9 +417,10 @@ export default function LoginPage() {
 
           <button
             onClick={handleSave}
+            disabled={loading}
             className="w-full cursor-pointer bg-[#00d4aa] hover:bg-[#00bfa0] text-[#061212] font-bold text-[13.5px] tracking-wide py-2.75 rounded-[11px] mb-3.5 transition-colors duration-200"
           >
-            Sign In →
+           {loading ? "Signing In..." : "Sign In →"}
           </button>
 
           <p className="text-center text-[#3a6060] text-[12.5px] mb-3">

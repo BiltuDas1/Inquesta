@@ -31,7 +31,6 @@ interface EnrollCourseVariables {
   transactionID: string;
 }
 export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
-  // State for the modal and the transaction input
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
 

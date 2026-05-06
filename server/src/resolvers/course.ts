@@ -94,3 +94,41 @@ export async function enrollToCourse(
     };
   }
 }
+
+export async function getAllEnrolledCourses(access_token: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token",
+    };
+  }
+
+  try {
+    const result = await db
+      .select({
+        id: courses.id,
+        title: courses.title,
+        description: courses.description,
+        price: courses.price,
+        level: courses.level,
+        duration: courses.duration,
+        instructorName: courses.instructorName,
+        iconName: courses.iconName,
+      })
+      .from(courseEnrollments)
+      .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))
+      .where(eq(courseEnrollments.user_id, accessToken.getSub()));
+
+    return {
+      success: true,
+      message: "enrollment list fetched successfully",
+      data: result,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "failed to read enrollment information from database",
+    };
+  }
+}

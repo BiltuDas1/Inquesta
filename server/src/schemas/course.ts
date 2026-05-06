@@ -3,6 +3,7 @@ import {
   addCourse,
   deleteCourse,
   enrollToCourse,
+  getAllEnrolledCourses,
   getCourseInfo,
   getCourses,
   updateCourse,
@@ -239,6 +240,34 @@ builder.mutationField("enrollCourse", (t) =>
         args.courseID,
         args.transactionID,
       );
+    },
+  }),
+);
+
+builder.queryField("enrolledCourses", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: courseResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await getAllEnrolledCourses(cookieObj["access_token"]);
     },
   }),
 );
