@@ -445,17 +445,21 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
                   </span>
                 </p>
 
-                <div className="bg-white p-3 rounded-xl flex items-center justify-center mx-auto mb-6 w-48 h-48 border-4 border-[#3b4a44] shadow-inner">
+                <div className="  flex items-center justify-center mx-auto mb-6 w-82 h-82  relative overflow-hidden">
                   <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=your_upi_id@bank&pn=Inquesta&am=${course.price}&cu=INR`}
+                    src={`https://duqixbhmkyazlglmfopk.supabase.co/storage/v1/object/public/Inquesta/uploads/inquesta_QR.jpg`}
                     alt="Payment QR Code"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain select-none" 
+                    style={{
+                      imageRendering: "pixelated", 
+                    }}
+                    draggable={false} 
+                    crossOrigin="anonymous"
                   />
                 </div>
-
                 <div className="mb-6">
                   <label className="block text-xs font-bold text-[#84948e] uppercase tracking-wider mb-2">
-                    Transaction / UTR ID
+                    Transaction ID
                   </label>
                   <input
                     type="text"
