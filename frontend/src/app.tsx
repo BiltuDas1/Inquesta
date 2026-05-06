@@ -1,8 +1,4 @@
-import {
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router";
+import { Route, Routes, useNavigate } from "react-router";
 import Home from "./pages/homepage";
 import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
@@ -53,48 +49,52 @@ function App() {
       {/* For toast message */}
       <Toaster position="top-right"></Toaster>
 
-     
-        <GlobalSessionHandler />
-        <Routes>
-  {/* 1. PUBLIC ROUTES (No auth needed) */}
-  <Route path="/" element={<Home />} />
-  
-  <Route element={<MainLayout />}>
-    <Route path="/courses" element={<CourseListingPage />} />
-    <Route path="/course/:courseID" element={<CourseDetails />} />
-  </Route>
+      <GlobalSessionHandler />
+      <Routes>
+        {/* 1. PUBLIC ROUTES (No auth needed) */}
+        <Route path="/" element={<Home />} />
 
-  {/* 2. AUTH ROUTES (Blocked if already logged in) */}
-  <Route element={<PublicRoute />}>
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/register" element={<SignupPage />} />
-    <Route path="/auth/google" element={<GoogleLogin />} />
-    <Route path="/check-email" element={<CheckEmailPage />} />
-    <Route path="/email/verify" element={<VerifyEmailPage />} />
-  </Route>
+        <Route element={<MainLayout />}>
+          <Route path="/courses" element={<CourseListingPage />} />
+          <Route path="/course/:courseID" element={<CourseDetails />} />
+        </Route>
 
-  {/* 3. ONBOARDING ROUTE */}
-  <Route element={<OnboardingRoute />}>
-    <Route path="/onboard" element={<UserDataCollectionForm />} />
-  </Route>
+        {/* 2. AUTH ROUTES (Blocked if already logged in) */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<SignupPage />} />
+          <Route path="/auth/google" element={<GoogleLogin />} />
+          <Route path="/check-email" element={<CheckEmailPage />} />
+          <Route path="/email/verify" element={<VerifyEmailPage />} />
+        </Route>
 
-  {/* 4. PROTECTED ROUTES (Must be logged in as Admin) */}
-  <Route element={<ProtectedRoute />}>
-    {/* Move your entire DashboardLayout INSIDE the ProtectedRoute */}
-    <Route path="/dashboard" element={<DashboardLayout />}>
-      {/* Use index to load DashboardPage by default when visiting /dashboard */}
-      <Route index element={<DashboardPage />} />
-      <Route path="courses" element={<DashboardPage />} />
-      <Route path="students" element={<div>Students page coming soon !!</div>} />
-      <Route path="analytics" element={<div>Analytics coming soon</div>} />
-      <Route path="settings" element={<div>Settings coming soon</div>} />
-    </Route>
-  </Route>
+        {/* 3. ONBOARDING ROUTE */}
+        <Route element={<OnboardingRoute />}>
+          <Route path="/onboard" element={<UserDataCollectionForm />} />
+        </Route>
 
-  {/* 5. CATCH-ALL */}
-  <Route path="*" element={<NotFoundPage />} />
-</Routes>
-    
+        {/* 4. PROTECTED ROUTES (Must be logged in as Admin) */}
+        <Route element={<ProtectedRoute />}>
+          {/* Move your entire DashboardLayout INSIDE the ProtectedRoute */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            {/* Use index to load DashboardPage by default when visiting /dashboard */}
+            <Route index element={<DashboardPage />} />
+            <Route path="courses" element={<DashboardPage />} />
+            <Route
+              path="students"
+              element={<div>Students page coming soon !!</div>}
+            />
+            <Route
+              path="analytics"
+              element={<div>Analytics coming soon</div>}
+            />
+            <Route path="settings" element={<div>Settings coming soon</div>} />
+          </Route>
+        </Route>
+
+        {/* 5. CATCH-ALL */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </>
   );
 }

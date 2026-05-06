@@ -14,6 +14,7 @@ const PublicRoute = () => {
     );
   }
 
+  console.log("PublicRoute:", { user, isLoading });
   if (user) {
  
     if (user.role === "admin") {

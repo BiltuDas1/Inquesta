@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading: queryLoading,
     error,
   } = useQuery<IsLoggedInResponse>(IS_LOGGED_IN, {
-    fetchPolicy: "network-only",
+   fetchPolicy: "cache-and-network"
   });
 
   // Handle Success / Session Check
