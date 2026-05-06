@@ -94,7 +94,7 @@ export async function loginUser(
       password: users.password,
       role: users.role,
       firstname: users.firstname,
-      lastname: users.lastname
+      lastname: users.lastname,
     })
     .from(users)
     .where(and(eq(users.isActive, true), eq(users.email, email)))
@@ -166,7 +166,7 @@ export async function googleLogin(payload: GoogleUser) {
         id: users.id,
         role: users.role,
         firstname: users.firstname,
-        lastname: users.lastname
+        lastname: users.lastname,
       })
       .from(users)
       .where(eq(users.email, payload.email))
@@ -211,7 +211,7 @@ export async function googleLogin(payload: GoogleUser) {
           id: users.id,
           role: users.role,
           firstname: users.firstname,
-          lastname: users.lastname
+          lastname: users.lastname,
         })
         .from(users)
         .where(eq(users.email, payload.email))

@@ -8,8 +8,8 @@ export type User = {
 };
 
 export type UserRole = {
-  firstname: string,
-  lastname: string | null,
+  firstname: string;
+  lastname: string | null;
   email: string;
   role: string;
 };
