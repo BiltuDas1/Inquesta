@@ -41,7 +41,7 @@ export default function GoogleLogin() {
               role: userData.role,
             });
           }
-          
+
           if (userData.role === "admin") {
             navigate("/dashboard", { replace: true });
           } else {

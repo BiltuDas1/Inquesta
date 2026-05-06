@@ -1,6 +1,5 @@
 import type { Level } from "../types/courses";
 
-
 export const PER_PAGE = 10;
 export const LEVELS: Level[] = ["Beginner", "Intermediate", "Advanced"];
 

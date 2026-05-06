@@ -449,11 +449,11 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
                   <img
                     src={`https://duqixbhmkyazlglmfopk.supabase.co/storage/v1/object/public/Inquesta/uploads/inquesta_QR.jpg`}
                     alt="Payment QR Code"
-                    className="w-full h-full object-contain select-none" 
+                    className="w-full h-full object-contain select-none"
                     style={{
-                      imageRendering: "pixelated", 
+                      imageRendering: "pixelated",
                     }}
-                    draggable={false} 
+                    draggable={false}
                     crossOrigin="anonymous"
                   />
                 </div>

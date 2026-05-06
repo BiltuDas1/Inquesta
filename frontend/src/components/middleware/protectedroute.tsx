@@ -2,7 +2,6 @@ import { Navigate, Outlet } from "react-router";
 import { useAuth } from "../../context/authcontext";
 
 const ProtectedRoute = () => {
-
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -13,7 +12,6 @@ const ProtectedRoute = () => {
     );
   }
 
-
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -21,7 +19,6 @@ const ProtectedRoute = () => {
   if (user.role !== "admin") {
     return <Navigate to="/courses" replace />;
   }
-
 
   return <Outlet />;
 };

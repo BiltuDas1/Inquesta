@@ -5,7 +5,6 @@ const PublicRoute = () => {
   // Grab the user and loading state from your global context
   const { user, isLoading } = useAuth();
 
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-[#6fffd9] font-body">
@@ -16,7 +15,7 @@ const PublicRoute = () => {
 
   // console.log("PublicRoute:", { user, isLoading });
   // if (user) {
- 
+
   //   if (user.role === "admin") {
   //     return <Navigate to="/dashboard" replace />;
   //   } else {

@@ -255,7 +255,7 @@
 //                 onNext={handleNextPage}
 //                 onPrevious={handlePreviousPage}
 //                 onJumpToFirst={handleJumpToFirst}
-              
+
 //               />
 //             )}
 //           </main>
@@ -264,7 +264,6 @@
 //     </div>
 //   );
 // }
-
 
 import { useMemo, useState } from "react";
 import { CourseCard } from "../courses/coursecard";
@@ -331,7 +330,7 @@ export default function CourseListingPage() {
     } else {
       url.searchParams.delete("cursor");
     }
-    
+
     // Use replaceState to avoid cluttering the browser's back button history
     window.history.replaceState({}, "", url.toString());
   };
@@ -344,7 +343,8 @@ export default function CourseListingPage() {
   });
 
   const courses: Course[] = data?.courseGet?.data || [];
-  const appError = data?.courseGet?.success === false ? data.courseGet.message : null;
+  const appError =
+    data?.courseGet?.success === false ? data.courseGet.message : null;
 
   // --- 4. Pagination Data Prep ---
   // Filter out the duplicate item caused by the backend's 'lte' logic
@@ -369,10 +369,10 @@ export default function CourseListingPage() {
   };
 
   const handleJumpToFirst = () => {
-    setLastID(null); 
-    setCursorHistory([]); 
-    setPage(1); 
-    updateURL(1, null); 
+    setLastID(null);
+    setCursorHistory([]);
+    setPage(1);
+    updateURL(1, null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

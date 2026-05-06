@@ -3,7 +3,6 @@ import { useQuery } from "@apollo/client/react";
 import { useAuth } from "../../context/authcontext";
 import { Navigate, Outlet } from "react-router";
 
-
 const GET_USER_INFO = gql`
   query getUserInfo {
     getUserInfo {
@@ -22,10 +21,13 @@ export default function OnboardingRoute() {
   // 1. Grab user and auth loading state from global context
   const { user, isLoading: isAuthLoading } = useAuth();
 
-
-  const { data, loading: isQueryLoading, error } = useQuery<UserInfoData>(GET_USER_INFO, {
+  const {
+    data,
+    loading: isQueryLoading,
+    error,
+  } = useQuery<UserInfoData>(GET_USER_INFO, {
     fetchPolicy: "network-only",
-    skip: !user || isAuthLoading, 
+    skip: !user || isAuthLoading,
   });
 
   if (isAuthLoading || isQueryLoading) {
@@ -42,7 +44,6 @@ export default function OnboardingRoute() {
 
   const isDetailsFilled = data?.getUserInfo?.success;
 
-  
   if (user.role === "admin") {
     return <Navigate to="/dashboard" replace />;
   }

@@ -60,7 +60,8 @@ const GlobalSessionHandler = () => {
     };
 
     window.addEventListener("session-expired", handleSessionExpired);
-    return () => window.removeEventListener("session-expired", handleSessionExpired);
+    return () =>
+      window.removeEventListener("session-expired", handleSessionExpired);
   }, [navigate, location]);
 
   return null;
@@ -102,10 +103,7 @@ function App() {
             {/* Use index to load DashboardPage by default when visiting /dashboard */}
             <Route index element={<DashboardPage />} />
             <Route path="courses" element={<DashboardPage />} />
-            <Route
-              path="students"
-              element={<EnrollmentsDashboard/>}
-            />
+            <Route path="students" element={<EnrollmentsDashboard />} />
             <Route
               path="analytics"
               element={<div>Analytics coming soon</div>}

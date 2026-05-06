@@ -6,7 +6,10 @@ interface EnrollmentSuccessProps {
   courseTitle: string;
 }
 
-export const EnrollmentSuccess: React.FC<EnrollmentSuccessProps> = ({ onClose, courseTitle }) => {
+export const EnrollmentSuccess: React.FC<EnrollmentSuccessProps> = ({
+  onClose,
+  courseTitle,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -25,7 +28,7 @@ export const EnrollmentSuccess: React.FC<EnrollmentSuccessProps> = ({ onClose, c
       <h3 className="text-[1.5rem] font-black text-[#dfe2eb] mb-3 font-headline leading-tight">
         Payment Submitted!
       </h3>
-      
+
       <p className="text-[#b9cac3] text-sm mb-2 px-4">
         We've received your transaction details for:
       </p>
@@ -35,9 +38,12 @@ export const EnrollmentSuccess: React.FC<EnrollmentSuccessProps> = ({ onClose, c
 
       <div className="bg-[#10141a]/50 border border-[#3b4a44] rounded-xl p-4 mb-8 mx-2 text-left">
         <div className="flex gap-3 items-start">
-          <span className="material-symbols-outlined text-[#ffb4ab] text-xl">info</span>
+          <span className="material-symbols-outlined text-[#ffb4ab] text-xl">
+            info
+          </span>
           <p className="text-[#84948e] text-[0.8rem] leading-relaxed">
-            Our team is verifying your UTR ID. Your course will be activated automatically within 
+            Our team is verifying your UTR ID. Your course will be activated
+            automatically within
             <span className="text-[#dfe2eb] font-bold"> 2 to 4 hours</span>.
           </p>
         </div>
@@ -45,17 +51,17 @@ export const EnrollmentSuccess: React.FC<EnrollmentSuccessProps> = ({ onClose, c
 
       {/* Actions */}
       <div className="flex flex-col gap-3">
-        <button 
+        <button
           onClick={() => {
             onClose();
             navigate("/courses");
-          }} 
+          }}
           className="w-full bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-black py-4 rounded-xl transition-all shadow-[0_10px_20px_rgba(111,255,217,0.2)] active:scale-95"
         >
           Go to My Dashboard
         </button>
-        
-        <button 
+
+        <button
           onClick={onClose}
           className="text-[#84948e] text-xs font-bold uppercase tracking-widest hover:text-[#dfe2eb] transition-colors py-2"
         >

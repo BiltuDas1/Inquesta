@@ -6,7 +6,7 @@ import { useAuth } from "../../context/authcontext";
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const { logout ,user} = useAuth();
+  const { logout, user } = useAuth();
 
   // Use React Router's location to determine which tab is active based on the URL
   const location = useLocation();

@@ -127,7 +127,14 @@
 //   cache: new InMemoryCache(),
 // });
 
-import { ApolloLink, HttpLink, InMemoryCache, ApolloClient, gql, Observable } from "@apollo/client";
+import {
+  ApolloLink,
+  HttpLink,
+  InMemoryCache,
+  ApolloClient,
+  gql,
+  Observable,
+} from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 
 type PendingRequest = {
@@ -167,16 +174,19 @@ async function triggerRefreshToken(): Promise<void> {
 
   const { data, errors } = await response.json();
   if (errors?.length || !data?.refreshJWT?.success) {
-    throw new Error(data?.refreshJWT?.message || "Refresh failed — session expired");
+    throw new Error(
+      data?.refreshJWT?.message || "Refresh failed — session expired",
+    );
   }
 }
 
 const errorLink = onError(({ error, operation, forward }) => {
   if (!error || !("errors" in error) || !Array.isArray(error.errors)) return;
 
-  const isUnauthorized = error.errors.some((err: any) => 
-    err.message.toLowerCase().includes("not authorized") ||
-    err.message.toLowerCase().includes("unauthorized")
+  const isUnauthorized = error.errors.some(
+    (err: any) =>
+      err.message.toLowerCase().includes("not authorized") ||
+      err.message.toLowerCase().includes("unauthorized"),
   );
 
   if (!isUnauthorized) return;
@@ -205,10 +215,10 @@ const errorLink = onError(({ error, operation, forward }) => {
 
         // 1. Wipe local storage on the network side
         localStorage.removeItem("user");
-        
+
         // 2. Unconditionally tell the React app that the session died
         window.dispatchEvent(new CustomEvent("session-expired"));
-        
+
         observer.error(err);
       });
   });

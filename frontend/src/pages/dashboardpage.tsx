@@ -9,8 +9,6 @@ import {
   REQUEST_UPLOAD,
 } from "../graphql/coursesOps";
 
-
-
 import { NumberedCursorPagination } from "../components/ui/cursorpagination";
 import type { Course } from "../types/courses";
 import { formatLevel, LEVELS, PER_PAGE } from "../utils/courseutils";
@@ -56,8 +54,10 @@ export default function DashboardPage() {
 
   const [requestUpload] =
     useMutation<RequestUploadMutationResult>(REQUEST_UPLOAD);
-  const [addCourse, { loading: adding }] = useMutation<AddCourseMutationResult>(ADD_COURSE);
-  const [updateCourse, { loading: updating }] = useMutation<UpdateCourseMutationResult>(UPDATE_COURSE);
+  const [addCourse, { loading: adding }] =
+    useMutation<AddCourseMutationResult>(ADD_COURSE);
+  const [updateCourse, { loading: updating }] =
+    useMutation<UpdateCourseMutationResult>(UPDATE_COURSE);
   const [deleteCourse] = useMutation<DeleteCourseMutationResult>(DELETE_COURSE);
 
   // ── Data Processing & Filtering ──
@@ -143,14 +143,13 @@ export default function DashboardPage() {
           finalIcon = filename;
         }
       }
- 
+
       const courseVars = {
         ...formData,
         instructor_name: formData.instructorName,
         price: Number(formData.price) || 0,
         icon_name: finalIcon,
       };
-
 
       if (modal === "add") {
         const { data } = await addCourse({ variables: courseVars });
@@ -159,21 +158,25 @@ export default function DashboardPage() {
         } else {
           throw new Error(data?.courseAdd?.message || "Failed to add course.");
         }
-
       } else if (modal != null) {
-        const { data } = await updateCourse({ variables: { ...courseVars, id: String(modal) } });
-        
+        const { data } = await updateCourse({
+          variables: { ...courseVars, id: String(modal) },
+        });
+
         // Check backend success flag and use the backend message
         if (data?.courseUpdate?.success) {
-          toast.success(data.courseUpdate.message || "Course updated successfully!");
+          toast.success(
+            data.courseUpdate.message || "Course updated successfully!",
+          );
         } else {
-          throw new Error(data?.courseUpdate?.message || "Failed to update course.");
+          throw new Error(
+            data?.courseUpdate?.message || "Failed to update course.",
+          );
         }
       }
 
       await refetch();
       setModal(null);
-    
     } catch (e) {
       console.error("Error saving course:", e);
     }
