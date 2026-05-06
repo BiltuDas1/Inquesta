@@ -153,14 +153,6 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
             </div>
           </div>
 
-          {/* Enroll Button */}
-          {/* <button
-            onClick={handleEnroll}
-            className="w-full bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline active:scale-[0.98]"
-          >
-            Enroll Now
-
-          </button> */}
           {/* Conditional Button Rendering */}
           {isAlreadyEnrolled ? (
             <button
@@ -179,7 +171,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
             </button>
           )}
         </div>
-         <p>{`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}${course.icon}`}</p>
+     
              
       </aside>
 
