@@ -9,8 +9,8 @@ export const Footer = () => {
         </div>
         <div className="flex flex-wrap justify-center gap-8 text-on-surface-variant">
           {[
-            { name: "Terms of Service", url: "", new_tab: false },
-            { name: "Privacy Policy", url: "", new_tab: false },
+            // { name: "Terms of Service", url: "", new_tab: false },
+            // { name: "Privacy Policy", url: "", new_tab: false },
             {
               name: "Instagram",
               url: "https://www.instagram.com/inquestasolutions/",
@@ -19,6 +19,11 @@ export const Footer = () => {
             {
               name: "LinkedIn",
               url: "https://www.linkedin.com/company/inquesta-solutions/",
+              new_tab: true,
+            },
+            {
+              name: "X",
+              url: "https://x.com/InquestaSol",
               new_tab: true,
             },
           ].map((data) => (
