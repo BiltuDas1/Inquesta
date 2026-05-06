@@ -6,12 +6,15 @@ import { useNavigate } from "react-router";
 import GoogleSVG from "../components/svg/google";
 import { google_login } from "../utils/googleauth";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/authcontext";
 
 // QUERY to get user data
 const LOGIN_QUERY = gql`
   query login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       data {
+        firstname
+        lastname
         email
         role
       }
@@ -25,6 +28,8 @@ const LOGIN_QUERY = gql`
 interface LoginData {
   login: {
     data: {
+      firstname: string;
+      lastname: string;
       email: string;
       role: string;
     } | null;
@@ -53,6 +58,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -62,12 +69,9 @@ export default function LoginPage() {
 
   // Initialize Apollo Lazy Query
   const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
-  const [fetchUserInfo] = useLazyQuery<UserInfoData>(
-    GET_USER_INFO,
-    {
-      fetchPolicy: "network-only",
-    },
-  );
+  const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
+    fetchPolicy: "network-only",
+  });
 
   // Triggered when the input will be changed
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,25 +116,23 @@ export default function LoginPage() {
         }
 
         // Extract the success boolean from the new query
-        const isDetailsFilled = userInfoData.getUserInfo.success;
+        // const isDetailsFilled = userInfoData.getUserInfo.success;
+        const isDetailsFilled =
+          !userInfoError && userInfoData?.getUserInfo?.success === true;
+        console.log("Isfilled", isDetailsFilled);
 
-        // Save user session (localStorage or Context/Redux)
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            email: userData.email,
-            role: userData.role,
-          }),
-        );
+        login({
+          firstname: userData.firstname || "",
+          lastname: userData.lastname || "",
+          email: userData.email,
+          role: userData.role,
+        });
 
-        if (!isDetailsFilled) {
-          navigate("/onboard");
-        }
-        // Role-based redirection
-        else if (userData.role === "admin") {
+        if (userData.role === "admin") {
           navigate("/dashboard");
+        } else if (!isDetailsFilled) {
+          navigate("/onboard");
         } else {
-          // Assuming default users go to courses
           navigate("/courses");
         }
 
@@ -411,9 +413,10 @@ export default function LoginPage() {
 
           <button
             onClick={handleSave}
+            disabled={loading}
             className="w-full cursor-pointer bg-[#00d4aa] hover:bg-[#00bfa0] text-[#061212] font-bold text-[13.5px] tracking-wide py-2.75 rounded-[11px] mb-3.5 transition-colors duration-200"
           >
-            Sign In →
+            {loading ? "Signing In..." : "Sign In →"}
           </button>
 
           <p className="text-center text-[#3a6060] text-[12.5px] mb-3">
