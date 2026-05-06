@@ -56,7 +56,7 @@ interface UserInfoData {
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
+  // const [remember, setRemember] = useState(false);
 
   const { login } = useAuth();
 
