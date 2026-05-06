@@ -4,7 +4,7 @@ import { useAuth } from "../../context/authcontext";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { gql } from "@apollo/client";
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
 
 interface PurchaseCardProps {
   course: Course;
@@ -30,18 +30,49 @@ interface EnrollCourseVariables {
   courseID: string;
   transactionID: string;
 }
+
+// Query to get user's enrolled courses
+const GET_ENROLLED_COURSES = gql`
+  query enrolledCourses {
+    enrolledCourses {
+      data {
+        id
+      }
+    }
+  }
+`;
+
+interface EnrolledCoursesResponse {
+  enrolledCourses: {
+    data: Array<{
+      id: string;
+    }>;
+  };
+}
+
 export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
 
-  const [enrollCourse, { loading: isSubmitting }] = useMutation<
-    EnrollCourseResponse,
-    EnrollCourseVariables
-  >(ENROLL_COURSE_MUTATION);
+ 
 
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // 1. Fetch enrolled courses (skip if guest)
+  const { data: enrollmentData, loading: checkingEnrollment } = useQuery<EnrolledCoursesResponse>(GET_ENROLLED_COURSES, {
+    skip: !user,
+  });
+
+  // 2. Check if the current course ID exists in the user's list
+  const isAlreadyEnrolled = enrollmentData?.enrolledCourses?.data?.some(
+    (item: any) => item.id === course.id
+  );
+
+   const [enrollCourse, { loading: isSubmitting }] = useMutation<
+    EnrollCourseResponse,
+    EnrollCourseVariables
+  >(ENROLL_COURSE_MUTATION);
   const handleEnroll = () => {
     //  Check if the user is authenticated
     if (!user) {
@@ -111,7 +142,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
           {/* Clean Price Display */}
           <div className="mb-5 px-1">
             <p className="text-[#84948e] text-sm font-headline font-semibold mb-1">
-              Buy individual course
+             {isAlreadyEnrolled ? "You own this course" : "Buy individual course"}
             </p>
             <div className="flex items-baseline gap-1">
               <span className="material-symbols-outlined">currency_rupee</span>
@@ -122,12 +153,30 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
           </div>
 
           {/* Enroll Button */}
-          <button
+          {/* <button
             onClick={handleEnroll}
             className="w-full bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline active:scale-[0.98]"
           >
             Enroll Now
-          </button>
+
+          </button> */}
+          {/* Conditional Button Rendering */}
+          {isAlreadyEnrolled ? (
+            <button
+              onClick={() => navigate(`/courses`)} 
+              className="w-full bg-[#181c22] border-2 border-[#6fffd9] text-[#6fffd9] font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline hover:bg-[#6fffd9] hover:text-[#00382c]"
+            >
+              Go to Dashboard
+            </button>
+          ) : (
+            <button
+              onClick={handleEnroll}
+              disabled={checkingEnrollment}
+              className="w-full bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline active:scale-[0.98] disabled:opacity-50"
+            >
+              {checkingEnrollment ? "Checking..." : "Enroll Now"}
+            </button>
+          )}
         </div>
       </aside>
 
@@ -191,7 +240,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               disabled={isSubmitting} // ⬅️ USED HERE: Prevents double-clicking
               className="w-full flex justify-center items-center gap-2 bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(111,255,217,0.2)] text-base font-headline active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait"
             >
-              {/* ⬅️ USED HERE: Changes text dynamically */}
+              {/* ⬅ USED HERE: Changes text dynamically */}
               {isSubmitting ? "Submitting..." : "Submit for Verification"}
             </button>
           </div>
