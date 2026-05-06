@@ -143,12 +143,12 @@ export default function DashboardPage() {
           finalIcon = filename;
         }
       }
-
+ 
       const courseVars = {
         ...formData,
         instructor_name: formData.instructorName,
         price: Number(formData.price) || 0,
-        icon: finalIcon,
+        icon_name: finalIcon,
       };
 
 

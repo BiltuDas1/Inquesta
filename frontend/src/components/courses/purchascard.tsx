@@ -128,6 +128,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
         <div className="bg-[#1c2026] border border-[#3b4a44] rounded-2xl shadow-2xl p-5 font-body relative">
           {/* Course Image */}
           <div className="w-full h-40 mb-5 rounded-xl overflow-hidden border border-[#2a342f] bg-[#181c22]">
+           
             <img
               src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
               alt={course.title}
@@ -178,6 +179,8 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
             </button>
           )}
         </div>
+         <p>{`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}${course.icon}`}</p>
+             
       </aside>
 
       {/* --- PAYMENT MODAL --- */}
@@ -244,6 +247,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               {isSubmitting ? "Submitting..." : "Submit for Verification"}
             </button>
           </div>
+          
         </div>
       )}
     </>

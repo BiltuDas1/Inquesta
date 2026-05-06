@@ -125,3 +125,5 @@ export default function CourseModal({ editing, onClose, onSave, isSubmitting }: 
     </div>
   );
 }
+
+
