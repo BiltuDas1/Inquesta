@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from "react-router";
+import { Route, Routes, useLocation, useNavigate } from "react-router";
 import Home from "./pages/homepage";
 import SignupPage from "./pages/signuppage";
 import LoginPage from "./pages/loginpage";
@@ -20,29 +20,50 @@ import CourseListingPage from "./components/layout/courselistingpage";
 import DashboardLayout from "./components/layout/dashboardlayout";
 
 // For handling global session
+// const GlobalSessionHandler = () => {
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const handleSessionExpired = async () => {
+//       // Clear apollo cache
+//       await client.clearStore();
+
+//       toast.error("Your session has expired. Please log in again.");
+//       navigate("/login");
+//     };
+
+//     window.addEventListener("session-expired", handleSessionExpired);
+
+//     // Cleanup resources
+//     return () => {
+//       window.removeEventListener("session-expired", handleSessionExpired);
+//     };
+//   }, [navigate]);
+
+//   return null;
+// };
+
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleSessionExpired = async () => {
-      // Clear apollo cache
       await client.clearStore();
 
-      toast.error("Your session has expired. Please log in again.");
-      navigate("/login");
+      // Only kick them out with an error if they were trying to view a protected page
+      if (location.pathname.startsWith("/dashboard")) {
+        toast.error("Your session has expired. Please log in again.");
+        navigate("/login", { replace: true });
+      }
     };
 
     window.addEventListener("session-expired", handleSessionExpired);
-
-    // Cleanup resources
-    return () => {
-      window.removeEventListener("session-expired", handleSessionExpired);
-    };
-  }, [navigate]);
+    return () => window.removeEventListener("session-expired", handleSessionExpired);
+  }, [navigate, location]);
 
   return null;
 };
-
 function App() {
   return (
     <>
