@@ -3,15 +3,42 @@ import type { Course } from "../../types/courses";
 import { useAuth } from "../../context/authcontext";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 
 interface PurchaseCardProps {
   course: Course;
 }
 
+const ENROLL_COURSE_MUTATION = gql`
+  mutation enrollCourse($courseID: String!, $transactionID: String!) {
+    enrollCourse(courseID: $courseID, transactionID: $transactionID) {
+      message
+      success
+    }
+  }
+`;
+
+interface EnrollCourseResponse {
+  enrollCourse: {
+    success: boolean;
+    message: string;
+  };
+}
+
+interface EnrollCourseVariables {
+  courseID: string;
+  transactionID: string;
+}
 export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
   // State for the modal and the transaction input
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
+
+  const [enrollCourse, { loading: isSubmitting }] = useMutation<
+    EnrollCourseResponse,
+    EnrollCourseVariables
+  >(ENROLL_COURSE_MUTATION);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -21,29 +48,48 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
     if (!user) {
       toast.error("Please log in to enroll in this course.");
       navigate("/login");
-      return; 
+      return;
     }
 
     //.If authenticated, open the payment modal
     setIsModalOpen(true);
   };
 
-  const handleSubmitPayment = () => {
+  // Handle Payment
+  const handleSubmitPayment = async () => {
     if (!transactionId.trim()) {
-      alert("Please enter a valid Transaction / UTR ID.");
+      toast.error("Please enter a valid Transaction / UTR ID.");
       return;
     }
 
-    console.log(
-      `Verifying payment for: ${course.title} | ID: ${transactionId}`,
-    );
-    // Add your actual backend API call here to save the enrollment request
+    try {
+      const response = await enrollCourse({
+        variables: {
+          courseID: String(course.id),
+          transactionID: transactionId.trim(),
+        },
+      });
 
-    alert(
-      "Payment details submitted successfully! We will verify and activate your course.",
-    );
-    setIsModalOpen(false);
-    setTransactionId("");
+      if (response.data) {
+        const { success, message } = response.data.enrollCourse;
+
+        if (success) {
+          toast.success(message || "Payment details submitted successfully!");
+          setIsModalOpen(false);
+          setTransactionId("");
+        } else {
+          toast.error(message || "Failed to submit payment details.");
+        }
+        navigate("/courses")
+      } else {
+        toast.error("No response received from the server.");
+      }
+    } catch (error: any) {
+      console.error("Enrollment error:", error);
+      toast.error(
+        error.message || "An unexpected error occurred. Please try again.",
+      );
+    }
   };
 
   return (
@@ -129,8 +175,10 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               <label className="block text-xs font-bold text-[#84948e] uppercase tracking-wider mb-2">
                 Transaction / UTR ID
               </label>
+
               <input
                 type="text"
+                disabled={isSubmitting}
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
                 placeholder="e.g. 312345678901"
@@ -141,9 +189,11 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
             {/* Submit Payment Button */}
             <button
               onClick={handleSubmitPayment}
-              className="w-full bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(111,255,217,0.2)] text-base font-headline active:scale-[0.98]"
+              disabled={isSubmitting} // ⬅️ USED HERE: Prevents double-clicking
+              className="w-full flex justify-center items-center gap-2 bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(111,255,217,0.2)] text-base font-headline active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait"
             >
-              Submit for Verification
+              {/* ⬅️ USED HERE: Changes text dynamically */}
+              {isSubmitting ? "Submitting..." : "Submit for Verification"}
             </button>
           </div>
         </div>
