@@ -11,7 +11,6 @@
 // import toast from "react-hot-toast";
 // import { useNavigate } from "react-router";
 
-
 // // ── Types ──
 // export interface User {
 //   firstname: string;
@@ -72,7 +71,6 @@
 //     }
 //   }, []);
 
-
 //   const {
 //     data,
 //     loading: queryLoading,
@@ -97,7 +95,7 @@
 //     }
 //   }, [data, queryLoading]);
 
-//   // Handle Errors 
+//   // Handle Errors
 //   useEffect(() => {
 //     if (error) {
 //       setUser(null);
@@ -128,7 +126,7 @@
 //     } catch (err: any) {
 //       console.error("Logout error:", err);
 //       toast.error(err.message || "Failed to log out properly.", { id: loadingToast });
-      
+
 //       setUser(null);
 //       localStorage.removeItem("user");
 //       navigate("/login");
@@ -150,7 +148,13 @@
 //   return context;
 // };
 
-import { createContext, useContext, useEffect, useState, type ReactNode} from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
@@ -173,7 +177,9 @@ interface AuthContextType {
 
 const IS_LOGGED_IN = gql`
   query isLoggedIn {
-    isLoggedIn { success }
+    isLoggedIn {
+      success
+    }
   }
 `;
 
@@ -185,9 +191,19 @@ interface IsLoggedInResponse {
 
 const LOGOUT_MUTATION = gql`
   mutation logoutUser {
-    logoutUser { success message }
+    logoutUser {
+      success
+      message
+    }
   }
 `;
+
+interface LogoutUserResponse {
+  logoutUser: {
+    success: boolean;
+    message: string;
+  };
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -196,27 +212,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setLoading] = useState(true);
   const navigate = useNavigate();
   const client = useApolloClient();
-  const [logoutUser] = useMutation(LOGOUT_MUTATION);
 
-  // 1. Instant UI Load & Network Listener
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
-    
-    setLoading(false); // Stop loading immediately for fast UI!
+
+    setLoading(false);
 
     const handleSessionExpired = () => {
-      setUser(null); // Wipe React state
+      setUser(null);
       localStorage.removeItem("user");
     };
 
     window.addEventListener("session-expired", handleSessionExpired);
-    return () => window.removeEventListener("session-expired", handleSessionExpired);
+    return () =>
+      window.removeEventListener("session-expired", handleSessionExpired);
   }, []);
 
-  // 2. Background Security Verification
-  const { data, loading: queryLoading, error } = useQuery<IsLoggedInResponse>(IS_LOGGED_IN, {
-    fetchPolicy: "network-only", // Always ask the server, never trust cache here
+  const {
+    data,
+    loading: queryLoading,
+    error,
+  } = useQuery<IsLoggedInResponse>(IS_LOGGED_IN, {
+    fetchPolicy: "network-only",
   });
 
   useEffect(() => {
@@ -233,27 +251,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [error]);
 
-  // 3. Actions
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
+  const [logoutUser] = useMutation<LogoutUserResponse>(LOGOUT_MUTATION);
   const logout = async () => {
-    const loadingToast = toast.loading("Logging out...");
     try {
-      await logoutUser();
+      const response = await logoutUser();
       setUser(null);
       localStorage.removeItem("user");
       await client.clearStore();
-      toast.success("Logged out successfully", { id: loadingToast });
+      toast.success(
+        response.data?.logoutUser?.message || "Logged out successfully",
+      );
       navigate("/login");
     } catch (err: any) {
-      console.error("Logout error:", err);
       setUser(null);
       localStorage.removeItem("user");
+      await client.clearStore();
       navigate("/login");
-      toast.dismiss(loadingToast);
+      toast.error(err.message || "Failed to log out properly.");
     }
   };
 
@@ -266,6 +285,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) throw new Error("useAuth must be used within an AuthProvider");
+  if (context === undefined)
+    throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
