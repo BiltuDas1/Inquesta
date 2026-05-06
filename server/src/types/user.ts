@@ -52,3 +52,10 @@ export const UserInfoObject = builder
       qualification: t.exposeString("qualification"),
     }),
   });
+
+export type UserDetails = {
+  id: string;
+  firstname: string;
+  lastname?: string | null;
+  email: string;
+} & UserInfo;

@@ -4,16 +4,19 @@ import {
   deleteCourse,
   enrollToCourse,
   getAllEnrolledCourses,
+  getAllEnrollments,
   getCourseInfo,
   getCourses,
   updateCourse,
 } from "../resolvers/course.ts";
 import {
+  CourseEnrolledObject,
   CourseObject,
   type Course,
   type CourseLevel,
 } from "../types/course.ts";
 import * as cookie from "cookie";
+import type { UserDetails } from "../types/user.ts";
 
 builder.mutationField("courseAdd", (t) =>
   t.field({
@@ -267,6 +270,55 @@ builder.queryField("enrolledCourses", (t) =>
       }
 
       return await getAllEnrolledCourses(cookieObj["access_token"]);
+    },
+  }),
+);
+
+const coursesResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: (Course & {
+      course_id: string;
+      enrolled_at: number;
+      transaction_id: string;
+    } & UserDetails)[];
+  }>("CoursesResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [CourseEnrolledObject],
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getallEnrollments", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: coursesResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await getAllEnrollments(cookieObj["access_token"]);
     },
   }),
 );
