@@ -130,7 +130,7 @@
 //         <div className="bg-[#1c2026] border border-[#3b4a44] rounded-2xl shadow-2xl p-5 font-body relative">
 //           {/* Course Image */}
 //           <div className="w-full h-40 mb-5 rounded-xl overflow-hidden border border-[#2a342f] bg-[#181c22]">
-           
+
 //             <img
 //               src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
 //               alt={course.title}
@@ -158,7 +158,7 @@
 //           {/* Conditional Button Rendering */}
 //           {isAlreadyEnrolled ? (
 //             <button
-//               onClick={() => navigate(`/courses`)} 
+//               onClick={() => navigate(`/courses`)}
 //               className="w-full bg-[#181c22] border-2 border-[#6fffd9] text-[#6fffd9] font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline hover:bg-[#6fffd9] hover:text-[#00382c]"
 //             >
 //               Go to Dashboard
@@ -173,8 +173,7 @@
 //             </button>
 //           )}
 //         </div>
-     
-             
+
 //       </aside>
 
 //       {/* --- PAYMENT MODAL --- */}
@@ -241,13 +240,12 @@
 //               {isSubmitting ? "Submitting..." : "Submit for Verification"}
 //             </button>
 //           </div>
-          
+
 //         </div>
 //       )}
 //     </>
 //   );
 // };
-
 
 import React, { useState } from "react";
 import type { Course } from "../../types/courses";
@@ -302,28 +300,6 @@ interface EnrolledCoursesResponse {
   };
 }
 
-// --- SUCCESS VIEW COMPONENT ---
-// const EnrollmentSuccessView = ({ onClose, courseTitle }: { onClose: () => void; courseTitle: string }) => {
-//   const navigate = useNavigate();
-//   return (
-//     <div className="text-center py-4 animate-in fade-in zoom-in duration-300">
-//       <div className="w-20 h-20 bg-[#6fffd9]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-//         <span className="material-symbols-outlined text-[#6fffd9] text-5xl">check_circle</span>
-//       </div>
-//       <h3 className="text-2xl font-bold text-[#dfe2eb] mb-2 font-headline">Enrollment Initiated!</h3>
-//       <p className="text-[#b9cac3] text-sm mb-8 leading-relaxed px-2">
-//         Your payment details for <span className="text-[#6fffd9] font-bold">"{courseTitle}"</span> have been submitted. Our team will verify the transaction within <span className="text-[#6fffd9] font-semibold">2-4 hours</span>.
-//       </p>
-//       <button 
-//         onClick={() => { onClose(); navigate("/courses"); }} 
-//         className="w-full bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(111,255,217,0.2)] text-base font-headline"
-//       >
-//         Go to My Dashboard
-//       </button>
-//     </div>
-//   );
-// };
-
 export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false); // ── Added State ──
@@ -333,13 +309,14 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
   const navigate = useNavigate();
 
   // 1. Fetch enrolled courses (skip if guest)
-  const { data: enrollmentData, loading: checkingEnrollment } = useQuery<EnrolledCoursesResponse>(GET_ENROLLED_COURSES, {
-    skip: !user,
-  });
+  const { data: enrollmentData, loading: checkingEnrollment } =
+    useQuery<EnrolledCoursesResponse>(GET_ENROLLED_COURSES, {
+      skip: !user,
+    });
 
   // 2. Check if the current course ID exists in the user's list
   const isAlreadyEnrolled = enrollmentData?.enrolledCourses?.data?.some(
-    (item: any) => String(item.id) === String(course.id)
+    (item: any) => String(item.id) === String(course.id),
   );
 
   const [enrollCourse, { loading: isSubmitting }] = useMutation<
@@ -384,7 +361,9 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
       }
     } catch (error: any) {
       console.error("Enrollment error:", error);
-      toast.error(error.message || "An unexpected error occurred. Please try again.");
+      toast.error(
+        error.message || "An unexpected error occurred. Please try again.",
+      );
     }
   };
 
@@ -398,14 +377,17 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               alt={course.title}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.currentTarget.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600";
+                e.currentTarget.src =
+                  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600";
               }}
             />
           </div>
 
           <div className="mb-5 px-1">
             <p className="text-[#84948e] text-sm font-headline font-semibold mb-1">
-              {isAlreadyEnrolled ? "You own this course" : "Buy individual course"}
+              {isAlreadyEnrolled
+                ? "You own this course"
+                : "Buy individual course"}
             </p>
             <div className="flex items-baseline gap-1">
               <span className="material-symbols-outlined">currency_rupee</span>
@@ -417,8 +399,9 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
 
           {isAlreadyEnrolled ? (
             <button
-              onClick={() => navigate(`/courses`)} 
-              className="w-full bg-[#181c22] border-2 border-[#6fffd9] text-[#6fffd9] font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline hover:bg-[#6fffd9] hover:text-[#00382c]"
+              onClick={() => navigate(`/courses`)}
+              // Changed bg-transparent/border to solid bg-[#6fffd9] and dark text
+              className="w-full bg-[#6fffd9] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(111,255,217,0.3)] text-base font-headline hover:bg-[#5cebc5] hover:scale-[1.02] active:scale-[0.98]"
             >
               Go to Dashboard
             </button>
@@ -452,9 +435,14 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
                   <span className="material-symbols-outlined">close</span>
                 </button>
 
-                <h3 className="text-2xl font-bold text-[#dfe2eb] mb-1 font-headline">Complete Payment</h3>
+                <h3 className="text-2xl font-bold text-[#dfe2eb] mb-1 font-headline">
+                  Complete Payment
+                </h3>
                 <p className="text-[#b9cac3] text-sm mb-6">
-                  Scan the QR code to pay <span className="text-[#6fffd9] font-bold">₹{course.price}</span>
+                  Scan the QR code to pay{" "}
+                  <span className="text-[#6fffd9] font-bold">
+                    ₹{course.price}
+                  </span>
                 </p>
 
                 <div className="bg-white p-3 rounded-xl flex items-center justify-center mx-auto mb-6 w-48 h-48 border-4 border-[#3b4a44] shadow-inner">
@@ -466,7 +454,9 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
                 </div>
 
                 <div className="mb-6">
-                  <label className="block text-xs font-bold text-[#84948e] uppercase tracking-wider mb-2">Transaction / UTR ID</label>
+                  <label className="block text-xs font-bold text-[#84948e] uppercase tracking-wider mb-2">
+                    Transaction / UTR ID
+                  </label>
                   <input
                     type="text"
                     disabled={isSubmitting}
@@ -487,8 +477,11 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               </>
             ) : (
               <EnrollmentSuccess
-                courseTitle={course.title} 
-                onClose={() => { setIsModalOpen(false); setShowSuccess(false); }} 
+                courseTitle={course.title}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setShowSuccess(false);
+                }}
               />
             )}
           </div>
