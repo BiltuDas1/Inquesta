@@ -1,4 +1,3 @@
-import React from "react";
 import type { Course, Level } from "../../types/courses";
 import LevelBadge from "./levelbadge";
 
