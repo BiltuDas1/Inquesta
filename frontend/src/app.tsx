@@ -18,6 +18,7 @@ import CourseDetails from "./components/courses/coursedetails";
 import MainLayout from "./components/layout/mainlayout";
 import CourseListingPage from "./components/layout/courselistingpage";
 import DashboardLayout from "./components/layout/dashboardlayout";
+import EnrollmentsDashboard from "./components/courses/enrollmenttable";
 
 // For handling global session
 // const GlobalSessionHandler = () => {
@@ -103,7 +104,7 @@ function App() {
             <Route path="courses" element={<DashboardPage />} />
             <Route
               path="students"
-              element={<div>Students page coming soon !!</div>}
+              element={<EnrollmentsDashboard/>}
             />
             <Route
               path="analytics"
