@@ -82,15 +82,15 @@ export default function UserDataCollectionForm() {
       if (data?.updateUserInfo?.success) {
         // If it's an auto-save, we might just want to show a small toast without redirecting
         if (isAutoSave) {
-          toast.success("Number auto-saved!");
+          // toast.success("Number auto-saved!");
         } else {
-          toast.success(
-            data.updateUserInfo.message || "Details saved successfully!",
-          );
+          // toast.success(
+          //   data.updateUserInfo.message || "Details saved successfully!",
+          // );
           navigate("/courses");
         }
       } else {
-        toast.error(data?.updateUserInfo?.message || "Failed to save details.");
+        // toast.error(data?.updateUserInfo?.message || "Failed to save details.");
       }
     } catch (error: any) {
       console.error("Mutation error:", error);

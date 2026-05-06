@@ -16,7 +16,7 @@ export default function Home() {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-none shadow-2xl shadow-black/40">
         <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto font-headline tracking-tight relative">
           <div className="text-2xl font-bold tracking-tighter text-on-surface flex gap-2">
-            <img className="h-8" src="/favicon.svg" />
+            <img className="h-8" src="/favicon.svg" alt="logo" />
             <span className="text-white">Inquesta</span>
           </div>
 
@@ -29,62 +29,61 @@ export default function Home() {
           </button>
 
           {/* 3. Navigation Links and Action Buttons Container */}
-          {/* Added dynamic classes to handle flex-col on mobile and flex-row on desktop */}
           <div
-            className={`${isMenuOpen ? "flex" : "hidden"} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 `}
+            className={`${
+              isMenuOpen ? "flex" : "hidden"
+            } lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 `}
           >
-            {/* Nav Links */}
+            {/* --- NAV LINKS --- */}
+            {/* Everyone sees the Courses link */}
             <a
               className="text-on-surface-variant hover:text-on-surface transition-colors"
               href="/courses"
             >
               Courses
             </a>
-            {/* <a
-              className="text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
-            >
-              Programs
-            </a>
-            <a
-              className="text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
-            >
-              About
-            </a> */}
+
+            {/* Only Admin users see the Dashboard link */}
+            {user?.role === "admin" && (
+              <a
+                className="text-on-surface-variant hover:text-on-surface transition-colors"
+                href="/dashboard"
+              >
+                Dashboard
+              </a>
+            )}
 
             {/* Divider for mobile */}
             <div className="w-full h-px bg-outline-variant lg:hidden"></div>
 
-            {/* Buttons */}
+            {/* --- BUTTONS & AVATAR --- */}
             <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
-              <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
-                {!user ? (
+              {!user ? (
+                /* User is NOT logged in: Show Login and Get Started */
+                <>
                   <button
                     onClick={() => navigate("/login")}
                     className="text-on-surface-variant hover:text-on-surface transition-colors font-medium"
                   >
                     Login
                   </button>
-                ) : (
-                  <div
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 font-semibold uppercase"
-                    title={`${user.firstname}${user.lastname ? ` ${user.lastname}` : ""}`}
+                  <button
+                    onClick={() => navigate("/register")}
+                    className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto"
                   >
-                    {/* Grabs the first letter of the first name */}
-                    {user.firstname?.charAt(0)}
-                    {/* Grabs the first letter of the last name, if it exists */}
-                    {user.lastname?.charAt(0)}
-                  </div>
-                )}
-              </div>
-
-              <button
-                onClick={() => navigate("/register")}
-                className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto"
-              >
-                Get Started
-              </button>
+                    Get Started
+                  </button>
+                </>
+              ) : (
+                /* User IS logged in: Show Initial Avatar */
+                <div
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 font-semibold uppercase"
+                  title={`${user.firstname}${user.lastname ? ` ${user.lastname}` : ""}`}
+                >
+                  {user.firstname?.charAt(0)}
+                  {user.lastname?.charAt(0)}
+                </div>
+              )}
             </div>
           </div>
         </div>

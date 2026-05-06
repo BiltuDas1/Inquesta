@@ -4,8 +4,8 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../context/authcontext";
 
 export default function Navbar() {
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  // const [searchFocused, setSearchFocused] = useState(false);
+  // const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const { user, logout } = useAuth();
@@ -38,7 +38,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
-        setIsMobileSearchOpen(false);
+        // setIsMobileSearchOpen(false);
       }
     };
     window.addEventListener("resize", handleResize);
@@ -62,8 +62,8 @@ export default function Navbar() {
     }
   };
 
-  const iconBtnClass =
-    "relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors";
+  // const iconBtnClass =
+  ("relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors");
 
   return (
     <>
@@ -75,7 +75,7 @@ export default function Navbar() {
             <Logo />
           </div>
           <div className="flex items-center gap-1">
-            <button
+            {/* <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={iconBtnClass}
             >
@@ -88,7 +88,7 @@ export default function Navbar() {
               >
                 search
               </span>
-            </button>
+            </button> */}
 
             {user ? (
               <div className="relative" ref={mobileRef}>
@@ -139,7 +139,7 @@ export default function Navbar() {
 
           {/* Search bar */}
           <div className="flex-1 min-w-[200px] max-w-[640px] relative mx-2 lg:mx-6">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#84948e] pointer-events-none flex">
+            {/* <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#84948e] pointer-events-none flex">
               <span
                 className="material-symbols-outlined"
                 style={{
@@ -160,7 +160,7 @@ export default function Navbar() {
                   ? "border-[#6fffd9] shadow-[0_0_0_3px_rgba(111,255,217,0.12)]"
                   : "border-[#3b4a44]"
               }`}
-            />
+            /> */}
           </div>
 
           {/* Desktop Auth Group */}
@@ -209,7 +209,7 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Search Overlay */}
-      {isMobileSearchOpen && (
+      {/* {isMobileSearchOpen && (
         <div className="fixed inset-0 z-[200] bg-[#181c22] flex flex-col md:hidden">
           <div className="flex items-center px-4 h-16 border-b border-[#3b4a44] gap-3 shrink-0">
             <span
@@ -232,7 +232,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 }
