@@ -41,7 +41,12 @@ export default function GoogleLogin() {
               role: userData.role,
             });
           }
-          navigate("/onboard", { replace: true });
+          
+          if (userData.role === "admin") {
+            navigate("/dashboard", { replace: true });
+          } else {
+            navigate("/onboard", { replace: true });
+          }
         }
         // Capture the specific GraphQL validation message (e.g., "Token expired")
         else {

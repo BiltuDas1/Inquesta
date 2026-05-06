@@ -42,10 +42,12 @@ export default function OnboardingRoute() {
 
   const isDetailsFilled = data?.getUserInfo?.success;
 
-  console.log(isDetailsFilled)
+  
+  if (user.role === "admin") {
+    return <Navigate to="/dashboard" replace />;
+  }
   if (isDetailsFilled) {
-    const targetRoute = user.role === "admin" ? "/dashboard" : "/courses";
-    return <Navigate to={targetRoute} replace />;
+    return <Navigate to="/courses" replace />;
   }
 
   return <Outlet />;

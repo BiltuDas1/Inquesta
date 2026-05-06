@@ -54,8 +54,6 @@ interface UserInfoData {
   };
 }
 
-
-
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -119,9 +117,10 @@ export default function LoginPage() {
 
         // Extract the success boolean from the new query
         // const isDetailsFilled = userInfoData.getUserInfo.success;
-        const isDetailsFilled = !userInfoError && userInfoData?.getUserInfo?.success === true;
-        console.log("Isfilled",isDetailsFilled)
-      
+        const isDetailsFilled =
+          !userInfoError && userInfoData?.getUserInfo?.success === true;
+        console.log("Isfilled", isDetailsFilled);
+
         login({
           firstname: userData.firstname || "",
           lastname: userData.lastname || "",
@@ -129,14 +128,11 @@ export default function LoginPage() {
           role: userData.role,
         });
 
-        if (!isDetailsFilled) {
-          navigate("/onboard");
-        }
-        // Role-based redirection
-        else if (userData.role === "admin") {
+        if (userData.role === "admin") {
           navigate("/dashboard");
+        } else if (!isDetailsFilled) {
+          navigate("/onboard");
         } else {
-          // Assuming default users go to courses
           navigate("/courses");
         }
 
@@ -420,7 +416,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full cursor-pointer bg-[#00d4aa] hover:bg-[#00bfa0] text-[#061212] font-bold text-[13.5px] tracking-wide py-2.75 rounded-[11px] mb-3.5 transition-colors duration-200"
           >
-           {loading ? "Signing In..." : "Sign In →"}
+            {loading ? "Signing In..." : "Sign In →"}
           </button>
 
           <p className="text-center text-[#3a6060] text-[12.5px] mb-3">
