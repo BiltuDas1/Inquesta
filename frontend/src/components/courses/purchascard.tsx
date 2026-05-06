@@ -1,164 +1,8 @@
-// // import React, { useState } from 'react';
-// // import type { Course } from '../../types/courses';
-
-// // interface PurchaseCardProps {
-// //   course: Course;
-// // }
-
-// // export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
-// //   // State for toggling between Subscription and Individual Purchase
-// //   const [selectedPlan, setSelectedPlan] = useState<'sub' | 'buy'>('buy');
-
-// //   const handleEnroll = () => {
-// //     console.log(`Enrolling via: ${selectedPlan}`);
-// //     // Add your checkout or enrollment logic here
-// //   };
-
-// //   return (
-// //     <aside className="w-full md:w-[340px] lg:w-[400px] flex-shrink-0 order-1 md:order-2 z-10 md:sticky md:top-24 lg:top-28 md:-mt-[180px] lg:-mt-[280px]">
-// //       {/* Inner styling container - Surface Container Color */}
-// //       <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl shadow-2xl p-5 lg:p-8 font-body">
-
-// //         {/* Course Thumbnail with Fallback */}
-// //         <div className="w-full h-40 sm:h-48 mb-6 rounded-lg overflow-hidden border border-[#3b4a44] bg-[#181c22]">
-// //           <img
-// //               src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
-// //             alt={course.title}
-// //             className="w-full h-full object-cover"
-// //             onError={(e) => {
-// //               e.currentTarget.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600";
-// //             }}
-// //           />
-// //         </div>
-
-// //         <div className="space-y-4">
-// //           {/* Option 1: Subscribe and Save */}
-// //           {/* <div
-// //             onClick={() => setSelectedPlan('sub')}
-// //             className={`p-4 lg:p-5 border rounded-xl cursor-pointer transition-all duration-300 ${
-// //               selectedPlan === 'sub'
-// //                 ? 'border-[#343d96] bg-[#181c22]'
-// //                 : 'border-[#3b4a44] bg-[#1c2026] hover:bg-[#181c22]'
-// //             }`}
-// //           >
-// //             <div className="flex items-start gap-3 sm:gap-4">
-
-// //               <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-// //                 selectedPlan === 'sub' ? 'border-[#343d96]' : 'border-[#84948e]'
-// //               }`}>
-// //                 {selectedPlan === 'sub' && <div className="w-2.5 h-2.5 rounded-full bg-[#343d96]"></div>}
-// //               </div>
-
-// //               <div className="flex-1">
-// //                 <p className="font-bold text-[#dfe2eb] text-sm sm:text-base font-headline">Subscribe and save</p>
-// //                 <p className="text-xl sm:text-2xl font-black text-[#dfe2eb] mt-1 font-headline">
-// //                   From ₹450.00
-// //                 </p>
-// //                 <ul className="mt-3 lg:mt-4 space-y-2 lg:space-y-3 text-xs sm:text-sm text-[#b9cac3]">
-// //                   <li className="flex items-start sm:items-center gap-2 sm:gap-3">
-// //                     <span className="material-symbols-outlined text-[14px] sm:text-base mt-0.5 sm:mt-0 text-[#6fffd9]">verified_user</span>
-// //                     Full Platform Access
-// //                   </li>
-// //                 </ul>
-// //               </div>
-// //             </div>
-// //           </div> */}
-
-// //           {/* Option 2: Buy Individual Course */}
-// //           <div
-// //             onClick={() => setSelectedPlan('buy')}
-// //             className={`p-4 lg:p-5 border rounded-xl cursor-pointer transition-all duration-300 ${
-// //               selectedPlan === 'buy'
-// //                 ? 'border-[#343d96] bg-[#181c22]'
-// //                 : 'border-[#3b4a44] bg-[#1c2026] hover:bg-[#181c22]'
-// //             }`}
-// //           >
-// //             <div className="flex items-start gap-3 sm:gap-4">
-// //               <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-// //                 selectedPlan === 'buy' ? 'border-[#343d96]' : 'border-[#84948e]'
-// //               }`}>
-// //                 {selectedPlan === 'buy' && <div className="w-2.5 h-2.5 rounded-full bg-[#343d96]"></div>}
-// //               </div>
-
-// //               <div className="flex-1">
-// //                 <p className="font-bold text-[#dfe2eb] text-sm sm:text-base font-headline">Buy individual course</p>
-// //                 <p className="text-xl sm:text-2xl font-black text-[#dfe2eb] mt-1 font-headline">
-// //                   ₹{course.price}
-// //                 </p>
-// //               </div>
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* CTA Button - Secondary Container Color */}
-// //         <button
-// //           onClick={handleEnroll}
-// //           className="w-full mt-6 bg-[#343d96] hover:bg-[#bdc2ff] hover:text-[#1b247f] text-[#dfe2eb] font-black py-3.5 rounded-lg transition-all shadow-lg text-base lg:text-lg font-headline active:scale-[0.98]"
-// //         >
-// //           {selectedPlan === 'sub' ? 'Start Free Trial' : 'Enroll Now'}
-// //         </button>
-
-// //         <p className="text-center text-[10px] text-[#84948e] mt-4 uppercase tracking-widest font-headline">
-// //           30-Day Money-Back Guarantee
-// //         </p>
-// //       </div>
-// //     </aside>
-// //   );
-// // };
-
-// import React from 'react';
-// import type { Course } from '../../types/courses';
-
-// interface PurchaseCardProps {
-//   course: Course;
-// }
-
-// export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
-//   const handleEnroll = () => {
-//     console.log(`Enrolling in: ${course.title}`);
-//     // Add your checkout or enrollment logic here
-//   };
-
-//   return (
-//     <aside className="w-full md:w-[300px] lg:w-[340px] flex-shrink-0 order-1 md:order-2 z-10 md:sticky md:top-24 lg:top-28 md:-mt-[180px] lg:-mt-[280px]">
-//       <div className="bg-[#1c2026] border border-[#3b4a44] rounded-2xl shadow-2xl p-5 font-body">
-
-//         {/* Course Image - Scaled down height for a more compact card */}
-//         <div className="w-full h-40 mb-5 rounded-xl overflow-hidden border border-[#2a342f] bg-[#181c22]">
-//           <img
-//             src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
-//             alt={course.title}
-//             className="w-full h-full object-cover"
-//             onError={(e) => {
-//               e.currentTarget.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600";
-//             }}
-//           />
-//         </div>
-
-//         {/* Clean Price Display - Scaled down text to match new card size */}
-//         <div className="mb-5 px-1">
-//           <p className="text-[#84948e] text-sm font-headline font-semibold mb-1">Buy individual course</p>
-//           <div className="flex items-baseline gap-1">
-//             <span className="text-xl font-bold text-[#6fffd9]">₹</span>
-//             <span className="text-3xl font-black text-[#dfe2eb] tracking-tight">{course.price}</span>
-//           </div>
-//         </div>
-
-//         {/* Beautiful Enroll Button - Slightly shorter padding to match */}
-//         <button
-//           onClick={handleEnroll}
-//           className="w-full bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline active:scale-[0.98]"
-//         >
-//           Enroll Now
-//         </button>
-
-//       </div>
-//     </aside>
-//   );
-// };
-
 import React, { useState } from "react";
 import type { Course } from "../../types/courses";
+import { useAuth } from "../../context/authcontext";
+import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 interface PurchaseCardProps {
   course: Course;
@@ -169,7 +13,18 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
 
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const handleEnroll = () => {
+    //  Check if the user is authenticated
+    if (!user) {
+      toast.error("Please log in to enroll in this course.");
+      navigate("/login");
+      return; 
+    }
+
+    //.If authenticated, open the payment modal
     setIsModalOpen(true);
   };
 
@@ -188,7 +43,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
       "Payment details submitted successfully! We will verify and activate your course.",
     );
     setIsModalOpen(false);
-    setTransactionId(""); // Reset the input
+    setTransactionId("");
   };
 
   return (
