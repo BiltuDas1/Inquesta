@@ -336,7 +336,7 @@ export default function LoginPage() {
                 href="#"
                 className="text-[#00d4aa] hover:text-[#00bfa0] text-[11px] font-medium transition-colors"
               >
-                Forgot password?
+                {/* Forgot password? */}
               </a>
             </div>
             <div className="relative">
@@ -383,15 +383,15 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center gap-2 mt-2.5 mb-4">
-            <div
+            {/* <div
               onClick={() => setRemember((v) => !v)}
               className={`w-3.75 h-3.75 rounded cursor-pointer flex items-center justify-center shrink-0 border transition-all duration-200 ${
                 remember
                   ? "bg-[#00d4aa] border-[#00d4aa]"
                   : "bg-[#0c1a1a] border-[#1e3535]"
               }`}
-            >
-              {remember && (
+            > */}
+              {/* {remember && (
                 <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
                   <path
                     d="M2 6l3 3 5-5"
@@ -401,14 +401,14 @@ export default function LoginPage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              )}
-            </div>
-            <span
+              )} */}
+            {/* </div> */}
+            {/* <span
               onClick={() => setRemember((v) => !v)}
               className="text-[#4a7070] text-[12px] cursor-pointer select-none"
             >
               Keep me signed in
-            </span>
+            </span> */}
           </div>
 
           <button
