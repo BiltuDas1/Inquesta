@@ -24,14 +24,32 @@ export async function getCourses(limit: number, lastID?: string | null) {
       .where(lte(courses.id, lastID))
       .orderBy(desc(courses.id))
       .limit(limit);
-    return response;
+
+    const data = []
+    for (const item of response) {
+      data.push({
+        ...item,
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
+      })
+    }
+
+    return data;
   } else {
     const response = await db
       .select()
       .from(courses)
       .orderBy(desc(courses.id))
       .limit(limit);
-    return response;
+
+    const data = []
+    for (const item of response) {
+      data.push({
+        ...item,
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
+      })
+    }
+
+    return data;
   }
 }
 
