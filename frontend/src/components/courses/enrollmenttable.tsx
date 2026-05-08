@@ -114,12 +114,15 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
                       <div className="font-headline font-semibold text-[0.9rem] text-[#dfe2eb] truncate capitalize">
                         {enrollment.name}
                       </div>
-                      <div className="text-[0.75rem] text-[#b9cac3] mt-[4px] flex items-center gap-1.5 truncate capitalize">
-                        <span className="material-symbols-outlined text-[14px] text-[#84948e]">
-                          school
-                        </span>
-                        {enrollment.qualification}
-                      </div>
+                      {/* Check if qualification exists */}
+                      {enrollment.qualification && (
+                        <div className="text-[0.75rem] text-[#b9cac3] mt-[4px] flex items-center gap-1.5 truncate capitalize">
+                          <span className="material-symbols-outlined text-[14px] text-[#84948e]">
+                            school
+                          </span>
+                          {enrollment.qualification}
+                        </div>
+                      )}
                     </div>
                   </td>
 
@@ -130,21 +133,36 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
                         {enrollment.email}
                       </div>
                       <div className="text-[0.75rem] text-[#b9cac3] mt-[4px] flex items-center gap-3 truncate">
-                        <span className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[13px] text-[#84948e]">
-                            call
+                        {/* Check if phone exists */}
+                        {enrollment.phone && (
+                          <span className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[13px] text-[#84948e]">
+                              call
+                            </span>
+                            {enrollment.phone}
                           </span>
-                          {enrollment.phone}
-                        </span>
+                        )}
 
-                        <span className="text-[#3b4a44]">|</span>
+                        {/* Show separator ONLY if both numbers exist */}
+                        {enrollment.phone && enrollment.whatsapp && (
+                          <span className="text-[#3b4a44]">|</span>
+                        )}
 
-                        <span className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[13px] text-[#6fffd9]">
-                            forum
+                        {/* Check if WhatsApp exists */}
+                        {enrollment.whatsapp && (
+                          <span className="flex items-center gap-1 text-[#6fffd9]">
+                            {/* WhatsApp SVG Icon */}
+                            <svg
+                              width="13"
+                              height="13"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
+                            </svg>
+                            {enrollment.whatsapp}
                           </span>
-                          {enrollment.whatsapp}
-                        </span>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -191,25 +209,28 @@ export default function EnrollmentsDashboard() {
     GET_ALL_ENROLLMENTS,
     {
       fetchPolicy: "cache-and-network",
-    },
+    }
   );
 
   const rawEnrollments = data?.getallEnrollments?.data || [];
 
   // Map the raw backend data into the clean format the Table expects
-  const formattedEnrollments: Enrollment[] = rawEnrollments.map(
-    (item: any) => ({
-      id: item.transaction_id,
-      name: `${item.user_firstname} ${item.user_lastname}`.trim(),
-      email: item.user_email,
-      phone: `+${item.user_phone_country_code} ${item.user_phone_number}`,
-      whatsapp: `+${item.user_whatsapp_country_code} ${item.user_whatsapp_number}`,
-      qualification: item.user_qualification,
-      title: item.course_title,
-      transactionId: item.transaction_id,
-      courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
-    }),
-  );
+  const formattedEnrollments: Enrollment[] = rawEnrollments.map((item: any) => ({
+    id: item.transaction_id,
+    name: `${item.user_firstname} ${item.user_lastname}`.trim(),
+    email: item.user_email,
+    // Add check to ensure the numbers exist, otherwise pass an empty string
+    phone: item.user_phone_number
+      ? `+${item.user_phone_country_code} ${item.user_phone_number}`
+      : "",
+    whatsapp: item.user_whatsapp_number
+      ? `+${item.user_whatsapp_country_code} ${item.user_whatsapp_number}`
+      : "",
+    qualification: item.user_qualification || "",
+    title: item.course_title,
+    transactionId: item.transaction_id,
+    courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
+  }));
 
   return (
     <div className="bg-[#10141a] min-h-screen font-body text-[#dfe2eb] overflow-x-hidden pb-20">
