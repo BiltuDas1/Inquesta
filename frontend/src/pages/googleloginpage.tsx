@@ -45,7 +45,7 @@ export default function GoogleLogin() {
           if (userData.role === "admin") {
             navigate("/dashboard", { replace: true });
           } else {
-            navigate("/onboard", { replace: true });
+            navigate("/courses", { replace: true });
           }
         }
         // Capture the specific GraphQL validation message (e.g., "Token expired")
