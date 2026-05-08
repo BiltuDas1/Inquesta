@@ -57,16 +57,19 @@ export default function UserDataCollectionForm() {
     highestQualification: "",
   });
 
+  // Local state purely to manage the Dropdown's selected value
+  const [selectedQualOption, setSelectedQualOption] = useState<string>("");
+
   // Reusable save function that takes the current state of the form
   const executeSave = async (dataToSave: FormData, isAutoSave = false) => {
     try {
       const phoneCodeInt = parseInt(
         dataToSave.phoneCountryCode.replace("+", ""),
-        10,
+        10
       );
       const whatsappCodeInt = parseInt(
         dataToSave.whatsappCountryCode.replace("+", ""),
-        10,
+        10
       );
 
       const { data } = await updateUserInfo({
@@ -80,33 +83,24 @@ export default function UserDataCollectionForm() {
       });
 
       if (data?.updateUserInfo?.success) {
-        // If it's an auto-save, we might just want to show a small toast without redirecting
-        if (isAutoSave) {
-          // toast.success("Number auto-saved!");
-        } else {
-          // toast.success(
-          //   data.updateUserInfo.message || "Details saved successfully!",
-          // );
+        if (!isAutoSave) {
           navigate("/courses");
         }
-      } else {
-        // toast.error(data?.updateUserInfo?.message || "Failed to save details.");
       }
     } catch (error: any) {
       console.error("Mutation error:", error);
-      toast.error(error.message || "An unexpected error occurred.");
+      if (!isAutoSave) toast.error(error.message || "An unexpected error occurred.");
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
 
     if (name === "phoneNumber" || name === "whatsappNumber") {
       const numericValue = value.replace(/\D/g, "");
 
-      // Create the updated state object immediately so we can pass it to the auto-save
       const updatedFormData = {
         ...formData,
         [name]: numericValue,
@@ -120,15 +114,39 @@ export default function UserDataCollectionForm() {
       return;
     }
 
-    // For other fields like highest qualification
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
+  // Handle the Dropdown change separately
+  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedQualOption(value);
+
+    if (value !== "Other") {
+      setFormData((prev) => ({ ...prev, highestQualification: value }));
+    } else {
+      setFormData((prev) => ({ ...prev, highestQualification: "" }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Validation: At least ONE contact number is required
+    if (!formData.phoneNumber.trim() && !formData.whatsappNumber.trim()) {
+      toast.error("Please provide either a Phone Number or a WhatsApp Number.");
+      return;
+    }
+
+    // 2. Validation: Qualification is mandatory
+    if (!formData.highestQualification.trim()) {
+      toast.error("Please specify your highest qualification.");
+      return;
+    }
+
     // Pass the current state and mark as false for isAutoSave to trigger the redirect
     await executeSave(formData, false);
   };
@@ -155,7 +173,7 @@ export default function UserDataCollectionForm() {
               htmlFor="phoneNumber"
               className="block text-sm font-medium text-[#dfe2eb]"
             >
-              Phone Number
+              Phone Number <span className="text-[#84948e] text-xs font-normal">(Optional if WhatsApp provided)</span>
             </label>
             <div className="flex gap-2">
               <div className="relative w-[100px] shrink-0">
@@ -184,7 +202,6 @@ export default function UserDataCollectionForm() {
                 onChange={handleChange}
                 maxLength={10}
                 placeholder="(555) 000-0000"
-                required
                 className="flex-1 w-full bg-[#262a31] text-[#dfe2eb] border border-[#84948e] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#6fffd9] focus:border-transparent transition-all placeholder-[#b9cac3]/50"
               />
             </div>
@@ -196,7 +213,7 @@ export default function UserDataCollectionForm() {
               htmlFor="whatsappNumber"
               className="block text-sm font-medium text-[#dfe2eb]"
             >
-              WhatsApp Number
+              WhatsApp Number <span className="text-[#84948e] text-xs font-normal">(Optional if Phone provided)</span>
             </label>
             <div className="flex gap-2">
               <div className="relative w-[100px] shrink-0">
@@ -225,31 +242,62 @@ export default function UserDataCollectionForm() {
                 onChange={handleChange}
                 maxLength={10}
                 placeholder="(555) 000-0000"
-                required
                 className="flex-1 w-full bg-[#262a31] text-[#dfe2eb] border border-[#84948e] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#6fffd9] focus:border-transparent transition-all placeholder-[#b9cac3]/50"
               />
             </div>
           </div>
 
-          {/* Highest Qualification Field */}
+          {/* Highest Qualification Field (Dropdown) */}
           <div className="space-y-2">
             <label
-              htmlFor="highestQualification"
+              htmlFor="qualificationSelect"
               className="block text-sm font-medium text-[#dfe2eb]"
             >
-              Highest Qualification
+              Highest Qualification <span className="text-red-400">*</span>
             </label>
-            <input
-              type="text"
-              id="highestQualification"
-              name="highestQualification"
-              value={formData.highestQualification}
-              onChange={handleChange}
-              placeholder="e.g., Higher Secondary Education"
-              required
-              className="w-full bg-[#262a31] text-[#dfe2eb] border border-[#84948e] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#6fffd9] focus:border-transparent transition-all placeholder-[#b9cac3]/50"
-            />
+            <div className="relative">
+              <select
+                id="qualificationSelect"
+                value={selectedQualOption}
+                onChange={handleDropdownChange}
+                className="w-full appearance-none bg-[#262a31] text-[#dfe2eb] border border-[#84948e] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#6fffd9] focus:border-transparent transition-all"
+              >
+                <option value="" disabled>Select Qualification</option>
+                <option value="High School / 12th">High School / 12th</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                <option value="Master's Degree">Master's Degree</option>
+                <option value="PhD">PhD</option>
+                <option value="Other">Other</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#b9cac3]">
+                <span className="material-symbols-outlined text-[18px]">
+                  keyboard_arrow_down
+                </span>
+              </div>
+            </div>
           </div>
+
+          {/* Conditional Text Input for "Other" */}
+          {selectedQualOption === "Other" && (
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300 mt-4">
+              <label
+                htmlFor="highestQualification"
+                className="block text-xs font-medium text-[#b9cac3]"
+              >
+                Please Specify Your Qualification <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="highestQualification"
+                name="highestQualification"
+                value={formData.highestQualification}
+                onChange={handleChange}
+                placeholder="e.g., Associate Degree"
+                className="w-full bg-[#262a31] text-[#dfe2eb] border border-[#84948e] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#6fffd9] focus:border-transparent transition-all placeholder-[#b9cac3]/50"
+              />
+            </div>
+          )}
 
           {/* Submit Button */}
           <button

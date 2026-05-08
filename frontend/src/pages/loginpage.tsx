@@ -115,8 +115,7 @@ export default function LoginPage() {
           return;
         }
 
-        // Extract the success boolean from the new query
-        // const isDetailsFilled = userInfoData.getUserInfo.success;
+   
         const isDetailsFilled =
           !userInfoError && userInfoData?.getUserInfo?.success === true;
         console.log("Isfilled", isDetailsFilled);
@@ -130,9 +129,7 @@ export default function LoginPage() {
 
         if (userData.role === "admin") {
           navigate("/dashboard");
-        } else if (!isDetailsFilled) {
-          navigate("/onboard");
-        } else {
+        }else {
           navigate("/courses");
         }
 
