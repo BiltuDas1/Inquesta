@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Outlet, Link, useLocation, useNavigate } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
 import { Logo } from "../ui/logo";
 import { useAuth } from "../../context/authcontext";
 
@@ -152,7 +152,7 @@ export default function DashboardLayout() {
       </aside>
 
       {/* ── Main Content Wrapper ── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
         <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 bg-[#1c2026] border-b border-[#3b4a44] shrink-0 z-10 transition-all duration-300">
           <div className="flex items-center">
