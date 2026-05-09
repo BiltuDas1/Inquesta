@@ -2,14 +2,21 @@ import { builder, GQLResponse } from "../libraries/builder.ts";
 import {
   addCourse,
   deleteCourse,
-  getCourse,
+  enrollToCourse,
+  getAllEnrolledCourses,
+  getAllEnrollments,
+  getCourseInfo,
+  getCourses,
   updateCourse,
 } from "../resolvers/course.ts";
 import {
+  CourseEnrolledObject,
   CourseObject,
   type Course,
   type CourseLevel,
 } from "../types/course.ts";
+import * as cookie from "cookie";
+import type { UserDetails } from "../types/user.ts";
 
 builder.mutationField("courseAdd", (t) =>
   t.field({
@@ -24,6 +31,7 @@ builder.mutationField("courseAdd", (t) =>
       level: t.arg.string({ required: true }),
       duration: t.arg.string({ required: true }),
       instructor_name: t.arg.string({ required: true }),
+      icon_name: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -31,6 +39,7 @@ builder.mutationField("courseAdd", (t) =>
           ...args,
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
+          iconName: args.icon_name,
         });
         return {
           success: true,
@@ -66,16 +75,24 @@ const courseResponse = builder
 builder.queryField("courseGet", (t) =>
   t.field({
     type: courseResponse,
-    args: {},
+    args: {
+      lastID: t.arg.string({ required: false }),
+      limit: t.arg.int({ required: true }),
+    },
     resolve: async (_parent, args, context) => {
       try {
-        const result = await getCourse();
+        const result: (Course & { id: string })[] = await getCourses(
+          args.limit,
+          args.lastID,
+        );
+
         return {
           success: true,
           message: "course list has been fetched successfully",
           data: result,
         };
       } catch (error) {
+        console.error("Error fetching courses:", error);
         return {
           success: false,
           message: "unable to fetch courses list",
@@ -143,6 +160,166 @@ builder.mutationField("courseUpdate", (t) =>
           message: "failed to update course details",
         };
       }
+    },
+  }),
+);
+
+const singleCourseResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: Course & { id: string };
+  }>("SingleCourseResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: CourseObject,
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getCourseInfo", (t) =>
+  t.field({
+    type: singleCourseResponse,
+    args: {
+      courseID: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      try {
+        const result = await getCourseInfo(args.courseID);
+        if (!result) {
+          return {
+            success: false,
+            message: "course not found",
+          };
+        }
+
+        return {
+          success: true,
+          message: "course information fetched successfully",
+          data: result,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: "internal server error",
+        };
+      }
+    },
+  }),
+);
+
+builder.mutationField("enrollCourse", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GQLResponse,
+    args: {
+      courseID: t.arg.string({ required: true }),
+      transactionID: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await enrollToCourse(
+        cookieObj["access_token"],
+        args.courseID,
+        args.transactionID,
+      );
+    },
+  }),
+);
+
+builder.queryField("enrolledCourses", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: courseResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await getAllEnrolledCourses(cookieObj["access_token"]);
+    },
+  }),
+);
+
+const coursesResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: (Course & {
+      course_id: string;
+      enrolled_at: number;
+      transaction_id: string;
+    } & UserDetails)[];
+  }>("CoursesResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [CourseEnrolledObject],
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getallEnrollments", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: coursesResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await getAllEnrollments(cookieObj["access_token"]);
     },
   }),
 );

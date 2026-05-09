@@ -6,12 +6,15 @@ import { useNavigate } from "react-router";
 import GoogleSVG from "../components/svg/google";
 import { google_login } from "../utils/googleauth";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/authcontext";
 
 // QUERY to get user data
 const LOGIN_QUERY = gql`
   query login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       data {
+        firstname
+        lastname
         email
         role
       }
@@ -25,6 +28,8 @@ const LOGIN_QUERY = gql`
 interface LoginData {
   login: {
     data: {
+      firstname: string;
+      lastname: string;
       email: string;
       role: string;
     } | null;
@@ -33,9 +38,27 @@ interface LoginData {
   };
 }
 
+// Query for check if the user fill-up the user-data collection form or not
+const GET_USER_INFO = gql`
+  query getUserInfo {
+    getUserInfo {
+      success
+    }
+  }
+`;
+
+// Response type of USER INFO
+interface UserInfoData {
+  getUserInfo: {
+    success: boolean;
+  };
+}
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
+  // const [remember, setRemember] = useState(false);
+
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -46,6 +69,9 @@ export default function LoginPage() {
 
   // Initialize Apollo Lazy Query
   const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
+  const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
+    fetchPolicy: "network-only",
+  });
 
   // Triggered when the input will be changed
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,20 +106,30 @@ export default function LoginPage() {
         toast.success(data.login.message || "Logged in successfully!");
         const userData = data.login.data;
 
-        // Save user session (localStorage or Context/Redux)
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            email: userData.email,
-            role: userData.role,
-          }),
-        );
+        // Fetch User Info to check onboarding status
+        const { data: userInfoData, error: userInfoError } =
+          await fetchUserInfo();
 
-        // Role-based redirection
+        if (userInfoError || !userInfoData?.getUserInfo) {
+          toast.error("Failed to verify user details.");
+          return;
+        }
+
+   
+        const isDetailsFilled =
+          !userInfoError && userInfoData?.getUserInfo?.success === true;
+        console.log("Isfilled", isDetailsFilled);
+
+        login({
+          firstname: userData.firstname || "",
+          lastname: userData.lastname || "",
+          email: userData.email,
+          role: userData.role,
+        });
+
         if (userData.role === "admin") {
           navigate("/dashboard");
-        } else {
-          // Assuming default users go to courses
+        }else {
           navigate("/courses");
         }
 
@@ -297,7 +333,7 @@ export default function LoginPage() {
                 href="#"
                 className="text-[#00d4aa] hover:text-[#00bfa0] text-[11px] font-medium transition-colors"
               >
-                Forgot password?
+                {/* Forgot password? */}
               </a>
             </div>
             <div className="relative">
@@ -344,15 +380,15 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center gap-2 mt-2.5 mb-4">
-            <div
+            {/* <div
               onClick={() => setRemember((v) => !v)}
               className={`w-3.75 h-3.75 rounded cursor-pointer flex items-center justify-center shrink-0 border transition-all duration-200 ${
                 remember
                   ? "bg-[#00d4aa] border-[#00d4aa]"
                   : "bg-[#0c1a1a] border-[#1e3535]"
               }`}
-            >
-              {remember && (
+            > */}
+              {/* {remember && (
                 <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
                   <path
                     d="M2 6l3 3 5-5"
@@ -362,21 +398,22 @@ export default function LoginPage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              )}
-            </div>
-            <span
+              )} */}
+            {/* </div> */}
+            {/* <span
               onClick={() => setRemember((v) => !v)}
               className="text-[#4a7070] text-[12px] cursor-pointer select-none"
             >
               Keep me signed in
-            </span>
+            </span> */}
           </div>
 
           <button
             onClick={handleSave}
+            disabled={loading}
             className="w-full cursor-pointer bg-[#00d4aa] hover:bg-[#00bfa0] text-[#061212] font-bold text-[13.5px] tracking-wide py-2.75 rounded-[11px] mb-3.5 transition-colors duration-200"
           >
-            Sign In →
+            {loading ? "Signing In..." : "Sign In →"}
           </button>
 
           <p className="text-center text-[#3a6060] text-[12.5px] mb-3">

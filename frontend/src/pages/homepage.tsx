@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Footer } from "../components/layout/footer";
+import { useAuth } from "../context/authcontext";
 // import { Link } from "react-router";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  const { user } = useAuth();
 
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
@@ -13,7 +16,7 @@ export default function Home() {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-none shadow-2xl shadow-black/40">
         <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto font-headline tracking-tight relative">
           <div className="text-2xl font-bold tracking-tighter text-on-surface flex gap-2">
-            <img className="h-8" src="/favicon.svg" />
+            <img className="h-8" src="/favicon.svg" alt="logo" />
             <span className="text-white">Inquesta</span>
           </div>
 
@@ -26,47 +29,61 @@ export default function Home() {
           </button>
 
           {/* 3. Navigation Links and Action Buttons Container */}
-          {/* Added dynamic classes to handle flex-col on mobile and flex-row on desktop */}
           <div
-            className={`${isMenuOpen ? "flex" : "hidden"} lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 `}
+            className={`${
+              isMenuOpen ? "flex" : "hidden"
+            } lg:flex absolute lg:relative top-full left-0 w-full lg:w-auto bg-background/95 lg:bg-transparent flex-col lg:flex-row items-center p-6 lg:p-0 space-y-6 lg:space-y-0 lg:space-x-8 shadow-xl lg:shadow-none border-b lg:border-none border-outline-variant/50 `}
           >
-            {/* Nav Links */}
+            {/* --- NAV LINKS --- */}
+            {/* Everyone sees the Courses link */}
             <a
               className="text-on-surface-variant hover:text-on-surface transition-colors"
               href="/courses"
             >
               Courses
             </a>
-            <a
-              className="text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
-            >
-              Programs
-            </a>
-            <a
-              className="text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
-            >
-              About
-            </a>
+
+            {/* Only Admin users see the Dashboard link */}
+            {user?.role === "admin" && (
+              <a
+                className="text-on-surface-variant hover:text-on-surface transition-colors"
+                href="/dashboard"
+              >
+                Dashboard
+              </a>
+            )}
 
             {/* Divider for mobile */}
             <div className="w-full h-px bg-outline-variant lg:hidden"></div>
 
-            {/* Buttons */}
+            {/* --- BUTTONS & AVATAR --- */}
             <div className="flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-6 w-full lg:w-auto">
-              <button
-                onClick={() => navigate("/login")}
-                className="text-on-surface-variant hover:text-on-surface transition-colors font-medium"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => navigate("/register")}
-                className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto"
-              >
-                Get Started
-              </button>
+              {!user ? (
+                /* User is NOT logged in: Show Login and Get Started */
+                <>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="text-on-surface-variant hover:text-on-surface transition-colors font-medium"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => navigate("/register")}
+                    className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm active:scale-95 transition-transform shadow-lg shadow-primary-container/20 glow-hover w-full lg:w-auto"
+                  >
+                    Get Started
+                  </button>
+                </>
+              ) : (
+                /* User IS logged in: Show Initial Avatar */
+                <div
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 font-semibold uppercase"
+                  title={`${user.firstname}${user.lastname ? ` ${user.lastname}` : ""}`}
+                >
+                  {user.firstname?.charAt(0)}
+                  {user.lastname?.charAt(0)}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -170,8 +187,8 @@ export default function Home() {
         </section> */}
 
         {/* Courses Bento Grid */}
-        <section className="py-32 px-8">
-          <div className="max-w-7xl mx-auto">
+        {/* <section className="py-32 px-8"> 
+           <div className="max-w-7xl mx-auto border">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
               <div>
                 <h2 className="text-4xl md:text-5xl font-headline font-extrabold tracking-tight mb-4">
@@ -190,7 +207,7 @@ export default function Home() {
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              {/* Featured Course */}
+           
               <div className="md:col-span-8 group cursor-pointer relative h-[450px] rounded-3xl overflow-hidden bg-surface-container border border-outline-variant">
                 <img
                   className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
@@ -227,7 +244,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Side Course */}
+     
               <div className="md:col-span-4 group cursor-pointer relative h-[450px] rounded-3xl overflow-hidden bg-surface-container border border-outline-variant">
                 <img
                   className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700"
@@ -251,7 +268,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Bottom Wide Course */}
+          
               <div className="md:col-span-12 group cursor-pointer relative h-[450px] md:h-[300px] rounded-3xl overflow-hidden bg-surface-container border border-outline-variant flex items-center px-12">
                 <img
                   className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700"
@@ -283,11 +300,11 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </div>  
+         </section> */}
 
         {/* Laboratory Section with SVG Pattern */}
-        <section className="py-32 bg-surface-container-low relative overflow-hidden">
+        {/* <section className="py-32 bg-surface-container-low relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-8 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-20">
               <h2 className="text-4xl md:text-5xl font-headline font-extrabold tracking-tight mb-6">
@@ -336,7 +353,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* SVG Background Wave Pattern */}
+        
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] pointer-events-none opacity-5">
             <svg className="w-full h-full" viewBox="0 0 100 100">
               <path
@@ -353,7 +370,7 @@ export default function Home() {
               />
             </svg>
           </div>
-        </section>
+        </section> */}
 
         {/* CTA Section */}
         <section className="py-32 px-8">

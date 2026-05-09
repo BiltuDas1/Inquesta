@@ -22,6 +22,27 @@
       "when": 1775937593374,
       "tag": "0002_careful_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1777044581562,
+      "tag": "0003_acoustic_piledriver",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1777891336193,
+      "tag": "0004_exotic_hannibal_king",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1778004543100,
+      "tag": "0005_hesitant_peter_parker",
+      "breakpoints": true
     }
   ]
 }

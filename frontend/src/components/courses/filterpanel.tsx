@@ -89,7 +89,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   ];
 
   return (
-    <div className={`text-on-surface font-headline isSidebar ? px-4 py-2: px-2  `}>
+    <div
+      className={`text-on-surface font-headline isSidebar ? px-4 py-2: px-2  `}
+    >
       {isSidebar && onClose && (
         <div className="flex items-center justify-between py-3 border-b border-[#3b4a44] font-headline ">
           <span className="text-sm font-semibold text-[#dfe2eb]">
@@ -149,8 +151,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       >
         <p className="text-xs text-[#84948e]">Filter options...</p>
       </Section>
-    
-    {/* Level Section */}
+
+      {/* Level Section */}
       <Section
         label="Level"
         sKey="level"

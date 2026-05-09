@@ -8,6 +8,8 @@ export type User = {
 };
 
 export type UserRole = {
+  firstname: string;
+  lastname: string | null;
   email: string;
   role: string;
 };
@@ -24,6 +26,8 @@ export const UserRoleObject = builder
   .objectRef<UserRole>("UserRole")
   .implement({
     fields: (t) => ({
+      firstname: t.exposeString("firstname"),
+      lastname: t.exposeString("lastname"),
       email: t.exposeString("email"),
       role: t.exposeString("role"),
     }),
@@ -36,3 +40,22 @@ export type UserInfo = {
   whatsapp_country_code: number | null;
   qualification: string | null;
 };
+
+export const UserInfoObject = builder
+  .objectRef<UserInfo>("UserInfo")
+  .implement({
+    fields: (t) => ({
+      phone: t.exposeString("phone"),
+      phone_country_code: t.exposeInt("phone_country_code"),
+      whatsapp: t.exposeString("whatsapp"),
+      whatsapp_country_code: t.exposeInt("whatsapp_country_code"),
+      qualification: t.exposeString("qualification"),
+    }),
+  });
+
+export type UserDetails = {
+  id: string;
+  firstname: string;
+  lastname?: string | null;
+  email: string;
+} & UserInfo;

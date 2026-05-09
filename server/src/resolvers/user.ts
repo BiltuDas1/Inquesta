@@ -87,6 +87,8 @@ export async function loginUser(
       id: users.id,
       password: users.password,
       role: users.role,
+      firstname: users.firstname,
+      lastname: users.lastname,
     })
     .from(users)
     .where(and(eq(users.isActive, true), eq(users.email, email)))
@@ -116,6 +118,8 @@ export async function loginUser(
 
   return {
     role: {
+      firstname: userRecord.firstname,
+      lastname: userRecord.lastname,
       email: email,
       role: userRecord.role,
     },
@@ -155,6 +159,8 @@ export async function googleLogin(payload: GoogleUser) {
       .selectDistinct({
         id: users.id,
         role: users.role,
+        firstname: users.firstname,
+        lastname: users.lastname,
       })
       .from(users)
       .where(eq(users.email, payload.email))
@@ -180,8 +186,10 @@ export async function googleLogin(payload: GoogleUser) {
       success: true,
       message: "login successful",
       role: {
+        firstname: result[0].firstname,
+        lastname: result[0].lastname,
         email: payload.email,
-        role: result[0]?.role,
+        role: result[0].role,
       },
       jwt: jwtObj,
     };
@@ -196,6 +204,8 @@ export async function googleLogin(payload: GoogleUser) {
         .selectDistinct({
           id: users.id,
           role: users.role,
+          firstname: users.firstname,
+          lastname: users.lastname,
         })
         .from(users)
         .where(eq(users.email, payload.email))
@@ -221,8 +231,10 @@ export async function googleLogin(payload: GoogleUser) {
         success: true,
         message: "login successful",
         role: {
+          firstname: result[0].firstname,
+          lastname: result[0].lastname,
           email: payload.email,
-          role: result[0]?.role,
+          role: result[0].role,
         },
         jwt: jwtObj,
       };
@@ -314,4 +326,95 @@ export async function update_userinfo(access_token: string, info: UserInfo) {
       message: "failed to update data",
     };
   }
+}
+
+type UserInfoResponse = {
+  success: boolean;
+  message: string;
+  data?: UserInfo;
+};
+
+export async function get_userinfo(
+  access_token: string,
+  context: FastifyContext,
+): Promise<UserInfoResponse> {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token",
+    };
+  }
+
+  try {
+    const [user] = await db
+      .selectDistinct()
+      .from(users_info)
+      .where(eq(users_info.users_id, accessToken.getSub()));
+
+    if (!user) {
+      return {
+        success: false,
+        message: "no records found",
+      };
+    }
+
+    return {
+      success: true,
+      message: "data fetched successfully",
+      data: {
+        phone_country_code: user.phone_number_cc,
+        phone: user.phone_number,
+        whatsapp_country_code: user.whatsapp_number_cc,
+        whatsapp: user.whatsapp_number,
+        qualification: user.qualification,
+      },
+    };
+  } catch (error) {
+    context.logger.error("get_userinfo: " + error);
+    throw error;
+  }
+}
+
+export async function get_user_role(access_token: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+    };
+  }
+
+  const result = await db
+    .selectDistinct()
+    .from(users)
+    .where(eq(users.id, accessToken.getSub()));
+  if (result.length === 0) {
+    return {
+      success: false,
+      message: "no record found",
+    };
+  }
+
+  const userinfo = result[0];
+  if (userinfo === undefined) {
+    return {
+      success: false,
+      message: "no record found",
+    };
+  }
+
+  return {
+    success: true,
+    message: "valid login",
+    data: {
+      firstname: userinfo.firstname,
+      lastname: userinfo.lastname,
+      role: userinfo.role,
+    },
+  };
+}
+
+export async function delete_refresh_token(refresh_token: string) {
+  await redis.del(refresh_token);
 }

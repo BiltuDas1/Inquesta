@@ -9,6 +9,7 @@ import { importPKCS8, importSPKI } from "jose";
 import * as crypto from "crypto";
 import mysql from "mysql2/promise";
 import { isProduction, isMockTestingEnabled } from "./environment.ts";
+import { S3Client } from "@aws-sdk/client-s3";
 
 export const serverConfig = {
   host: isProduction ? "0.0.0.0" : "127.0.0.1",
@@ -79,3 +80,18 @@ export async function loadEdDSAKey() {
   });
   EDDSA_PUBLIC_KEY = await importSPKI(public_key_str, "EdDSA");
 }
+
+export const s3Bucket = new S3Client({
+  region: "auto",
+  endpoint: requireEnv("SUPERBASE_S3_ENDPOINT"),
+  credentials: {
+    accessKeyId: requireEnv("SUPERBASE_S3_ACCESS_KEY"),
+    secretAccessKey: requireEnv("SUPERBASE_S3_SECRET_ACCESS_KEY"),
+  },
+  forcePathStyle: true,
+});
+
+const pubEndpoint = requireEnv("SUPERBASE_S3_PUBLIC_ENDPOINT");
+export const s3PublicEndpoint = pubEndpoint.endsWith("/")
+  ? pubEndpoint
+  : `${pubEndpoint}/`;

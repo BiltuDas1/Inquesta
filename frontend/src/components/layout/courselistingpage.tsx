@@ -1,13 +1,129 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CourseCard } from "../courses/coursecard";
-import { courses, type Course } from "../../dummydata/courses";
 import { FilterPanel } from "../courses/filterpanel";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import type { Course } from "../../types/courses";
+import { NumberedCursorPagination } from "../ui/cursorpagination";
+
+// Query to get courses
+const GET_COURSES = gql`
+  query GetCourses($limit: Int!, $lastID: String) {
+    courseGet(limit: $limit, lastID: $lastID) {
+      success
+      message
+      data {
+        id
+        title
+        description
+        instructorName
+        duration
+        level
+        price
+        icon
+      }
+    }
+  }
+`;
+
+// Define the exact shape of what the GraphQL query returns
+interface GetCoursesResponse {
+  courseGet: {
+    success: boolean;
+    message: string;
+    data: Course[];
+  };
+}
 
 // --- Main Page Component ---
 export default function CourseListingPage() {
   const [filterOpen, setFilterOpen] = useState<boolean>(false); // Mobile modal state
-  const [desktopFilterOpen, setDesktopFilterOpen] = useState<boolean>(true); // Desktop sidebar state
-  const [sortBy, setSortBy] = useState<string>("Most Popular");
+  // const [desktopFilterOpen, setDesktopFilterOpen] = useState<boolean>(true); // Desktop sidebar state
+  // const [sortBy, setSortBy] = useState<string>("Most Popular");
+
+  // --- 1. Init from URL Params ---
+  const searchParams = useMemo(
+    () => new URLSearchParams(window.location.search),
+    [],
+  );
+  const initialCursor = searchParams.get("cursor");
+  const initialPage = parseInt(searchParams.get("p") || "1", 10);
+
+  const [lastID, setLastID] = useState<string | null>(initialCursor);
+  const [page, setPage] = useState<number>(initialPage);
+  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+
+  // --- 2. URL Update Helper ---
+  const updateURL = (newPage: number, newCursor: string | null) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("p", newPage.toString());
+
+    if (newCursor) {
+      url.searchParams.set("cursor", newCursor);
+    } else {
+      url.searchParams.delete("cursor");
+    }
+
+    // Use replaceState to avoid cluttering the browser's back button history
+    window.history.replaceState({}, "", url.toString());
+  };
+
+  // --- 3. GraphQL Query ---
+  const { loading, error, data } = useQuery<GetCoursesResponse>(GET_COURSES, {
+    // limit 12: 1 (cursor) + 10 (display) + 1 (look-ahead)
+    variables: { limit: 12, lastID: lastID },
+    fetchPolicy: "cache-and-network",
+  });
+
+  const courses: Course[] = data?.courseGet?.data || [];
+  const appError =
+    data?.courseGet?.success === false ? data.courseGet.message : null;
+
+  // --- 4. Pagination Data Prep ---
+  // Filter out the duplicate item caused by the backend's 'lte' logic
+  const cleanCourses = courses.filter((course) => course.id !== lastID);
+
+  // Show exactly 10 items to the user
+  const displayCourses = cleanCourses.slice(0, 10);
+
+  // If the backend gave us the look-ahead item (11 items total), a next page exists
+  const hasNextPage = cleanCourses.length > 10;
+
+  // --- 5. Pagination Handlers ---
+  const handleNextPage = () => {
+    if (hasNextPage && displayCourses.length > 0) {
+      const newCursor = displayCourses[displayCourses.length - 1].id;
+      setCursorHistory((prev) => [...prev, lastID || ""]);
+      setLastID(newCursor);
+      setPage((p) => p + 1);
+      updateURL(page + 1, newCursor);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleJumpToFirst = () => {
+    setLastID(null);
+    setCursorHistory([]);
+    setPage(1);
+    updateURL(1, null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handlePreviousPage = () => {
+    if (cursorHistory.length > 0) {
+      const newHistory = [...cursorHistory];
+      const prevCursor = newHistory.pop() || null;
+      setCursorHistory(newHistory);
+      setLastID(prevCursor === "" ? null : prevCursor);
+      setPage((p) => p - 1);
+      updateURL(page - 1, prevCursor === "" ? null : prevCursor);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (page > 1) {
+      // FIX FOR REFRESH: If they refresh on page 2+, history is lost.
+      // Jump them back to Page 1 safely so they aren't stuck.
+      handleJumpToFirst();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] pb-12">
@@ -34,7 +150,7 @@ export default function CourseListingPage() {
         </h1>
 
         {/* Filter + Sort bar */}
-        <div className="flex items-center gap-3 mb-6">
+        {/* <div className="flex items-center gap-3 mb-6">
           <button
             onClick={() => setFilterOpen(true)}
             className="flex items-center gap-2 border border-[#84948e] text-[#dfe2eb] text-sm font-semibold px-4 py-2 rounded hover:bg-[#181c22] transition-colors lg:hidden"
@@ -43,7 +159,7 @@ export default function CourseListingPage() {
             Filter
           </button>
 
-          {/* Desktop Filter Button (Moved to the top row) */}
+        
           <button
             onClick={() => setDesktopFilterOpen(!desktopFilterOpen)}
             className="hidden lg:flex items-center gap-2 border border-[#84948e] text-[#dfe2eb] text-sm font-bold px-4 py-[9px] rounded hover:bg-[#181c22] transition-colors cursor-pointer"
@@ -57,7 +173,7 @@ export default function CourseListingPage() {
             Filter
           </button>
 
-          {/* Sort By Dropdown */}
+       
           <div className="flex flex-col relative">
             <label className="text-xs text-[#84948e] absolute -top-2 left-2 bg-[#10141a] px-1 font-medium z-10">
               Sort by
@@ -77,17 +193,12 @@ export default function CourseListingPage() {
               </span>
             </div>
           </div>
+        </div> */}
 
-          <span className="ml-auto text-sm text-[#84948e] font-medium hidden sm:block">
-            10,000 results
-          </span>
-        </div>
-
-        {/* Main Content Area
-         */}
+        {/* Main Content Area */}
         <div className="flex overflow-hidden">
           {/* Desktop Sidebar Filters */}
-          <aside
+          {/* <aside
             className={`hidden lg:block flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
               desktopFilterOpen ? "w-64 mr-8 opacity-100" : "w-0 mr-0 opacity-0"
             }`}
@@ -97,35 +208,62 @@ export default function CourseListingPage() {
                 <FilterPanel isSidebar={false} />
               </div>
             </div>
-          </aside>
+          </aside> */}
 
           {/* Course List */}
           <main className="flex-1 min-w-0">
-            {courses.map((course: Course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
+            {loading && (
+              <p className="text-[#84948e] py-4 text-center">
+                Loading courses...
+              </p>
+            )}
 
-            {/*Dummy Pagination */}
-            <div className="flex items-center justify-center gap-1.5 mt-10">
-              {[
-                { label: "‹", page: null },
-                { label: "1", page: 1 },
-                { label: "2", page: 2, active: true },
-                { label: "3", page: 3 },
-                { label: "...", page: null },
-                { label: "625", page: 625 },
-                { label: "›", page: null },
-              ].map((item, i) => (
-                <button
-                  key={i}
-                  className={`w-9 h-9 flex items-center justify-center rounded-full text-sm transition-colors
-                    ${item.active ? "bg-[#00e5bc] text-[#00382c] font-bold" : "text-[#dfe2eb] font-medium hover:bg-[#1c2026]"}
-                    ${!item.page ? "cursor-default text-[#84948e] hover:bg-transparent" : "cursor-pointer"}`}
-                >
-                  {item.label}
-                </button>
+            {(error || appError) && (
+              <p className="text-red-400 py-4 text-center bg-red-900/20 rounded border border-red-500/50">
+                Error: {error?.message || appError}
+              </p>
+            )}
+
+            {/* The Ghost Page Fallback UI */}
+            {!loading && !error && !appError && displayCourses.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16">
+                <span className="material-symbols-outlined text-[#84948e] text-5xl mb-4">
+                  inventory_2
+                </span>
+                <p className="text-[#dfe2eb] font-bold text-lg mb-2">
+                  End of the Line!
+                </p>
+                <p className="text-[#84948e] mb-6">
+                  You have reached the end of the courses list.
+                </p>
+                {(cursorHistory.length > 0 || page > 1) && (
+                  <button
+                    onClick={handlePreviousPage}
+                    className="px-6 py-2 bg-[#6a35ff] text-white font-bold rounded hover:bg-[#5a2ce0] transition-colors"
+                  >
+                    Go Back to Previous Page
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Render Courses */}
+            {!loading &&
+              displayCourses.map((course: Course) => (
+                <CourseCard key={course.id} course={course} />
               ))}
-            </div>
+
+            {/* Pagination controls only show if there are courses on screen */}
+            {!loading && displayCourses.length > 0 && (
+              <NumberedCursorPagination
+                page={page}
+                hasNext={hasNextPage}
+                hasPrevious={cursorHistory.length > 0 || page > 1}
+                onNext={handleNextPage}
+                onPrevious={handlePreviousPage}
+                onJumpToFirst={handleJumpToFirst}
+              />
+            )}
           </main>
         </div>
       </div>

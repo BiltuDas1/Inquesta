@@ -8,6 +8,7 @@ import {
   smallint,
   boolean,
   index,
+  timestamp,
 } from "drizzle-orm/mysql-core";
 import { uuidv7 } from "uuidv7";
 import { CourseLevels } from "../types/course.ts";
@@ -38,6 +39,7 @@ export const courses = mysqlTable("courses", {
   level: mysqlEnum("level", CourseLevels).notNull(),
   duration: varchar({ length: 255 }).notNull(),
   instructorName: varchar("instructor_name", { length: 255 }).notNull(),
+  iconName: varchar("icon_name", { length: 255 }),
 });
 
 export const users_info = mysqlTable("users_info", {
@@ -56,4 +58,17 @@ export const countries = mysqlTable("countries", {
   name: varchar({ length: 100 }).notNull(),
   iso_code: char({ length: 2 }).notNull(),
   currency_code: char({ length: 3 }).notNull(),
+});
+
+export const courseEnrollments = mysqlTable("course_enrollments", {
+  id: int().autoincrement().primaryKey(),
+  course_id: varchar("courses_id", { length: 36 }).references(
+    () => courses.id,
+    { onDelete: "restrict" },
+  ),
+  user_id: varchar("user_id", { length: 36 }).references(() => users.id, {
+    onDelete: "cascade",
+  }),
+  transaction_id: varchar("transaction_id", { length: 255 }).notNull().unique(),
+  enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });

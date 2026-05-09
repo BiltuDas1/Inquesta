@@ -2,12 +2,15 @@ import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
+import { useAuth } from "../context/authcontext";
 
 // GraphQL mutation
 const LOGIN_WITH_GOOGLE = gql`
   mutation loginWithGoogle($code: String!) {
     loginWithGoogle(code: $code) {
       data {
+        firstname
+        lastname
         email
         role
       }
@@ -22,28 +25,27 @@ export default function GoogleLogin() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const { login } = useAuth();
   const [loginWithGoogle, { loading, error: apolloError }] = useMutation(
     LOGIN_WITH_GOOGLE,
     {
       onCompleted: (data: any) => {
         if (data.loginWithGoogle.success) {
           const userData = data.loginWithGoogle.data;
-          console.log(userData.email);
-          // 2. THIS IS THE CRITICAL FIX: SAVE TO LOCALSTORAGE BEFORE NAVIGATING
+          console.log(userData);
           if (userData) {
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                email: userData.email,
-                role: userData.role,
-              }),
-            );
+            login({
+              firstname: userData.firstname || "",
+              lastname: userData.lastname || "",
+              email: userData.email,
+              role: userData.role,
+            });
           }
-          // Route based on role
-          if (userData?.role === "admin") {
-            navigate("/dashboard");
+
+          if (userData.role === "admin") {
+            navigate("/dashboard", { replace: true });
           } else {
-            navigate("/courses");
+            navigate("/courses", { replace: true });
           }
         }
         // Capture the specific GraphQL validation message (e.g., "Token expired")

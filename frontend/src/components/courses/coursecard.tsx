@@ -1,79 +1,24 @@
-import type { Course } from "../../dummydata/courses";
+import React from "react";
+
+import type { Course } from "../../types/courses";
+import { Link } from "react-router";
 
 interface CourseCardProps {
   course: Course;
 }
-interface StarRatingProps {
-  rating: number;
-}
-
-interface BadgePillProps {
-  label: string;
-}
-
-export const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-
-  return (
-    <div className="flex items-center gap-0.5">
-      {[...Array(5)].map((_, i) => {
-        const isFull = i < full;
-        const isHalf = i === full && half;
-        const iconName = isHalf ? "star_half" : "star";
-
-        // Yellow for full/half stars, dark gray for empty stars
-        const colorClass =
-          isFull || isHalf ? "text-yellow-400" : "text-[#3b4a44]";
-
-        return (
-          <span
-            key={i}
-            className={`material-symbols-outlined ${colorClass}`}
-            style={{
-              fontSize: "16px",
-              fontVariationSettings: "'FILL' 1",
-            }}
-          >
-            {iconName}
-          </span>
-        );
-      })}
-    </div>
-  );
-};
-
-export const BadgePill: React.FC<BadgePillProps> = ({ label }) => {
-  const styles: Record<string, string> = {
-    Premium: "bg-[#343d96] text-[#bdc2ff]",
-    Bestseller: "bg-[#00e5bc] text-[#00382c]",
-    "Highest Rated": "bg-[#6fffd9] text-[#00382c]",
-  };
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded ${styles[label] || "bg-[#31353c] text-[#dfe2eb]"}`}
-    >
-      {label === "Premium" && (
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: "18px" }}
-        >
-          verified
-        </span>
-      )}
-      {label}
-    </span>
-  );
-};
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
+  const safeDescription = course?.description || "";
+  const truncatedDescription =
+    safeDescription.length > 121
+      ? `${safeDescription.substring(0, 121)}...`
+      : safeDescription;
+
   return (
-    <div className="flex gap-3 md:gap-4 py-4 border-b border-[#3b4a44] group cursor-pointer hover:bg-[#181c22] rounded-lg px-2 -mx-2 transition-colors">
-      {/* Thumbnail */}
-      <div className="flex-shrink-0 w-20 h-16 sm:w-28 sm:h-20 md:w-65 md:h-38 overflow-hidden rounded">
+    <div className="relative flex gap-3 md:gap-4 py-4 border-b border-[#3b4a44] group cursor-pointer hover:bg-[#181c22] rounded-lg px-2 -mx-2 transition-colors">
+      <div className="flex-shrink-0 w-20 h-16 sm:w-28 sm:h-20 md:w-65 md:h-38 overflow-hidden rounded z-0">
         <img
-          src={course.image}
+          src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
           alt={course.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -85,60 +30,54 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         />
       </div>
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
+        {/* THE CHANGE: Use course.id directly in the URL */}
         <h3 className="text-sm sm:text-base font-bold text-[#dfe2eb] leading-snug line-clamp-2 group-hover:text-[#6fffd9] transition-colors font-headline">
-          {course.title}
+          <Link
+            to={`/course/${course.id}`}
+            className="outline-none before:absolute before:inset-0 before:z-10"
+          >
+            {course.title}
+          </Link>
         </h3>
-        <p className="hidden md:block text-xs text-[#b9cac3] mt-1 line-clamp-2">
-          {course.description}
-        </p>
-        <p className="text-xs text-[#b9cac3] mt-1">{course.instructor}</p>
 
-        <div className="flex items-center gap-1.5 mt-1">
-          <span className="text-xs font-bold text-[#6fffd9]">
-            {course.rating}
+        <p className="hidden md:block text-xs text-[#b9cac3] mt-1">
+          {truncatedDescription}
+        </p>
+
+        <p className="text-xs text-[#00e5bc] mt-1 font-medium">
+          {course.instructorName}
+        </p>
+
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#31353c] text-[#dfe2eb] uppercase tracking-wider">
+            {course.level}
           </span>
-          <StarRating rating={course.rating} />
-          <span className="text-xs text-[#84948e]">
-            ({course.reviews.toLocaleString()})
+          <span className="text-xs text-[#84948e] flex items-center gap-1">
+            <span className="material-symbols-outlined text-[14px]">
+              schedule
+            </span>
+            {course.duration}
           </span>
         </div>
 
-        <p className="text-xs text-[#84948e] mt-0.5">
-          {course.hours} total hours · {course.lectures} lectures ·{" "}
-          {course.level}
-        </p>
-
-        {/* Price row - mobile shows here */}
-        <div className="flex items-center gap-2 mt-1 md:hidden">
+        <div className="flex items-center gap-2 mt-2 md:hidden">
           <span className="text-sm font-bold text-[#dfe2eb]">
             ₹{course.price}
           </span>
-          <span className="text-xs text-[#84948e] line-through">
-            ₹{course.originalPrice}
-          </span>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mt-2">
-          {course.badges.map((b: string) => (
-            <BadgePill key={b} label={b} />
-          ))}
-        </div>
-
-        {/* Add to cart - mobile */}
-        <button className="mt-3 md:hidden w-full border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors">
-          Add to cart
-        </button>
+        <Link
+          to={`/course/${course.id}`}
+          className="relative z-20 mt-3 md:hidden w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
+        >
+          Enroll Now
+        </Link>
       </div>
 
-      {/* Price - desktop */}
       <div className="hidden md:flex flex-col items-end justify-start flex-shrink-0 w-24">
         <span className="text-lg font-bold text-[#dfe2eb]">
           ₹{course.price}
-        </span>
-        <span className="text-sm text-[#84948e] line-through">
-          ₹{course.originalPrice}
         </span>
       </div>
     </div>

@@ -13,6 +13,8 @@
     "formatter": "npx prettier --write ."
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1041.0",
+    "@aws-sdk/s3-request-presigner": "^3.1041.0",
     "@envelop/graphql-jit": "^11.1.1",
     "@fastify/cors": "^11.2.0",
     "@pothos/core": "^4.12.0",

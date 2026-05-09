@@ -3,6 +3,9 @@ import { isProduction } from "../environment.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import {
+  delete_refresh_token,
+  get_user_role,
+  get_userinfo,
   googleLogin,
   loginUser,
   registerUser,
@@ -10,6 +13,7 @@ import {
   verify_email,
 } from "../resolvers/user.ts";
 import {
+  UserInfoObject,
   UserRoleObject,
   type User,
   type UserInfo,
@@ -390,6 +394,168 @@ builder.mutationField("updateUserInfo", (t) =>
       };
 
       return await update_userinfo(cookieObj["access_token"], userinfo);
+    },
+  }),
+);
+
+const getUserInfoResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: UserInfo;
+  }>("GetUserInfoResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: UserInfoObject,
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getUserInfo", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: getUserInfoResponse,
+    args: {},
+    resolve: async (_parent, {}, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await get_userinfo(cookieObj["access_token"], context);
+    },
+  }),
+);
+
+const UserLoginResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: { firstname: string; lastname: string | null; role: string };
+  }>("UserLoginResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.field({
+        nullable: true,
+        type: builder
+          .objectRef<{
+            firstname: string;
+            lastname: string | null;
+            role: string;
+          }>("UserLoginResponseData")
+          .implement({
+            fields: (tInner) => ({
+              firstname: tInner.exposeString("firstname"),
+              lastname: tInner.exposeString("lastname"),
+              role: tInner.exposeString("role"),
+            }),
+          }),
+        resolve: (parent) => parent.data,
+      }),
+    }),
+  });
+
+builder.queryField("isLoggedIn", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: UserLoginResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await get_user_role(cookieObj["access_token"]);
+    },
+  }),
+);
+
+builder.mutationField("logoutUser", (t) =>
+  t.field({
+    type: GQLResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["refresh_token"] === undefined) {
+        return {
+          success: false,
+          message: "no refresh_token cookie",
+        };
+      }
+
+      await delete_refresh_token(cookieObj["refresh_token"]);
+
+      // Passing Cookies via HTTP Response
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
+          name: "access_token",
+          value: "",
+          expires: 0,
+          path: "/",
+          samesite: "Lax",
+          httponly: true,
+          secure: isProduction,
+        }),
+      );
+
+      context.reply.header(
+        "set-cookie",
+        set_cookie({
+          name: "refresh_token",
+          value: "",
+          expires: 0,
+          path: "/",
+          samesite: "Strict",
+          httponly: true,
+          secure: isProduction,
+        }),
+      );
+
+      context.reply.header("Set-Login", "logged-out");
+
+      return {
+        success: true,
+        message: "successfully logged out",
+      };
     },
   }),
 );
