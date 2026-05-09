@@ -1,24 +1,24 @@
 import { Route, Routes, useLocation, useNavigate } from "react-router";
-import Home from "./pages/homepage";
-import SignupPage from "./pages/signuppage";
-import LoginPage from "./pages/loginpage";
-import DashboardPage from "./pages/dashboardpage";
-import ProtectedRoute from "./components/middleware/protectedroute";
-import PublicRoute from "./components/middleware/publicroute";
-import NotFoundPage from "./pages/notfoundpage";
-import GoogleLogin from "./pages/googleloginpage";
+import Home from "./layouts/homepagelayout";
+import DashboardPage from "./features/admin/pages/dashboardpage";
+import ProtectedRoute from "./shared/routes/protectedroute";
+import PublicRoute from "./shared/routes/publicroute";
+import NotFoundPage from "./shared/pages/notfoundpage";
 import toast, { Toaster } from "react-hot-toast";
-import CheckEmailPage from "./pages/checkemailpage";
-import VerifyEmailPage from "./pages/verifyemailpage";
 import { useEffect } from "react";
-import { client } from "./lib/apolloclient";
-import UserDataCollectionForm from "./pages/userdatacollectionform";
-import OnboardingRoute from "./components/middleware/onboardingroute";
-import CourseDetails from "./components/courses/coursedetails";
-import MainLayout from "./components/layout/mainlayout";
-import CourseListingPage from "./components/layout/courselistingpage";
-import DashboardLayout from "./components/layout/dashboardlayout";
-import EnrollmentsDashboard from "./components/courses/enrollmenttable";
+import { client } from "./providers/apolloclient";
+import UserDataCollectionForm from "./features/user/pages/userdatacollectionform";
+import OnboardingRoute from "./shared/routes/onboardingroute";
+import EnrollmentsDashboard from "./features/courses/admin/enrollmenttable";
+import CourseListingPage from "./features/courses/pages/courselistingpage";
+import CoursesLayout from "./layouts/courseslayout";
+import CourseDetails from "./features/courses/pages/coursedetails";
+import LoginPage from "./features/auth/pages/loginpage";
+import SignupPage from "./features/auth/pages/signuppage";
+import GoogleLogin from "./features/auth/pages/googleloginpage";
+import VerifyEmailPage from "./features/auth/pages/verifyemailpage";
+import CheckEmailPage from "./features/auth/pages/checkemailpage";
+import DashboardLayout from "./layouts/adminlayout";
 
 // For handling global session
 // const GlobalSessionHandler = () => {
@@ -77,7 +77,7 @@ function App() {
         {/* 1. PUBLIC ROUTES (No auth needed) */}
         <Route path="/" element={<Home />} />
 
-        <Route element={<MainLayout />}>
+        <Route element={<CoursesLayout />}>
           <Route path="/courses" element={<CourseListingPage />} />
           <Route path="/course/:courseID" element={<CourseDetails />} />
         </Route>
