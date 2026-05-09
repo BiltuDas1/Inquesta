@@ -70,8 +70,14 @@ export async function getCourseInfo(id: string) {
     .selectDistinct()
     .from(courses)
     .where(eq(courses.id, id));
+
   if (result !== undefined) {
-    return result[0];
+    for (const item of result) {
+      return {
+        ...item,
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
+      }
+    }
   }
   return null;
 }
