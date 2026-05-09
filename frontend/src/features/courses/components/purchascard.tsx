@@ -169,7 +169,7 @@ const handleEnroll = async () => {
         <div className="bg-[#1c2026] border border-[#3b4a44] rounded-2xl shadow-2xl p-5 font-body relative">
           <div className="w-full h-40 mb-5 rounded-xl overflow-hidden border border-[#2a342f] bg-[#181c22]">
             <img
-              src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
+              src={`${course.icon}`}
               alt={course.title}
               className="w-full h-full object-cover"
               onError={(e) => {

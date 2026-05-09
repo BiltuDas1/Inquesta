@@ -29,7 +29,7 @@ export default function CourseModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(
     editing?.icon
-      ? `${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${editing.icon}`
+      ? `${editing.icon}`
       : null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);

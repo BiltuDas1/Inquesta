@@ -126,6 +126,8 @@ export default function CourseListingPage() {
     }
   };
 
+  
+
   return (
     <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] pb-12">
       {/* Mobile Filter Sidebar Overlay */}

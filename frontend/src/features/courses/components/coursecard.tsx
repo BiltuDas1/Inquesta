@@ -18,7 +18,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     <div className="relative flex gap-3 md:gap-4 py-4 border-b border-[#3b4a44] group cursor-pointer hover:bg-[#181c22] rounded-lg px-2 -mx-2 transition-colors">
       <div className="flex-shrink-0 w-20 h-16 sm:w-28 sm:h-20 md:w-65 md:h-38 overflow-hidden rounded z-0">
         <img
-          src={`${import.meta.env.VITE_SUPERBASE_PUBLIC_URL}/${course.icon}`}
+          src={`${course.icon}`}
           alt={course.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -66,7 +66,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             ₹{course.price}
           </span>
         </div>
-
         <Link
           to={`/course/${course.id}`}
           className="relative z-20 mt-3 md:hidden w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
