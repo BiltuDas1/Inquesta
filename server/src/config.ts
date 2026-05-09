@@ -8,9 +8,9 @@ import { OAuth2Client } from "google-auth-library";
 import { importPKCS8, importSPKI } from "jose";
 import * as crypto from "crypto";
 import mysql from "mysql2/promise";
+import { isProduction, isMockTestingEnabled } from "./environment.ts";
 import { S3Client } from "@aws-sdk/client-s3";
 
-export const isProduction = process.env.PRODUCTION !== undefined;
 export const serverConfig = {
   host: isProduction ? "0.0.0.0" : "127.0.0.1",
   port: 4000,
@@ -42,7 +42,9 @@ if (process.env.ORIGINS !== undefined) {
 }
 
 export const FRONTEND_FQDN = requireEnv("FRONTEND_FQDN");
-export const emailObj = new Email(requireEnv("RESEND_API_KEY"));
+export const emailObj = isMockTestingEnabled
+  ? new Email()
+  : new Email(requireEnv("RESEND_API_KEY"));
 export const templateObj = new Template();
 
 // Redis connection

@@ -1,4 +1,5 @@
-import { GOOGLE_CLIENT, isProduction } from "../config.ts";
+import { GOOGLE_CLIENT } from "../config.ts";
+import { isProduction } from "../environment.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import {

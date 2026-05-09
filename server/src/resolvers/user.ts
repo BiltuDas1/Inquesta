@@ -1,12 +1,5 @@
 import { hash, verify } from "argon2";
-import {
-  db,
-  emailObj,
-  FRONTEND_FQDN,
-  isProduction,
-  redis,
-  templateObj,
-} from "../config.ts";
+import { db, emailObj, FRONTEND_FQDN, redis, templateObj } from "../config.ts";
 import { users, users_info } from "../databases/schema.ts";
 import {
   type UserRole,
@@ -18,6 +11,7 @@ import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
 import type { FastifyContext } from "../types/fastify.ts";
+import { isProduction } from "../environment.ts";
 
 async function sendEmail(email: string, verify_link: string) {
   const { error } = await emailObj.send_email({
