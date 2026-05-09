@@ -13,19 +13,16 @@ const PublicRoute = () => {
     );
   }
 
-  // console.log("PublicRoute:", { user, isLoading });
-  // if (user) {
-
-  //   if (user.role === "admin") {
-  //     return <Navigate to="/dashboard" replace />;
-  //   } else {
-  //     return <Navigate to="/courses" replace />;
-  //   }
-  // }
 
   if (user) {
-    return <Navigate to="/onboard" replace />;
+    if (user.role === "admin") {
+      return <Navigate to="/dashboard" replace />;
+    } else {
+      return <Navigate to="/courses" replace />;
+    }
   }
+
+
 
   return <Outlet />;
 };
