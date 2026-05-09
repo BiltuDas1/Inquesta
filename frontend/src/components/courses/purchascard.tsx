@@ -210,7 +210,6 @@ const handleEnroll = async () => {
             </button>
           )}
         </div>
-        <p>{course.icon}</p>
       </aside>
 
       {/* --- PAYMENT MODAL --- */}

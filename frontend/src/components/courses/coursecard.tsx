@@ -66,7 +66,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             ₹{course.price}
           </span>
         </div>
-          <p>{course.icon}</p>
         <Link
           to={`/course/${course.id}`}
           className="relative z-20 mt-3 md:hidden w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
