@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
 import { useAuth } from "../features/auth/context/authcontext";
 import { Logo } from "../shared/components/logo";
+import { getGreeting } from "../shared/svg/utils/helper";
 
 export default function StudentsDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
@@ -17,7 +18,7 @@ export default function StudentsDashboardLayout() {
   const currentUrl = location.pathname;
 
   const navItems = [
-    { name: "Courses", icon: "library_books", path: "/dashboard/courses" },
+    { name: "My Enrollment", icon: "library_books", path: "/dashboard/courses" },
     { name: "Students", icon: "group", path: "/dashboard/students" },
   ];
 
@@ -164,7 +165,7 @@ export default function StudentsDashboardLayout() {
               <span className="material-symbols-outlined text-2xl">menu</span>
             </button>
             <h2 className="font-headline font-bold text-[#dfe2eb] text-lg hidden sm:block capitalize">
-              {currentTitle}
+              {getGreeting()} {", "}{user?.firstname} 👋🏼
             </h2>
           </div>
 

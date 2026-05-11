@@ -26,6 +26,7 @@ import VerifyEmailPage from "./features/auth/pages/verifyemailpage";
 import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./layouts/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
+import StudentEnrollmentsPage from "./features/students/pages/studentsenrollmentpage";
 
 // For handling global session
 // const GlobalSessionHandler = () => {
@@ -117,9 +118,9 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
 
             {/* The actual dashboard page */}
-            <Route
+          <Route
               path="dashboard"
-              element={<div>Student Home: Welcome back!</div>}
+              element={<StudentEnrollmentsPage />} 
             />
           </Route>
         </Route>
