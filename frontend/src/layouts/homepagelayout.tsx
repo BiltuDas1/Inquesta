@@ -77,11 +77,11 @@ export default function Home() {
               Courses
             </a>
 
-            {/* Only Admin users see the Dashboard link */}
-            {user?.role === "admin" && (
+           {/* Dashboard option */}
+            {user && (
               <a
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                href="admin/dashboard"
+                href={user.role === "admin" ? "/admin/dashboard" : "/students/dashboard"} 
               >
                 Dashboard
               </a>
