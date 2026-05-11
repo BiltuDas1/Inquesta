@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router"; // Ensure
 import { useAuth } from "../features/auth/context/authcontext";
 import { Logo } from "../shared/components/logo";
 
-export default function DashboardLayout() {
+export default function StudentsDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
@@ -17,8 +17,8 @@ export default function DashboardLayout() {
   const currentUrl = location.pathname;
 
   const navItems = [
-   { name: "Courses", icon: "library_books", path: "/admin/courses" },
-    { name: "Students", icon: "group", path: "/admin/students" },
+    { name: "Courses", icon: "library_books", path: "/dashboard/courses" },
+    { name: "Students", icon: "group", path: "/dashboard/students" },
   ];
 
   const currentTitle =

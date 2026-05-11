@@ -1,4 +1,10 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import Home from "./layouts/homepagelayout";
 import DashboardPage from "./features/admin/pages/dashboardpage";
 import ProtectedRoute from "./shared/routes/protectedroute";
@@ -7,7 +13,7 @@ import NotFoundPage from "./shared/pages/notfoundpage";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { client } from "./providers/apolloclient";
-import UserDataCollectionForm from "./features/user/pages/userdatacollectionform";
+import UserDataCollectionForm from "./features/students/pages/userdatacollectionform";
 import OnboardingRoute from "./shared/routes/onboardingroute";
 import EnrollmentsDashboard from "./features/courses/admin/enrollmenttable";
 import CourseListingPage from "./features/courses/pages/courselistingpage";
@@ -19,6 +25,7 @@ import GoogleLogin from "./features/auth/pages/googleloginpage";
 import VerifyEmailPage from "./features/auth/pages/verifyemailpage";
 import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./layouts/adminlayout";
+import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 
 // For handling global session
 // const GlobalSessionHandler = () => {
@@ -52,8 +59,13 @@ const GlobalSessionHandler = () => {
     const handleSessionExpired = async () => {
       await client.clearStore();
 
-      // Only kick them out with an error if they were trying to view a protected page
-      if (location.pathname.startsWith("/dashboard")) {
+      // Check if trying to access ANY protected portal
+      const protectedPaths = ["/admin", "/teacher", "/student", "/dashboard"];
+      const isProtected = protectedPaths.some((path) =>
+        location.pathname.startsWith(path),
+      );
+
+      if (isProtected) {
         toast.error("Your session has expired. Please log in again.");
         navigate("/login", { replace: true });
       }
@@ -96,12 +108,48 @@ function App() {
           <Route path="/onboard" element={<UserDataCollectionForm />} />
         </Route>
 
-        {/* 4. PROTECTED ROUTES (Must be logged in as Admin) */}
-        <Route element={<ProtectedRoute />}>
-          {/* Move your entire DashboardLayout INSIDE the ProtectedRoute */}
+        {/* =========================================
+             STUDENT DASHBOARD
+             Base URL: /students
+        ========================================= */}
+        <Route element={<ProtectedRoute allowedRoles={["user", "student"]} />}>
+          <Route path="/students" element={<StudentsDashboardLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+
+            {/* The actual dashboard page */}
+            <Route
+              path="dashboard"
+              element={<div>Student Home: Welcome back!</div>}
+            />
+          </Route>
+        </Route>
+
+        {/*  PROTECTED ROUTES (Must be logged in as Admin) */}
+        {/* <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
-            {/* Use index to load DashboardPage by default when visiting /dashboard */}
             <Route index element={<DashboardPage />} />
+            <Route path="courses" element={<DashboardPage />} />
+            <Route path="students" element={<EnrollmentsDashboard />} />
+            <Route
+              path="analytics"
+              element={<div>Analytics coming soon</div>}
+            />
+            <Route path="settings" element={<div>Settings coming soon</div>} />
+          </Route>
+        </Route> */}
+
+        {/* =========================================
+             ADMIN PROTECTED ROUTES
+             Base URL: /admin
+        ========================================= */}
+        {/* Added ['admin'] to strictly protect this wrapper */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin" element={<DashboardLayout />}>
+            {/* Auto-redirects /admin to /admin/dashboard */}
+            <Route index element={<Navigate to="dashboard" replace />} />
+
+            {/* The actual dashboard page */}
+            <Route path="dashboard" element={<DashboardPage />} />
             <Route path="courses" element={<DashboardPage />} />
             <Route path="students" element={<EnrollmentsDashboard />} />
             <Route

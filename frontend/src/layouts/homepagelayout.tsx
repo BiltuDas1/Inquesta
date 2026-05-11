@@ -82,7 +82,7 @@ export default function Home() {
             {user?.role === "admin" && (
               <a
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                href="/dashboard"
+                href="admin/dashboard"
               >
                 Dashboard
               </a>

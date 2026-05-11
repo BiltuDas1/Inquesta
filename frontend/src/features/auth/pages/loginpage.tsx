@@ -129,7 +129,7 @@ export default function LoginPage() {
         });
 
         if (userData.role === "admin") {
-          navigate("/dashboard");
+          navigate("/admin/dashboard");
         }else {
           navigate("/courses");
         }
