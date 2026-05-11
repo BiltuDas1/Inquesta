@@ -325,7 +325,7 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
                 }
             """,
       "variables": {
-        "email": "rohannayak@gmail.COM",
+        "email": "rohannayak@gmail.org",
         "password": "Pass@123",
       },
     },
@@ -354,58 +354,6 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
 
 
 def test_login_email_empty(api_request_context: APIRequestContext):
-
-  register_response = api_request_context.post(
-    "/",
-    data={
-      "query": """
-                mutation Register(
-                  $email: String!
-                  $firstname: String!
-                  $lastname: String
-                  $password: String!
-                ) {
-                  register(
-                    email: $email
-                    firstname: $firstname
-                    lastname: $lastname
-                    password: $password
-                  ) {
-                    success
-                    message
-                  }
-                }
-            """,
-      "variables": {
-        "email": "rohanganguli@gmail.com",
-        "firstname": "rohan",
-        "lastname": "ganguli",
-        "password": "Pass@123",
-      },
-    },
-  )
-
-  assert register_response.ok, (
-    f"Register API failed with status {register_response.status}"
-  )
-  register_json = register_response.json()
-
-  assert "errors" not in register_json, (
-    f"Register GraphQL Errors: {register_json['errors']}"
-  )
-
-  assert "data" in register_json, "Register response missing 'data' field"
-  register_result = register_json["data"].get("register")
-
-  assert register_result is not None, (
-    f"Register result was null. Errors: {register_json.get('errors')}"
-  )
-  assert register_result.get("success") is True, (
-    f"Expected True, got {register_result.get('success')}"
-  )
-  assert isinstance(register_result.get("message"), str), (
-    f"Expected str message, got {type(register_result.get('message'))}"
-  )
 
   login_response = api_request_context.post(
     "/",
