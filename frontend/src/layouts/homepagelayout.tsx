@@ -77,11 +77,15 @@ export default function Home() {
               Courses
             </a>
 
-           {/* Dashboard option */}
+            {/* Dashboard option */}
             {user && (
               <a
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                href={user.role === "admin" ? "/admin/dashboard" : "/students/dashboard"} 
+                href={
+                  user.role === "admin"
+                    ? "/admin/dashboard"
+                    : "/students/dashboard"
+                }
               >
                 Dashboard
               </a>

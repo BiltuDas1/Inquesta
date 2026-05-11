@@ -18,7 +18,11 @@ export default function StudentsDashboardLayout() {
   const currentUrl = location.pathname;
 
   const navItems = [
-    { name: "My Enrollments", icon: "library_books", path: "/students/courses" },
+    {
+      name: "My Enrollments",
+      icon: "library_books",
+      path: "/students/courses",
+    },
   ];
 
   // const currentTitle =

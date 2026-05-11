@@ -119,7 +119,7 @@ function App() {
 
             {/* The actual dashboard page */}
             <Route path="dashboard" element={<StudentEnrollmentsPage />} />
-               <Route path="courses" element={<StudentEnrollmentsPage />} />
+            <Route path="courses" element={<StudentEnrollmentsPage />} />
           </Route>
         </Route>
 
