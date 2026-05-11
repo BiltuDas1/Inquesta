@@ -18,16 +18,15 @@ export default function StudentsDashboardLayout() {
   const currentUrl = location.pathname;
 
   const navItems = [
-    { name: "My Enrollment", icon: "library_books", path: "/dashboard/courses" },
-    { name: "Students", icon: "group", path: "/dashboard/students" },
+    { name: "My Enrollments", icon: "library_books", path: "/students/courses" },
   ];
 
-  const currentTitle =
-    navItems.find(
-      (item) =>
-        currentUrl === item.path ||
-        (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
-    )?.name || "Dashboard";
+  // const currentTitle =
+  //   navItems.find(
+  //     (item) =>
+  //       currentUrl === item.path ||
+  //       (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
+  //   )?.name || "Dashboard";
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -153,7 +152,7 @@ export default function StudentsDashboardLayout() {
       </aside>
 
       {/* ── Main Content Wrapper ── */}
-          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
         <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 bg-[#1c2026] border-b border-[#3b4a44] shrink-0 z-10 transition-all duration-300">
           <div className="flex items-center">
@@ -165,7 +164,8 @@ export default function StudentsDashboardLayout() {
               <span className="material-symbols-outlined text-2xl">menu</span>
             </button>
             <h2 className="font-headline font-bold text-[#dfe2eb] text-lg hidden sm:block capitalize">
-              {getGreeting()} {", "}{user?.firstname} 👋🏼
+              {getGreeting()} {", "}
+              {user?.firstname} 👋🏼
             </h2>
           </div>
 

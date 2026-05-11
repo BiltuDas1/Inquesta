@@ -24,11 +24,17 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   //   return <Navigate to="/courses" replace />;
   // }
 
-  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    if (user.role === "admin") return <Navigate to="/admin/dashboard" replace />;
-    if (user.role === "user") return <Navigate to="/students/dashboard" replace />;
+  if (
+    allowedRoles &&
+    allowedRoles.length > 0 &&
+    !allowedRoles.includes(user.role)
+  ) {
+    if (user.role === "admin")
+      return <Navigate to="/admin/dashboard" replace />;
+    if (user.role === "user")
+      return <Navigate to="/students/dashboard" replace />;
     if (user.role === "teacher") return <Navigate to="/teacher" replace />;
-    
+
     // Fallback redirect
     return <Navigate to="/courses" replace />;
   }

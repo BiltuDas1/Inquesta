@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "../context/authcontext";
 
-
 // GraphQL mutation
 const LOGIN_WITH_GOOGLE = gql`
   mutation loginWithGoogle($code: String!) {

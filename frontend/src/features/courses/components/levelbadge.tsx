@@ -1,7 +1,6 @@
 import type { Level } from "../types/courses";
 import { formatLevel } from "../utils/courseutils";
 
-
 export default function LevelBadge({ level }: { level: Level }) {
   const displayLevel = formatLevel(level);
   const styles: Record<Level, string> = {

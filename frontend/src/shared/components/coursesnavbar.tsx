@@ -3,7 +3,6 @@ import { Logo } from "./logo";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../features/auth/context/authcontext";
 
-
 export default function Navbar() {
   // const [searchFocused, setSearchFocused] = useState(false);
   // const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);

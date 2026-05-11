@@ -13,7 +13,6 @@ const PublicRoute = () => {
     );
   }
 
-
   if (user) {
     if (user.role === "admin") {
       return <Navigate to="admin/dashboard" replace />;
@@ -21,8 +20,6 @@ const PublicRoute = () => {
       return <Navigate to="/courses" replace />;
     }
   }
-
-
 
   return <Outlet />;
 };

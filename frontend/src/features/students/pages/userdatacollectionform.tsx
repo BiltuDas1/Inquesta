@@ -65,11 +65,11 @@ export default function UserDataCollectionForm() {
     try {
       const phoneCodeInt = parseInt(
         dataToSave.phoneCountryCode.replace("+", ""),
-        10
+        10,
       );
       const whatsappCodeInt = parseInt(
         dataToSave.whatsappCountryCode.replace("+", ""),
-        10
+        10,
       );
 
       const { data } = await updateUserInfo({
@@ -89,12 +89,13 @@ export default function UserDataCollectionForm() {
       }
     } catch (error: any) {
       console.error("Mutation error:", error);
-      if (!isAutoSave) toast.error(error.message || "An unexpected error occurred.");
+      if (!isAutoSave)
+        toast.error(error.message || "An unexpected error occurred.");
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -173,7 +174,10 @@ export default function UserDataCollectionForm() {
               htmlFor="phoneNumber"
               className="block text-sm font-medium text-[#dfe2eb]"
             >
-              Phone Number <span className="text-[#84948e] text-xs font-normal">(Optional if WhatsApp provided)</span>
+              Phone Number{" "}
+              <span className="text-[#84948e] text-xs font-normal">
+                (Optional if WhatsApp provided)
+              </span>
             </label>
             <div className="flex gap-2">
               <div className="relative w-[100px] shrink-0">
@@ -213,7 +217,10 @@ export default function UserDataCollectionForm() {
               htmlFor="whatsappNumber"
               className="block text-sm font-medium text-[#dfe2eb]"
             >
-              WhatsApp Number <span className="text-[#84948e] text-xs font-normal">(Optional if Phone provided)</span>
+              WhatsApp Number{" "}
+              <span className="text-[#84948e] text-xs font-normal">
+                (Optional if Phone provided)
+              </span>
             </label>
             <div className="flex gap-2">
               <div className="relative w-[100px] shrink-0">
@@ -262,7 +269,9 @@ export default function UserDataCollectionForm() {
                 onChange={handleDropdownChange}
                 className="w-full appearance-none bg-[#262a31] text-[#dfe2eb] border border-[#84948e] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#6fffd9] focus:border-transparent transition-all"
               >
-                <option value="" disabled>Select Qualification</option>
+                <option value="" disabled>
+                  Select Qualification
+                </option>
                 <option value="High School / 12th">High School / 12th</option>
                 <option value="Diploma">Diploma</option>
                 <option value="Bachelor's Degree">Bachelor's Degree</option>
@@ -285,7 +294,8 @@ export default function UserDataCollectionForm() {
                 htmlFor="highestQualification"
                 className="block text-xs font-medium text-[#b9cac3]"
               >
-                Please Specify Your Qualification <span className="text-red-400">*</span>
+                Please Specify Your Qualification{" "}
+                <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"

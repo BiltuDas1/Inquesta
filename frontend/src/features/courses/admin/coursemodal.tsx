@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import type { Course, Level } from "../types/courses";
 import { formatLevel, LEVELS } from "../utils/courseutils";
 
-
 interface ModalProps {
   editing: Course | null;
   onClose: () => void;
@@ -28,9 +27,7 @@ export default function CourseModal({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(
-    editing?.icon
-      ? `${editing.icon}`
-      : null,
+    editing?.icon ? `${editing.icon}` : null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
