@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "../context/authcontext";
 
-
 // GraphQL mutation
 const LOGIN_WITH_GOOGLE = gql`
   mutation loginWithGoogle($code: String!) {
@@ -44,7 +43,7 @@ export default function GoogleLogin() {
           }
 
           if (userData.role === "admin") {
-            navigate("/dashboard", { replace: true });
+            navigate("/admin/dashboard", { replace: true });
           } else {
             navigate("/courses", { replace: true });
           }

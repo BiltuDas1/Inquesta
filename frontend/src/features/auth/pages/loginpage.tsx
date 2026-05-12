@@ -8,7 +8,6 @@ import { useAuth } from "../context/authcontext";
 import GoogleSVG from "../../../shared/svg/google";
 import InputField from "../../../shared/components/inputfield";
 
-
 // QUERY to get user data
 const LOGIN_QUERY = gql`
   query login($email: String!, $password: String!) {
@@ -116,7 +115,6 @@ export default function LoginPage() {
           return;
         }
 
-   
         const isDetailsFilled =
           !userInfoError && userInfoData?.getUserInfo?.success === true;
         console.log("Isfilled", isDetailsFilled);
@@ -129,8 +127,8 @@ export default function LoginPage() {
         });
 
         if (userData.role === "admin") {
-          navigate("/dashboard");
-        }else {
+          navigate("/admin/dashboard");
+        } else {
           navigate("/courses");
         }
 
@@ -389,7 +387,7 @@ export default function LoginPage() {
                   : "bg-[#0c1a1a] border-[#1e3535]"
               }`}
             > */}
-              {/* {remember && (
+            {/* {remember && (
                 <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
                   <path
                     d="M2 6l3 3 5-5"

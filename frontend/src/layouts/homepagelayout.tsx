@@ -8,7 +8,7 @@ export default function Home() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { user ,logout} = useAuth();
+  const { user, logout } = useAuth();
 
   const profileRef = useRef<HTMLDivElement>(null); // Ref for clicking outside
 
@@ -44,7 +44,6 @@ export default function Home() {
     }
   };
 
-
   return (
     <div className="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary min-h-screen">
       {/* Navigation */}
@@ -78,11 +77,15 @@ export default function Home() {
               Courses
             </a>
 
-            {/* Only Admin users see the Dashboard link */}
-            {user?.role === "admin" && (
+            {/* Dashboard option */}
+            {user && (
               <a
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                href="/dashboard"
+                href={
+                  user.role === "admin"
+                    ? "/admin/dashboard"
+                    : "/students/dashboard"
+                }
               >
                 Dashboard
               </a>
@@ -110,7 +113,10 @@ export default function Home() {
                   </button>
                 </>
               ) : (
-               <div className="relative w-full lg:w-auto flex justify-center" ref={profileRef}>
+                <div
+                  className="relative w-full lg:w-auto flex justify-center"
+                  ref={profileRef}
+                >
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="w-10 h-10 rounded-full bg-[#343d96] text-[#bdc2ff] font-bold text-sm border-2 border-[#3b4a44] hover:border-[#6fffd9] cursor-pointer flex items-center justify-center transition-colors shrink-0"

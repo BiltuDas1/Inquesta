@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
 import { useAuth } from "../features/auth/context/authcontext";
 import { Logo } from "../shared/components/logo";
+import { getGreeting } from "../shared/svg/utils/helper";
 
-export default function DashboardLayout() {
+export default function StudentsDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
@@ -17,16 +18,19 @@ export default function DashboardLayout() {
   const currentUrl = location.pathname;
 
   const navItems = [
-    { name: "Courses", icon: "library_books", path: "/admin/courses" },
-    { name: "Students", icon: "group", path: "/admin/students" },
+    {
+      name: "My Enrollments",
+      icon: "library_books",
+      path: "/students/courses",
+    },
   ];
 
-  const currentTitle =
-    navItems.find(
-      (item) =>
-        currentUrl === item.path ||
-        (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
-    )?.name || "Dashboard";
+  // const currentTitle =
+  //   navItems.find(
+  //     (item) =>
+  //       currentUrl === item.path ||
+  //       (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
+  //   )?.name || "Dashboard";
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -164,7 +168,8 @@ export default function DashboardLayout() {
               <span className="material-symbols-outlined text-2xl">menu</span>
             </button>
             <h2 className="font-headline font-bold text-[#dfe2eb] text-lg hidden sm:block capitalize">
-              {currentTitle}
+              {getGreeting()} {", "}
+              {user?.firstname} 👋🏼
             </h2>
           </div>
 

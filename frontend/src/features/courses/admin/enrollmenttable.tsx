@@ -209,28 +209,30 @@ export default function EnrollmentsDashboard() {
     GET_ALL_ENROLLMENTS,
     {
       fetchPolicy: "cache-and-network",
-    }
+    },
   );
 
   const rawEnrollments = data?.getallEnrollments?.data || [];
 
   // Map the raw backend data into the clean format the Table expects
-  const formattedEnrollments: Enrollment[] = rawEnrollments.map((item: any) => ({
-    id: item.transaction_id,
-    name: `${item.user_firstname} ${item.user_lastname}`.trim(),
-    email: item.user_email,
-    // Add check to ensure the numbers exist, otherwise pass an empty string
-    phone: item.user_phone_number
-      ? `+${item.user_phone_country_code} ${item.user_phone_number}`
-      : "",
-    whatsapp: item.user_whatsapp_number
-      ? `+${item.user_whatsapp_country_code} ${item.user_whatsapp_number}`
-      : "",
-    qualification: item.user_qualification || "",
-    title: item.course_title,
-    transactionId: item.transaction_id,
-    courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
-  }));
+  const formattedEnrollments: Enrollment[] = rawEnrollments.map(
+    (item: any) => ({
+      id: item.transaction_id,
+      name: `${item.user_firstname} ${item.user_lastname}`.trim(),
+      email: item.user_email,
+      // Add check to ensure the numbers exist, otherwise pass an empty string
+      phone: item.user_phone_number
+        ? `+${item.user_phone_country_code} ${item.user_phone_number}`
+        : "",
+      whatsapp: item.user_whatsapp_number
+        ? `+${item.user_whatsapp_country_code} ${item.user_whatsapp_number}`
+        : "",
+      qualification: item.user_qualification || "",
+      title: item.course_title,
+      transactionId: item.transaction_id,
+      courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
+    }),
+  );
 
   return (
     <div className="bg-[#10141a] min-h-screen font-body text-[#dfe2eb] overflow-x-hidden pb-20">
