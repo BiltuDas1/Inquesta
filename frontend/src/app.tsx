@@ -27,31 +27,7 @@ import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./layouts/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
-import TeachersDashboardLayout from "./layouts/teachersdashboardlayout";
-
-// For handling global session
-// const GlobalSessionHandler = () => {
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const handleSessionExpired = async () => {
-//       // Clear apollo cache
-//       await client.clearStore();
-
-//       toast.error("Your session has expired. Please log in again.");
-//       navigate("/login");
-//     };
-
-//     window.addEventListener("session-expired", handleSessionExpired);
-
-//     // Cleanup resources
-//     return () => {
-//       window.removeEventListener("session-expired", handleSessionExpired);
-//     };
-//   }, [navigate]);
-
-//   return null;
-// };
+import ParentDashboardLayout from "./layouts/parentdashboardlayout";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -62,7 +38,13 @@ const GlobalSessionHandler = () => {
       await client.clearStore();
 
       // Check if trying to access ANY protected portal
-      const protectedPaths = ["/admin", "/teacher", "/student", "/dashboard"];
+      const protectedPaths = [
+        "/admin",
+        "/teacher",
+        "/student",
+        "/dashboard",
+        "/parent",
+      ];
       const isProtected = protectedPaths.some((path) =>
         location.pathname.startsWith(path),
       );
@@ -125,15 +107,20 @@ function App() {
         </Route>
 
         {/* =========================================
-             TEACHER DASHBOARD
-             Base URL: /teachers
+          PARENT DASHBOARD
+          Base URL: /parent
         ========================================= */}
-        <Route element={<ProtectedRoute allowedRoles={["user", "teacher"]} />}>
-          <Route path="/teacher" element={<TeachersDashboardLayout />}>
+        <Route element={<ProtectedRoute allowedRoles={["parent"]} />}>
+          <Route path="/parent" element={<ParentDashboardLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
-
-            {/* The actual dashboard page */}
-            <Route path="dashboard" element={<div>Teacher Dashboard Coming Soon !!</div>} />
+            <Route
+              path="dashboard"
+              element={<div>Detailed Student Progress</div>}
+            />
+            <Route
+              path="student-reports"
+              element={<div>Detailed Student Progress</div>}
+            />
           </Route>
         </Route>
 

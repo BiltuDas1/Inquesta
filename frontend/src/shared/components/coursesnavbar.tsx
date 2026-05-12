@@ -373,7 +373,11 @@ export default function Navbar() {
                   to={
                     user.role === "admin"
                       ? "/admin/dashboard"
-                      : "/students/dashboard"
+                      : user.role === "teacher"
+                        ? "/teacher/dashboard"
+                        : user.role === "parent"
+                          ? "/parent/dashboard"
+                          : "/students/dashboard"
                   }
                   className="flex items-center gap-2 text-[#b9cac3] hover:text-[#6fffd9] transition-colors font-semibold text-sm tracking-wide"
                 >
