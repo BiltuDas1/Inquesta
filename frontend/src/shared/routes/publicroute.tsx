@@ -22,6 +22,15 @@ const PublicRoute = () => {
     } else {
       return <Navigate to="/courses" replace />;
     }
+    if (user.role === "teacher") {
+      return <Navigate to="/teacher/dashboard" replace />;
+    }
+
+    if (user.role === "student") {
+      return <Navigate to="/students/dashboard" replace />;
+    }
+
+    return <Navigate to="/courses" replace />;
   }
 
   return <Outlet />;

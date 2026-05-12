@@ -29,16 +29,17 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     allowedRoles.length > 0 &&
     !allowedRoles.includes(user.role)
   ) {
-    if (user.role === "admin")
-      return <Navigate to="/admin/dashboard" replace />;
-    if (user.role === "user")
-      return <Navigate to="/students/dashboard" replace />;
-    if (user.role === "teacher") return <Navigate to="/teacher" replace />;
-    if (user.role === "parent")
-      return <Navigate to="/parent/dashboard" replace />;
-
-    // Fallback redirect
-    return <Navigate to="/courses" replace />;
+    switch (user.role) {
+      case "admin":
+        return <Navigate to="/admin/dashboard" replace />;
+      case "teacher":
+        return <Navigate to="/teacher/dashboard" replace />;
+      case "student":
+      case "user":
+        return <Navigate to="/students/dashboard" replace />;
+      default:
+        return <Navigate to="/courses" replace />;
+    }
   }
   return <Outlet />;
 };
