@@ -237,7 +237,6 @@
 //   );
 // }
 
-
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "./logo";
 import { useNavigate, Link } from "react-router";
@@ -293,18 +292,21 @@ export default function Navbar() {
         It is now a standard block container holding full-height inner containers.
       */}
       <nav className="sticky top-0 z-50 w-full h-16 bg-[#181c22] border-b border-[#3b4a44] text-on-surface font-headline">
-        
         {/* ── Mobile Layout ── */}
         <div className="flex md:hidden items-center justify-between w-full h-full px-4">
           <div className="flex items-center shrink-0">
             <Logo />
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Mobile Dashboard Link */}
             {user && (
               <Link
-                to={user.role === "admin" ? "/admin/dashboard" : "/student/dashboard"}
+                to={
+                  user.role === "admin"
+                    ? "/admin/dashboard"
+                    : "/student/dashboard"
+                }
                 className="text-[#b9cac3] hover:text-[#dfe2eb] transition-colors text-sm font-semibold"
               >
                 Dashboard
@@ -354,7 +356,6 @@ export default function Navbar() {
 
         {/* ── Tablet & Desktop Layout ── */}
         <div className="hidden md:flex items-center justify-between w-full h-full px-4 lg:px-8 max-w-7xl mx-auto">
-          
           {/* Left: Logo */}
           <div className="flex items-center shrink-0">
             <Logo />
@@ -365,12 +366,15 @@ export default function Navbar() {
 
           {/* Right: Navigation & Auth Group */}
           <div className="flex items-center gap-6 shrink-0">
-            
             {/* Desktop Dashboard Link */}
             {user && (
               <div className="flex items-center gap-6">
                 <Link
-                  to={user.role === "admin" ? "/admin/dashboard" : "/students/dashboard"}
+                  to={
+                    user.role === "admin"
+                      ? "/admin/dashboard"
+                      : "/students/dashboard"
+                  }
                   className="flex items-center gap-2 text-[#b9cac3] hover:text-[#6fffd9] transition-colors font-semibold text-sm tracking-wide"
                 >
                   Dashboard
