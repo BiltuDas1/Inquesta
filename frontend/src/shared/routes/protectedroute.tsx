@@ -34,6 +34,8 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     if (user.role === "user")
       return <Navigate to="/students/dashboard" replace />;
     if (user.role === "teacher") return <Navigate to="/teacher" replace />;
+    if (user.role === "parent")
+      return <Navigate to="/parent/dashboard" replace />;
 
     // Fallback redirect
     return <Navigate to="/courses" replace />;

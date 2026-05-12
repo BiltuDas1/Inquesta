@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Footer } from "../shared/components/footer";
 import { useAuth } from "../features/auth/context/authcontext";
 
@@ -70,25 +70,35 @@ export default function Home() {
           >
             {/* --- NAV LINKS --- */}
             {/* Everyone sees the Courses link */}
-            <a
+            {/* <a
               className="text-on-surface-variant hover:text-on-surface transition-colors"
               href="/courses"
             >
               Courses
-            </a>
+            </a> */}
+            <Link
+              className="text-on-surface-variant hover:text-on-surface transition-colors"
+              to="/courses"
+            >
+              Courses
+            </Link>
 
             {/* Dashboard option */}
             {user && (
-              <a
+              <Link
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
-                href={
+                to={
                   user.role === "admin"
                     ? "/admin/dashboard"
-                    : "/students/dashboard"
+                    : user.role === "teacher"
+                      ? "/teacher/dashboard"
+                      : user.role === "parent"
+                        ? "/parent/dashboard"
+                        : "/students/dashboard"
                 }
               >
                 Dashboard
-              </a>
+              </Link>
             )}
 
             {/* Divider for mobile */}
