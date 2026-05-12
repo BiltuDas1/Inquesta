@@ -19,8 +19,6 @@ const PublicRoute = () => {
     }
     if (user.role === "parent") {
       return <Navigate to="/parent/dashboard" replace />;
-    } else {
-      return <Navigate to="/courses" replace />;
     }
     if (user.role === "teacher") {
       return <Navigate to="/teacher/dashboard" replace />;
