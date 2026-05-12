@@ -59,7 +59,7 @@ def test_login_successful(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-                query Login($email: String!, $password: String!) {
+                mutation Login($email: String!, $password: String!) {
                   login(email: $email, password: $password) {
                     success
                     message
@@ -111,7 +111,7 @@ def test_login_email_not_exist(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-                query Login($email: String!, $password: String!) {
+                mutation Login($email: String!, $password: String!) {
                   login(email: $email, password: $password) {
                     success
                     message
@@ -211,7 +211,7 @@ def test_login_password_incorrect(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-                query Login($email: String!, $password: String!) {
+                mutation Login($email: String!, $password: String!) {
                   login(email: $email, password: $password) {
                     success
                     message
@@ -253,7 +253,7 @@ def test_login_password_incorrect(api_request_context: APIRequestContext):
   )
 
 
-def test_login_email_case_mismatch(api_request_context: APIRequestContext):
+def test_login_password_case_mismatch(api_request_context: APIRequestContext):
 
   register_response = api_request_context.post(
     "/",
@@ -311,7 +311,7 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-                query Login($email: String!, $password: String!) {
+                mutation Login($email: String!, $password: String!) {
                   login(email: $email, password: $password) {
                     success
                     message
@@ -325,8 +325,8 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
                 }
             """,
       "variables": {
-        "email": "rohannayak@gmail.org",
-        "password": "Pass@123",
+        "email": "rohannayak@gmail.com",
+        "password": "pass@123",
       },
     },
   )
@@ -359,7 +359,7 @@ def test_login_email_empty(api_request_context: APIRequestContext):
     "/",
     data={
       "query": """
-                query Login($email: String!, $password: String!) {
+                mutation Login($email: String!, $password: String!) {
                   login(email: $email, password: $password) {
                     success
                     message
