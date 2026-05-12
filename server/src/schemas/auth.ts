@@ -30,10 +30,11 @@ builder.mutationField("register", (t) =>
       lastname: t.arg.string({ required: false }),
       email: t.arg.string({ required: true }),
       password: t.arg.string({ required: true }),
+      is_student: t.arg.boolean({ required: true })
     },
-    resolve: async (_parent, data: User, context) => {
+    resolve: async (_parent, data, context) => {
       try {
-        return await registerUser(data, context);
+        return await registerUser(data, data.is_student, context);
       } catch (error: any) {
         context.logger.error(error, "Registration Failed");
         return {
@@ -62,7 +63,7 @@ const loginResponse = builder
     }),
   });
 
-builder.queryField("login", (t) =>
+builder.mutationField("login", (t) =>
   t.field({
     type: loginResponse,
     args: {
