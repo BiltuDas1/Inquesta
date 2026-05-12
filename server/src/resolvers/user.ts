@@ -32,10 +32,13 @@ async function sendEmail(email: string, verify_link: string) {
   return error;
 }
 
-export async function registerUser(data: User, context: FastifyContext) {
+export async function registerUser(data: User, is_student: boolean, context: FastifyContext) {
   try {
     data.password = await hash(data.password);
-    await db.insert(users).values(data);
+    await db.insert(users).values({
+      ...data,
+      role: is_student ? "student" : "parent"
+    });
     const token = generateUrlSafeToken();
     await redis.setEx("inquesta:user:email:" + token, 10 * 60, data.email); // Expire in 10 minutes
     const emailError = await sendEmail(
