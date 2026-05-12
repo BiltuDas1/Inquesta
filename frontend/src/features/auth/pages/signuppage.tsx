@@ -2,7 +2,7 @@ import { useState } from "react";
 import { gql } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useMutation } from "@apollo/client/react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router"; // Added Link import
 import { google_login } from "../utils/googleauth";
 import GoogleSVG from "../../../shared/svg/google";
 import InputField from "../../../shared/components/inputfield";
@@ -15,19 +15,21 @@ interface RegisterResponse {
   };
 }
 
-// Define your GraphQL mutation
+// UPDATE 1: Added $is_student to the GraphQL mutation
 const REGISTER_MUTATION = gql`
   mutation register(
     $email: String!
     $firstname: String!
     $lastname: String!
     $password: String!
+    $is_student: Boolean!
   ) {
     register(
       email: $email
       firstname: $firstname
       lastname: $lastname
       password: $password
+      is_student: $is_student
     ) {
       message
       success
@@ -40,13 +42,14 @@ export default function SignupPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
-  // Add state for the form data
+  // UPDATE 2: Added is_student to formData state (defaulting to true)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
+    is_student: true, 
   });
 
   // Initalize apollo mutation
@@ -81,13 +84,14 @@ export default function SignupPage() {
     }
 
     try {
-      // Execute the mutation
+      // UPDATE 3: Pass is_student in the variables payload
       const { data } = await registerUser({
         variables: {
           email: formData.email,
           firstname: formData.firstName,
           lastname: formData.lastName,
           password: formData.password,
+          is_student: formData.is_student, 
         },
       });
 
@@ -107,6 +111,7 @@ export default function SignupPage() {
           email: "",
           password: "",
           confirmPassword: "",
+          is_student: true,
         });
       } else {
         toast.error(
@@ -120,7 +125,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#0e1a1a] font-sans">
+    <div className="min-h-screen flex bg-[#0e1a1a] font-headline">
       {/* LEFT PANEL — hidden on mobile */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-center items-center px-12 overflow-hidden">
         {/* Background gradient */}
@@ -153,38 +158,6 @@ export default function SignupPage() {
             <br className="hidden xl:block" />
             and achieve your goals — all in one powerful platform.
           </p>
-
-          {/* Feature pills */}
-          {/* <div className="flex flex-col gap-3 text-left">
-            {[
-              {
-                icon: <span className="material-symbols-outlined ">star</span>,
-                text: "AI-powered personalized learning paths",
-              },
-              {
-                icon: <span className="material-symbols-outlined">school</span>,
-                text: "Expert-led courses with certifications",
-              },
-              {
-                icon: (
-                  <span className="material-symbols-outlined">menu_book</span>
-                ),
-                text: "Interactive content & real-time collaboration",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 bg-[#132424]/80 border border-[#1e3535] rounded-xl px-4 py-3 backdrop-blur-sm"
-              >
-                <div className="shrink-0 w-8 h-8 rounded-lg bg-[#1a3a35] flex items-center justify-center text-[#00d4aa]">
-                  {item.icon}
-                </div>
-                <span className="text-[#c5dede] text-sm font-medium">
-                  {item.text}
-                </span>
-              </div>
-            ))}
-          </div> */}
         </div>
       </div>
 
@@ -222,6 +195,44 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={handleSave}>
+
+            {/* UPDATE 4: Role Selection UI added here */}
+            <div className="mb-5">
+              <label className="block text-[#8aabb0] text-sm font-medium mb-3">
+                I am signing up as a:
+              </label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_student: true })}
+                  className={`flex-1 py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer ${
+                    formData.is_student
+                      ? "bg-[#00d4aa]/10 border-[#00d4aa] text-[#00d4aa]"
+                      : "bg-[#1b2e2e] border-[#2a4040] text-[#6a8f8f] hover:bg-[#1f3535]"
+                  }`}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                    school
+                  </span>
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_student: false })}
+                  className={`flex-1 py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer ${
+                    !formData.is_student
+                      ? "bg-[#00d4aa]/10 border-[#00d4aa] text-[#00d4aa]"
+                      : "bg-[#1b2e2e] border-[#2a4040] text-[#6a8f8f] hover:bg-[#1f3535]"
+                  }`}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                    co_present
+                  </span>
+                 Parent
+                </button>
+              </div>
+            </div>
+
             {/* Name row */}
             <div className="flex flex-col sm:flex-row gap-4 mb-4">
               <div className="flex-1">
@@ -384,12 +395,12 @@ export default function SignupPage() {
           {/* Login link */}
           <p className="text-center text-[#4a7070] text-sm">
             Already have an account?{" "}
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="text-[#00d4aa] hover:text-[#00bfa0] font-medium transition-colors"
             >
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </div>
