@@ -27,6 +27,7 @@ import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./layouts/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
+import TeachersDashboardLayout from "./layouts/teachersdashboardlayout";
 
 // For handling global session
 // const GlobalSessionHandler = () => {
@@ -123,20 +124,20 @@ function App() {
           </Route>
         </Route>
 
-        {/*  PROTECTED ROUTES (Must be logged in as Admin) */}
-        {/* <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="courses" element={<DashboardPage />} />
-            <Route path="students" element={<EnrollmentsDashboard />} />
-            <Route
-              path="analytics"
-              element={<div>Analytics coming soon</div>}
-            />
-            <Route path="settings" element={<div>Settings coming soon</div>} />
-          </Route>
-        </Route> */}
+        {/* =========================================
+             TEACHER DASHBOARD
+             Base URL: /teachers
+        ========================================= */}
+        <Route element={<ProtectedRoute allowedRoles={["user", "teacher"]} />}>
+          <Route path="/teacher" element={<TeachersDashboardLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
 
+            {/* The actual dashboard page */}
+            <Route path="dashboard" element={<div>Teacher Dashboard Coming Soon !!</div>} />
+          </Route>
+        </Route>
+
+      
         {/* =========================================
              ADMIN PROTECTED ROUTES
              Base URL: /admin
