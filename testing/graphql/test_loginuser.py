@@ -351,6 +351,10 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
   assert login_result.get("data") is not None, (
     f"Expected null, got {login_result.get('data')}"
   )
+  assert login_result["data"]["email"] == "rohannayak@gmail.com"
+  assert login_result["data"]["firstname"] == "rohan"
+  assert login_result["data"]["lastname"] == "nayak"
+  assert "role" in login_result["data"]
 
 
 def test_login_email_empty(api_request_context: APIRequestContext):
