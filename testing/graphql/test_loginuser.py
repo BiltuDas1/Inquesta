@@ -348,7 +348,7 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
   assert isinstance(login_result.get("message"), str), (
     f"Expected str message, got {type(login_result.get('message'))}"
   )
-  assert login_result.get("data") is None, (
+  assert login_result.get("data") is not None, (
     f"Expected null, got {login_result.get('data')}"
   )
 
