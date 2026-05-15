@@ -241,6 +241,54 @@ def test_register_firstname_empty(api_request_context: APIRequestContext):
   )
 
 
+def test_register_lastname_empty(api_request_context: APIRequestContext):
+  response = api_request_context.post(
+    "/",
+    data={
+      "query": """
+                mutation Register(
+                  $email: String!
+                  $firstname: String!
+                  $lastname: String
+                  $password: String!
+                ) {
+                  register(
+                    email: $email
+                    firstname: $firstname
+                    lastname: $lastname
+                    password: $password
+                  ) {
+                    message
+                    success
+                  }
+                }
+            """,
+      "variables": {
+        "email": "dipu123@gmail.com",
+        "firstname": "Dipankar",
+        "lastname": "",
+        "password": "pass@123",
+      },
+    },
+  )
+
+  assert response.ok, f"API failed with status {response.status}"
+  res_json = response.json()
+
+  assert "errors" not in res_json, f"Register GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("register")
+
+  assert result is not None, (
+    f"Register result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
 def test_register_password_too_short(api_request_context: APIRequestContext):
   response = api_request_context.post(
     "/",
