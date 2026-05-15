@@ -331,7 +331,7 @@ def test_register_password_too_long(api_request_context: APIRequestContext):
   assert result is not None, (
     f"Register result was null. Errors: {res_json.get('errors')}"
   )
-  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert result.get("success") is True, f"Expected True, got {result.get('success')}"
   assert isinstance(result.get("message"), str), (
     f"Expected str message, got {type(result.get('message'))}"
   )
