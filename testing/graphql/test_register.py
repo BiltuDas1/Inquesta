@@ -249,13 +249,11 @@ def test_register_lastname_empty(api_request_context: APIRequestContext):
                 mutation Register(
                   $email: String!
                   $firstname: String!
-                  $lastname: String
                   $password: String!
                 ) {
                   register(
                     email: $email
                     firstname: $firstname
-                    lastname: $lastname
                     password: $password
                   ) {
                     message
@@ -266,7 +264,6 @@ def test_register_lastname_empty(api_request_context: APIRequestContext):
       "variables": {
         "email": "dipu123@gmail.com",
         "firstname": "Dipankar",
-        "lastname": "",
         "password": "pass@123",
       },
     },
