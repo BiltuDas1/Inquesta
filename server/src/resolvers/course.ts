@@ -25,12 +25,12 @@ export async function getCourses(limit: number, lastID?: string | null) {
       .orderBy(desc(courses.id))
       .limit(limit);
 
-    const data = []
+    const data = [];
     for (const item of response) {
       data.push({
         ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
-      })
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+      });
     }
 
     return data;
@@ -41,12 +41,12 @@ export async function getCourses(limit: number, lastID?: string | null) {
       .orderBy(desc(courses.id))
       .limit(limit);
 
-    const data = []
+    const data = [];
     for (const item of response) {
       data.push({
         ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
-      })
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+      });
     }
 
     return data;
@@ -75,8 +75,8 @@ export async function getCourseInfo(id: string) {
     for (const item of result) {
       return {
         ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
-      }
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+      };
     }
   }
   return null;

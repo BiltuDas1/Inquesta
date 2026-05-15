@@ -32,20 +32,24 @@ async function sendEmail(email: string, verify_link: string) {
   return error;
 }
 
-export async function registerUser(data: User, is_student: boolean, context: FastifyContext) {
+export async function registerUser(
+  data: User,
+  is_student: boolean,
+  context: FastifyContext,
+) {
   try {
     data.password = await hash(data.password);
     await db.insert(users).values({
       ...data,
       isActive: isMockTestingEnabled,
-      role: is_student ? "student" : "parent"
+      role: is_student ? "student" : "parent",
     });
 
     if (isMockTestingEnabled) {
       return {
         success: true,
-        message: "registration complete"
-      }
+        message: "registration complete",
+      };
     }
 
     const token = generateUrlSafeToken();
