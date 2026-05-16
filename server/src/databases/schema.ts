@@ -40,6 +40,7 @@ export const courses = mysqlTable("courses", {
   duration: varchar({ length: 255 }).notNull(),
   instructorName: varchar("instructor_name", { length: 255 }).notNull(),
   iconName: varchar("icon_name", { length: 255 }),
+  slug: varchar({ length: 255 }).notNull().unique(),
 });
 
 export const users_info = mysqlTable("users_info", {

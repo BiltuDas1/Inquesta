@@ -1,4 +1,4 @@
-import { desc, eq, lte } from "drizzle-orm";
+import { desc, eq, like, lte } from "drizzle-orm";
 import { db, redis, s3PublicEndpoint } from "../config.ts";
 import {
   courseEnrollments,
@@ -9,9 +9,20 @@ import {
 import type { Course } from "../types/course.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
 import type { UserDetails } from "../types/user.ts";
+import { extract_url_number, sentence_to_url } from "../utils/slug.ts";
 
 export async function addCourse(data: Course) {
-  await db.insert(courses).values(data);
+  let slug = sentence_to_url(data.title, 5);
+  const result = await db.select().from(courses).where(like(courses.slug, `${slug}%`)).orderBy(desc(courses.slug)).limit(1);
+  for (const course of result) {
+    const num = extract_url_number(course.slug)
+    slug = `${slug}-${num + 1}`
+  }
+
+  await db.insert(courses).values({
+    ...data,
+    slug: slug
+  });
   await redis.del("inquesta:courses:list");
   return true;
 }
@@ -65,11 +76,11 @@ export async function deleteCourse(uuid: string) {
   return true;
 }
 
-export async function getCourseInfo(id: string) {
+export async function getCourseInfo(slug: string) {
   const result = await db
     .selectDistinct()
     .from(courses)
-    .where(eq(courses.id, id));
+    .where(eq(courses.slug, slug));
 
   if (result !== undefined) {
     for (const item of result) {
@@ -200,6 +211,7 @@ export async function getAllEnrollments(access_token: string) {
         level: item.courses.level,
         duration: item.courses.duration,
         instructorName: item.courses.instructorName,
+        slug: item.courses.slug,
         enrolled_at: Math.floor(
           item.course_enrollments.enrolledAt.getTime() / 1000,
         ),
