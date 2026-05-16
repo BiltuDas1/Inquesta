@@ -12,6 +12,7 @@ export type Course = {
   duration: string;
   instructorName: string;
   iconName?: string | null | undefined;
+  slug?: string;
 };
 
 export const CourseObject = builder
@@ -26,6 +27,7 @@ export const CourseObject = builder
       level: t.exposeString("level"),
       duration: t.exposeString("duration"),
       instructorName: t.exposeString("instructorName"),
+      slug: t.exposeString("slug")
     }),
   });
 

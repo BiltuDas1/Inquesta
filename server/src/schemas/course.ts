@@ -185,11 +185,11 @@ builder.queryField("getCourseInfo", (t) =>
   t.field({
     type: singleCourseResponse,
     args: {
-      courseID: t.arg.string({ required: true }),
+      slug: t.arg.string({ required: true }),
     },
     resolve: async (_parent, args, context) => {
       try {
-        const result = await getCourseInfo(args.courseID);
+        const result = await getCourseInfo(args.slug);
         if (!result) {
           return {
             success: false,

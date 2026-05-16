@@ -76,11 +76,11 @@ export async function deleteCourse(uuid: string) {
   return true;
 }
 
-export async function getCourseInfo(id: string) {
+export async function getCourseInfo(slug: string) {
   const result = await db
     .selectDistinct()
     .from(courses)
-    .where(eq(courses.id, id));
+    .where(eq(courses.slug, slug));
 
   if (result !== undefined) {
     for (const item of result) {
@@ -211,6 +211,7 @@ export async function getAllEnrollments(access_token: string) {
         level: item.courses.level,
         duration: item.courses.duration,
         instructorName: item.courses.instructorName,
+        slug: item.courses.slug,
         enrolled_at: Math.floor(
           item.course_enrollments.enrolledAt.getTime() / 1000,
         ),
