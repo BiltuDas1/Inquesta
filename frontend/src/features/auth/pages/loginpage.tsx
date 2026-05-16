@@ -68,7 +68,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   // Initialize Apollo Lazy Query
-  const [loginUser, { loading, error }] = useMutation<LoginData>(LOGIN_MUTATION);
+  const [loginUser, { loading, error }] =
+    useMutation<LoginData>(LOGIN_MUTATION);
   const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
     fetchPolicy: "network-only",
   });

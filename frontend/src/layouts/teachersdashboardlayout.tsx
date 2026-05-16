@@ -3,7 +3,6 @@ import { Outlet, useNavigate } from "react-router"; // Ensure this matches your 
 import { useAuth } from "../features/auth/context/authcontext";
 import { Logo } from "../shared/components/logo";
 
-
 export default function TeachersDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -14,16 +13,16 @@ export default function TeachersDashboardLayout() {
   const navigate = useNavigate();
   const profileRef = useRef<HTMLDivElement>(null);
 
-//   const location = useLocation();
-//   const currentUrl = location.pathname;
+  //   const location = useLocation();
+  //   const currentUrl = location.pathname;
 
-//   const navItems = [
-//     {
-//       name: "My Enrollments",
-//       icon: "library_books",
-//       path: "/students/courses",
-//     },
-//   ];
+  //   const navItems = [
+  //     {
+  //       name: "My Enrollments",
+  //       icon: "library_books",
+  //       path: "/students/courses",
+  //     },
+  //   ];
 
   // const currentTitle =
   //   navItems.find(
