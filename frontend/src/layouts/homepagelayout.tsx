@@ -167,7 +167,7 @@ export default function Home() {
               <div className="inline-flex items-center space-x-2 bg-surface-container-low/50 border border-outline-variant px-4 py-2 rounded-full backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="text-xs font-medium tracking-widest uppercase text-on-surface-variant">
-                  INDIA'S #1 STEM EDTECH PLATFORM
+                  REGISTRATION IS CURRENTLY GOING ON
                 </span>
               </div>
               <h1 className="text-6xl md:text-7xl font-headline font-extrabold tracking-tighter leading-[1.1]">
