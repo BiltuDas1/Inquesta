@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "0cd83375-6de4-4d78-9a83-a92359407e12",
-  "prevId": "90776175-dfab-455f-b225-5338c458a12a",
+  "id": "583a6cbd-d25c-4cd7-affb-4bcf020ceaad",
+  "prevId": "0cd83375-6de4-4d78-9a83-a92359407e12",
   "tables": {
     "countries": {
       "name": "countries",
@@ -203,6 +203,64 @@
           "columns": ["slug"]
         }
       },
+      "checkConstraint": {}
+    },
+    "notices": {
+      "name": "notices",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "badge": {
+          "name": "badge",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "image_path": {
+          "name": "image_path",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "notices_id": {
+          "name": "notices_id",
+          "columns": ["id"]
+        }
+      },
+      "uniqueConstraints": {},
       "checkConstraint": {}
     },
     "users": {

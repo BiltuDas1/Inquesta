@@ -17,6 +17,6 @@ export const NoticeObject = builder
       imagePath: t.exposeString("imagePath"),
       description: t.exposeString("description"),
       badge: t.exposeString("badge", { nullable: true }),
-      isActive: t.exposeBoolean("isActive")
+      isActive: t.exposeBoolean("isActive"),
     }),
   });

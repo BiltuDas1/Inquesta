@@ -13,15 +13,20 @@ import { extract_url_number, sentence_to_url } from "../utils/slug.ts";
 
 export async function addCourse(data: Course) {
   let slug = sentence_to_url(data.title, 5);
-  const result = await db.select().from(courses).where(like(courses.slug, `${slug}%`)).orderBy(desc(courses.slug)).limit(1);
+  const result = await db
+    .select()
+    .from(courses)
+    .where(like(courses.slug, `${slug}%`))
+    .orderBy(desc(courses.slug))
+    .limit(1);
   for (const course of result) {
-    const num = extract_url_number(course.slug)
-    slug = `${slug}-${num + 1}`
+    const num = extract_url_number(course.slug);
+    slug = `${slug}-${num + 1}`;
   }
 
   await db.insert(courses).values({
     ...data,
-    slug: slug
+    slug: slug,
   });
   await redis.del("inquesta:courses:list");
   return true;

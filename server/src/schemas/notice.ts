@@ -1,5 +1,10 @@
 import { builder, GQLResponse } from "../libraries/builder.ts";
-import { addNotice, deleteNotice, getNotices, updateNotice } from "../resolvers/notice.ts";
+import {
+  addNotice,
+  deleteNotice,
+  getNotices,
+  updateNotice,
+} from "../resolvers/notice.ts";
 import { NoticeObject, type Notice } from "../types/notice.ts";
 
 builder.mutationField("addNotice", (t) =>
@@ -13,12 +18,12 @@ builder.mutationField("addNotice", (t) =>
       description: t.arg.string({ required: true }),
       badge: t.arg.string({ required: false }),
       image: t.arg.string({ required: true }),
-      isActive: t.arg.boolean({ required: true })
+      isActive: t.arg.boolean({ required: true }),
     },
     resolve: async (_parent, data, context) => {
       return await addNotice({
         ...data,
-        imagePath: data.image
+        imagePath: data.image,
       });
     },
   }),
@@ -31,14 +36,13 @@ builder.mutationField("deleteNotice", (t) =>
     },
     type: GQLResponse,
     args: {
-      id: t.arg.string({ required: true })
+      id: t.arg.string({ required: true }),
     },
     resolve: async (_parent, data, context) => {
       return await deleteNotice(data.id);
     },
   }),
 );
-
 
 builder.mutationField("updateNotice", (t) =>
   t.field({
@@ -52,12 +56,12 @@ builder.mutationField("updateNotice", (t) =>
       description: t.arg.string({ required: true }),
       badge: t.arg.string({ required: false }),
       image: t.arg.string({ required: true }),
-      isActive: t.arg.boolean({ required: true })
+      isActive: t.arg.boolean({ required: true }),
     },
     resolve: async (_parent, data, context) => {
       return await updateNotice(data.id, {
         ...data,
-        imagePath: data.image
+        imagePath: data.image,
       });
     },
   }),
@@ -93,13 +97,13 @@ builder.mutationField("getNotices", (t) =>
         return {
           success: true,
           message: "notices fetched successfully",
-          data: result
+          data: result,
         };
       } catch (error) {
         return {
           success: false,
-          message: "failed to fetch notices"
-        }
+          message: "failed to fetch notices",
+        };
       }
     },
   }),
