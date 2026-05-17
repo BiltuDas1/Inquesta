@@ -23,13 +23,13 @@ export async function updateNotice(id: string, data: Notice) {
     await db.update(notices).set(data).where(eq(notices.id, id));
     return {
       success: true,
-      message: "notice updated successfully"
-    }
+      message: "notice updated successfully",
+    };
   } catch (error) {
     return {
       success: false,
-      message: "failed to update notice information"
-    }
+      message: "failed to update notice information",
+    };
   }
 }
 
@@ -38,13 +38,13 @@ export async function deleteNotice(id: string) {
     await db.delete(notices).where(eq(notices.id, id));
     return {
       success: true,
-      message: "notice deleted successfully"
-    }
+      message: "notice deleted successfully",
+    };
   } catch (error) {
     return {
       success: false,
-      message: "failed to delete notice"
-    }
+      message: "failed to delete notice",
+    };
   }
 }
 
@@ -54,8 +54,8 @@ export async function getNotices() {
   for (const notice of result) {
     data.push({
       ...notice,
-      imagePath: `${s3PublicEndpoint}${notice.imagePath}`
-    })
+      imagePath: `${s3PublicEndpoint}${notice.imagePath}`,
+    });
   }
   return data;
 }
