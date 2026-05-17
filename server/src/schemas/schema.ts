@@ -4,5 +4,6 @@ import "./health.ts";
 import "./auth.ts";
 import "./course.ts";
 import "./file.ts";
+import "./notice.ts";
 
 export const schema = builder.toSchema();

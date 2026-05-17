@@ -80,7 +80,6 @@ export const notices = mysqlTable("notices", {
   title: varchar({ length: 255 }).notNull(),
   description: text().notNull(),
   badge: varchar({ length: 255 }),
-  duration: int(),
-  difficulty: varchar({ length: 255 }),
-  imagePath: varchar("image_path", { length: 255 }),
+  imagePath: varchar("image_path", { length: 255 }).notNull(),
+  isActive: boolean("is_active").notNull().default(false),
 });
