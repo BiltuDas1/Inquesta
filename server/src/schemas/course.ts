@@ -142,11 +142,13 @@ builder.mutationField("courseUpdate", (t) =>
       level: t.arg.string({ required: true }),
       duration: t.arg.string({ required: true }),
       instructor_name: t.arg.string({ required: true }),
+      icon_name: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
         await updateCourse(args.id, {
           ...args,
+          iconName: args.icon_name,
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
         });
