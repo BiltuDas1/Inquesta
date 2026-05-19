@@ -161,6 +161,7 @@ export async function getAllEnrolledCourses(access_token: string) {
         duration: courses.duration,
         instructorName: courses.instructorName,
         iconName: courses.iconName,
+        slug: courses.slug
       })
       .from(courseEnrollments)
       .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))

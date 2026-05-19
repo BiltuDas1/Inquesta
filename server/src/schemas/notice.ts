@@ -84,7 +84,7 @@ const noticesResponse = builder
     }),
   });
 
-builder.mutationField("getNotices", (t) =>
+builder.queryField("getNotices", (t) =>
   t.field({
     authScopes: {
       isValidSession: true,
