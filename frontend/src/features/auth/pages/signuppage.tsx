@@ -49,7 +49,7 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    is_student: true, 
+    is_student: true,
   });
 
   // Initalize apollo mutation
@@ -91,7 +91,7 @@ export default function SignupPage() {
           firstname: formData.firstName,
           lastname: formData.lastName,
           password: formData.password,
-          is_student: formData.is_student, 
+          is_student: formData.is_student,
         },
       });
 
@@ -195,7 +195,6 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={handleSave}>
-
             {/* UPDATE 4: Role Selection UI added here */}
             <div className="mb-5">
               <label className="block text-[#8aabb0] text-sm font-medium mb-3">
@@ -211,24 +210,32 @@ export default function SignupPage() {
                       : "bg-[#1b2e2e] border-[#2a4040] text-[#6a8f8f] hover:bg-[#1f3535]"
                   }`}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "20px" }}
+                  >
                     school
                   </span>
                   Student
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, is_student: false })}
+                  onClick={() =>
+                    setFormData({ ...formData, is_student: false })
+                  }
                   className={`flex-1 py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer ${
                     !formData.is_student
                       ? "bg-[#00d4aa]/10 border-[#00d4aa] text-[#00d4aa]"
                       : "bg-[#1b2e2e] border-[#2a4040] text-[#6a8f8f] hover:bg-[#1f3535]"
                   }`}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: "20px" }}
+                  >
                     co_present
                   </span>
-                 Parent
+                  Parent
                 </button>
               </div>
             </div>

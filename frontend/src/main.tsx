@@ -22,7 +22,7 @@ const _sysCfg = {
   h: "aHR0cHM6Ly9naXRodWIuY29tL0JpbHR1RGFzMQ==",
   i: "U2FudHUgUHJhbWFuaWs=",
   j: "aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL3NhbnR1LXByYW1hbmlrLw==",
-  k: "aHR0cHM6Ly9naXRodWIuY29tL3NhbnR1cHJhbWFuaWsx"
+  k: "aHR0cHM6Ly9naXRodWIuY29tL3NhbnR1cHJhbWFuaWsx",
 };
 
 const _dec = (str: string) => atob(str);
@@ -32,16 +32,24 @@ const initMetadata = () => {
     const data = {
       "@context": _dec(_sysCfg.a),
       "@type": _dec(_sysCfg.b),
-      "name": _dec(_sysCfg.c),
-      "url": _dec(_sysCfg.d),
-      "description": _dec(_sysCfg.e),
-      "developer": [
-        { "@type": "Person", "name": _dec(_sysCfg.f), "sameAs": [_dec(_sysCfg.g), _dec(_sysCfg.h)] },
-        { "@type": "Person", "name": _dec(_sysCfg.i), "sameAs": [_dec(_sysCfg.j), _dec(_sysCfg.k)] }
-      ]
+      name: _dec(_sysCfg.c),
+      url: _dec(_sysCfg.d),
+      description: _dec(_sysCfg.e),
+      developer: [
+        {
+          "@type": "Person",
+          name: _dec(_sysCfg.f),
+          sameAs: [_dec(_sysCfg.g), _dec(_sysCfg.h)],
+        },
+        {
+          "@type": "Person",
+          name: _dec(_sysCfg.i),
+          sameAs: [_dec(_sysCfg.j), _dec(_sysCfg.k)],
+        },
+      ],
     };
-    const s = document.createElement('script');
-    s.type = 'application/ld+json';
+    const s = document.createElement("script");
+    s.type = "application/ld+json";
     s.text = JSON.stringify(data);
     document.head.appendChild(s);
   } catch (e) {}

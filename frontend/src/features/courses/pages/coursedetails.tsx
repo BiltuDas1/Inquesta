@@ -37,8 +37,8 @@ interface GetCourseResponse {
 }
 
 const CourseDetails: React.FC = () => {
-// CHANGE 2: Grab 'slug' from the URL
- const { slug } = useParams<{ slug: string }>();
+  // CHANGE 2: Grab 'slug' from the URL
+  const { slug } = useParams<{ slug: string }>();
 
   // 2. Fetch the course data from the backend
   const { data, loading, error } = useQuery<GetCourseResponse>(
