@@ -175,7 +175,7 @@ const GET_NOTICES = gql`
 // Define the shape of the Notice data
 interface Notice {
   id: string | number;
-  image: string;
+  imagePath: string;
   badge: string;
   title: string;
   description: string;
@@ -278,8 +278,8 @@ export function CourseCarousel() {
                 className="min-w-full h-full relative flex-shrink-0"
               >
                 <img
-                  src={slide.image}
-                  alt={slide.image}
+                  src={slide.imagePath}
+                  alt={slide.title}
                   className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
