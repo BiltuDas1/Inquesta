@@ -10,14 +10,12 @@ export interface Notice {
 interface NoticeTableProps {
   notices: Notice[];
   onEdit: (id: string | number) => void;
-  onUpdate: (id: string | number) => void;
   onDelete: (id: string | number) => void;
 }
 
 export default function NoticeTable({
   notices,
   onEdit,
-  onUpdate,
   onDelete,
 }: NoticeTableProps) {
   // Helper function to color-code badges
@@ -106,12 +104,6 @@ export default function NoticeTable({
                         className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c] transition-colors"
                       >
                         Edit
-                      </button>
-                      <button
-                        onClick={() => onUpdate(notice.id)}
-                        className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#6fffd9] cursor-pointer hover:bg-[#1c3029]/50 transition-colors"
-                      >
-                        Update
                       </button>
                       <button
                         onClick={() => onDelete(notice.id)}
