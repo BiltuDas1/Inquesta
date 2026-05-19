@@ -50,6 +50,13 @@
       "when": 1778918449184,
       "tag": "0006_sudden_stone_men",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1779037781801,
+      "tag": "0007_absent_changeling",
+      "breakpoints": true
     }
   ]
 }

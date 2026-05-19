@@ -30,7 +30,7 @@ builder.mutationField("register", (t) =>
       lastname: t.arg.string({ required: false }),
       email: t.arg.string({ required: true }),
       password: t.arg.string({ required: true }),
-      is_student: t.arg.boolean({ required: true })
+      is_student: t.arg.boolean({ required: true }),
     },
     resolve: async (_parent, data, context) => {
       try {

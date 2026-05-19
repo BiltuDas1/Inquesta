@@ -5,7 +5,7 @@ import { formatLevel, LEVELS } from "../utils/courseutils";
 interface ModalProps {
   editing: Course | null;
   onClose: () => void;
-  onSave: (data: Omit<Course, "id">, file: File | null) => void;
+  onSave: (data: Omit<Course, "id" | "slug">, file: File | null) => void;
   isSubmitting: boolean;
 }
 

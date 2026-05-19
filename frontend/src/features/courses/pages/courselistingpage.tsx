@@ -21,6 +21,7 @@ const GET_COURSES = gql`
         level
         price
         icon
+        slug
       }
     }
   }

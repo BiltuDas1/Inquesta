@@ -13,15 +13,20 @@ import { extract_url_number, sentence_to_url } from "../utils/slug.ts";
 
 export async function addCourse(data: Course) {
   let slug = sentence_to_url(data.title, 5);
-  const result = await db.select().from(courses).where(like(courses.slug, `${slug}%`)).orderBy(desc(courses.slug)).limit(1);
+  const result = await db
+    .select()
+    .from(courses)
+    .where(like(courses.slug, `${slug}%`))
+    .orderBy(desc(courses.slug))
+    .limit(1);
   for (const course of result) {
-    const num = extract_url_number(course.slug)
-    slug = `${slug}-${num + 1}`
+    const num = extract_url_number(course.slug);
+    slug = `${slug}-${num + 1}`;
   }
 
   await db.insert(courses).values({
     ...data,
-    slug: slug
+    slug: slug,
   });
   await redis.del("inquesta:courses:list");
   return true;
@@ -36,12 +41,12 @@ export async function getCourses(limit: number, lastID?: string | null) {
       .orderBy(desc(courses.id))
       .limit(limit);
 
-    const data = []
+    const data = [];
     for (const item of response) {
       data.push({
         ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
-      })
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+      });
     }
 
     return data;
@@ -52,12 +57,12 @@ export async function getCourses(limit: number, lastID?: string | null) {
       .orderBy(desc(courses.id))
       .limit(limit);
 
-    const data = []
+    const data = [];
     for (const item of response) {
       data.push({
         ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
-      })
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+      });
     }
 
     return data;
@@ -86,8 +91,8 @@ export async function getCourseInfo(slug: string) {
     for (const item of result) {
       return {
         ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null
-      }
+        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+      };
     }
   }
   return null;
@@ -156,6 +161,7 @@ export async function getAllEnrolledCourses(access_token: string) {
         duration: courses.duration,
         instructorName: courses.instructorName,
         iconName: courses.iconName,
+        slug: courses.slug
       })
       .from(courseEnrollments)
       .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))

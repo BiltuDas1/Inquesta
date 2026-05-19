@@ -9,4 +9,5 @@ export interface Course {
   level: string;
   price: number;
   icon: string;
+  slug: string;
 }

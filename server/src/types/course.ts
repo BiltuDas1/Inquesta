@@ -27,7 +27,7 @@ export const CourseObject = builder
       level: t.exposeString("level"),
       duration: t.exposeString("duration"),
       instructorName: t.exposeString("instructorName"),
-      slug: t.exposeString("slug")
+      slug: t.exposeString("slug"),
     }),
   });
 
@@ -64,5 +64,6 @@ export const CourseEnrolledObject = builder
       user_phone_number: t.exposeString("phone", { nullable: true }),
       user_whatsapp_number: t.exposeString("whatsapp", { nullable: true }),
       user_qualification: t.exposeString("qualification", { nullable: true }),
+      course_slug: t.exposeString("slug"),
     }),
   });

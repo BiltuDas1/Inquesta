@@ -73,3 +73,14 @@ export const courseEnrollments = mysqlTable("course_enrollments", {
   transaction_id: varchar("transaction_id", { length: 255 }).notNull().unique(),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });
+
+export const notices = mysqlTable("notices", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  title: varchar({ length: 255 }).notNull(),
+  description: text().notNull(),
+  badge: varchar({ length: 255 }),
+  imagePath: varchar("image_path", { length: 255 }).notNull(),
+  isActive: boolean("is_active").notNull().default(false),
+});
