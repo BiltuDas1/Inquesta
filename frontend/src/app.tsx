@@ -75,7 +75,7 @@ function App() {
 
         <Route element={<CoursesLayout />}>
           <Route path="/courses" element={<CourseListingPage />} />
-          <Route path="/course/:courseID" element={<CourseDetails />} />
+          <Route path="/course/:slug" element={<CourseDetails />} />
         </Route>
 
         {/* 2. AUTH ROUTES (Blocked if already logged in) */}
