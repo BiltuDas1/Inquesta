@@ -23,10 +23,11 @@ export default function NoticeTable({
   // Helper function to color-code badges
   const getBadgeStyles = (badge: string) => {
     switch (badge.toLowerCase()) {
-      case "urgent":
+      case "advanced":
         return "bg-[#3a1d1d] text-[#ffb4ab] border-[#5c2b2b]";
-      case "update":
+      case "trending":
         return "bg-[#162b3a] text-[#a8d3ff] border-[#22435c]";
+      case "beginner friendly":
       default:
         return "bg-[#1c3029] text-[#6fffd9] border-[#2a4d41]";
     }
