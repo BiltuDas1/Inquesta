@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Footer } from "../shared/components/footer";
 import { useAuth } from "../features/auth/context/authcontext";
+import { CourseCarousel } from "../shared/components/notice-carousel";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const { user, logout } = useAuth();
@@ -437,6 +439,8 @@ export default function Home() {
             </svg>
           </div>
         </section> */}
+
+        <CourseCarousel />
 
         {/* CTA Section */}
         <section className="py-32 px-8">
