@@ -34,7 +34,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         {/* THE CHANGE: Use course.id directly in the URL */}
         <h3 className="text-sm sm:text-base font-bold text-[#dfe2eb] leading-snug line-clamp-2 group-hover:text-[#6fffd9] transition-colors font-headline">
           <Link
-            to={`/course/${course.id}`}
+            to={`/course/${course.slug}`}
             className="outline-none before:absolute before:inset-0 before:z-10"
           >
             {course.title}
@@ -67,7 +67,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           </span>
         </div>
         <Link
-          to={`/course/${course.id}`}
+          to={`/course/${course.slug}`}
           className="relative z-20 mt-3 md:hidden w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
         >
           Enroll Now
