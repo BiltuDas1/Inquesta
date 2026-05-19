@@ -65,7 +65,7 @@ export default function StudentCourseTable({
                   {/* Action Button (Universal "View Course") */}
                   <td className="p-4 align-middle text-right">
                     <Link
-                      to={`/course/${c.id}`}
+                      to={`/course/${c.slug}`}
                       className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs transition-colors duration-200 whitespace-nowrap bg-[#6fffd9] text-[#00382c] hover:bg-[#00e5bc]"
                     >
                       <span className="material-symbols-outlined text-[16px]">
