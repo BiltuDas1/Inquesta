@@ -28,6 +28,7 @@ import DashboardLayout from "./layouts/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
 import ParentDashboardLayout from "./layouts/parentdashboardlayout";
+import NoticePage from "./features/admin/pages/noticepage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -124,7 +125,6 @@ function App() {
           </Route>
         </Route>
 
-      
         {/* =========================================
              ADMIN PROTECTED ROUTES
              Base URL: /admin
@@ -139,11 +139,11 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="courses" element={<DashboardPage />} />
             <Route path="students" element={<EnrollmentsDashboard />} />
-            <Route
-              path="analytics"
-              element={<div>Analytics coming soon</div>}
-            />
-            <Route path="settings" element={<div>Settings coming soon</div>} />
+
+            <Route path="settings">
+              <Route index element={<Navigate to="notice" replace />} />
+              <Route path="notice" element={<NoticePage />} />
+            </Route>
           </Route>
         </Route>
 
