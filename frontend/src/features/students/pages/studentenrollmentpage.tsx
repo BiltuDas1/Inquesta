@@ -12,6 +12,7 @@ const GET_ENROLLED_COURSES = gql`
         instructorName
         level
         duration
+        slug
       }
     }
   }
