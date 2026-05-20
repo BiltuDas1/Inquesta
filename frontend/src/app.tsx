@@ -5,7 +5,6 @@ import {
   useLocation,
   useNavigate,
 } from "react-router";
-import Home from "./layouts/homepagelayout";
 import DashboardPage from "./features/admin/pages/dashboardpage";
 import ProtectedRoute from "./shared/routes/protectedroute";
 import PublicRoute from "./shared/routes/publicroute";
@@ -31,6 +30,7 @@ import ParentDashboardLayout from "./layouts/parentdashboardlayout";
 import NoticePage from "./features/admin/pages/noticepage";
 import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
+
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
