@@ -154,7 +154,6 @@ import { useQuery } from "@apollo/client/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-
 // --- 1. GraphQL Query ---
 // Adjust the field names inside 'data' if your backend uses different names!
 const GET_NOTICES = gql`
@@ -240,7 +239,7 @@ export function CourseCarousel() {
   }
 
   if (error || carouselSlides.length === 0) {
-    console.log(error)
+    console.log(error);
     return null; // Or return a fallback UI if there are no notices to display
   }
 
@@ -296,7 +295,7 @@ export function CourseCarousel() {
                     {slide.title}
                   </h3>
                   <p className="text-on-surface-variant text-base md:text-xl max-w-2xl line-clamp-3 md:line-clamp-none">
-                    {slide.description} 
+                    {slide.description}
                     {/* {slide.image} */}
                   </p>
                   {/* <p>{slide.image}</p> */}

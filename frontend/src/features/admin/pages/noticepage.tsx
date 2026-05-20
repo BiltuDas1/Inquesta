@@ -7,7 +7,6 @@ import type { Notice } from "../../courses/admin/noticetable";
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 
-
 // ── Type Definitions for GraphQL ──
 interface NoticeData {
   id: string;
@@ -95,7 +94,7 @@ const ADD_NOTICE = gql`
 `;
 
 const UPDATE_NOTICE = gql`
-  mutation updateNotice (
+  mutation updateNotice(
     $id: String!
     $title: String!
     $description: String!
@@ -103,7 +102,7 @@ const UPDATE_NOTICE = gql`
     $isActive: Boolean!
     $image: String!
   ) {
-   updateNotice (
+    updateNotice(
       id: $id
       title: $title
       description: $description
@@ -118,8 +117,8 @@ const UPDATE_NOTICE = gql`
 `;
 
 const DELETE_NOTICE = gql`
-  mutation deleteNotice ($id: String!) {
-    deleteNotice (id: $id) {
+  mutation deleteNotice($id: String!) {
+    deleteNotice(id: $id) {
       success
       message
     }
@@ -139,7 +138,13 @@ const REQUEST_UPLOAD = gql`
 `;
 
 // ── 2. Helper Constants ──
-const BADGES = ["Beginner Friendly", "Advanced", "Trending", "Urgent", "Update"];
+const BADGES = [
+  "Beginner Friendly",
+  "Advanced",
+  "Trending",
+  "Urgent",
+  "Update",
+];
 
 // ── 3. Main Component ──
 export default function NoticePage() {
@@ -149,22 +154,29 @@ export default function NoticePage() {
   const [filterBadge, setFilterBadge] = useState("");
 
   // ── GraphQL Hooks ──
-  
-  // Reverted to useQuery - it automatically runs on mount!
-  const { loading, error, data, refetch } = useQuery<GetNoticesResponse>(GET_NOTICES, {
-    fetchPolicy: "cache-and-network",
-  });
 
-  const [addNotice, { loading: adding }] = useMutation<AddNoticeResponse>(ADD_NOTICE);
-  const [updateNotice, { loading: updating }] = useMutation<UpdateNoticeResponse>(UPDATE_NOTICE);
+  // Reverted to useQuery - it automatically runs on mount!
+  const { loading, error, data, refetch } = useQuery<GetNoticesResponse>(
+    GET_NOTICES,
+    {
+      fetchPolicy: "cache-and-network",
+    },
+  );
+
+  const [addNotice, { loading: adding }] =
+    useMutation<AddNoticeResponse>(ADD_NOTICE);
+  const [updateNotice, { loading: updating }] =
+    useMutation<UpdateNoticeResponse>(UPDATE_NOTICE);
   const [deleteNotice] = useMutation<DeleteNoticeResponse>(DELETE_NOTICE);
-  const [requestUpload, { loading: uploading }] = useMutation<RequestUploadResponse>(REQUEST_UPLOAD);
+  const [requestUpload, { loading: uploading }] =
+    useMutation<RequestUploadResponse>(REQUEST_UPLOAD);
 
   // ── Data Processing & Filtering ──
-  const rawNotices: Notice[] = data?.getNotices?.data?.map((n) => ({
-    ...n,
-    image: n.imagePath
-  })) || [];
+  const rawNotices: Notice[] =
+    data?.getNotices?.data?.map((n) => ({
+      ...n,
+      image: n.imagePath,
+    })) || [];
 
   const displayNotices = useMemo(() => {
     return rawNotices.filter((n) => {
@@ -186,7 +198,7 @@ export default function NoticePage() {
         });
         if (delData?.deleteNotice?.success) {
           toast.success("Notice deleted successfully");
-          await refetch(); 
+          await refetch();
         } else {
           toast.error(`Delete failed: ${delData?.deleteNotice?.message}`);
         }
@@ -207,7 +219,7 @@ export default function NoticePage() {
   //     });
   //     if (updateData?.updateNotice?.success) {
   //       toast.success("Notice status updated!");
-  //       await refetch(); 
+  //       await refetch();
   //     } else {
   //       toast.error("Failed to update status.");
   //     }
@@ -219,22 +231,22 @@ export default function NoticePage() {
 
   const handleSave = async (formData: any, file: File | null) => {
     try {
-      let finalImage = formData.image || ""; 
+      let finalImage = formData.image || "";
 
       if (file) {
         const { data: uploadRes } = await requestUpload({
           variables: { mimetype: file.type },
         });
-        
+
         if (uploadRes?.request_upload?.success) {
           const { url, filename } = uploadRes.request_upload.data;
-          
+
           await fetch(url, {
             method: "PUT",
             body: file,
             headers: { "Content-Type": file.type },
           });
-          
+
           finalImage = filename;
         } else {
           throw new Error("Failed to get upload authorization.");
@@ -252,22 +264,30 @@ export default function NoticePage() {
       if (modal === "add") {
         const { data: addData } = await addNotice({ variables: noticeVars });
         if (addData?.addNotice?.success) {
-          toast.success(addData.addNotice.message || "Notice added successfully!");
+          toast.success(
+            addData.addNotice.message || "Notice added successfully!",
+          );
         } else {
-          throw new Error(addData?.addNotice?.message || "Failed to add notice.");
+          throw new Error(
+            addData?.addNotice?.message || "Failed to add notice.",
+          );
         }
       } else if (modal != null) {
         const { data: updateData } = await updateNotice({
           variables: { ...noticeVars, id: String(modal) },
         });
         if (updateData?.updateNotice?.success) {
-          toast.success(updateData.updateNotice.message || "Notice updated successfully!");
+          toast.success(
+            updateData.updateNotice.message || "Notice updated successfully!",
+          );
         } else {
-          throw new Error(updateData?.updateNotice?.message || "Failed to update notice.");
+          throw new Error(
+            updateData?.updateNotice?.message || "Failed to update notice.",
+          );
         }
       }
 
-      await refetch(); 
+      await refetch();
       setModal(null);
     } catch (e: any) {
       console.error("Error saving notice:", e);
@@ -306,7 +326,8 @@ export default function NoticePage() {
                 onClick={() => setModal("add")}
                 className="inline-flex border gap-2 bg-[#6fffd9] text-[#00382c] font-headline font-bold text-[0.875rem] px-5 py-[0.6rem] rounded-[8px] border-none cursor-pointer hover:opacity-90 transition-opacity"
               >
-                <span className="material-symbols-outlined">add</span> Add Notice
+                <span className="material-symbols-outlined">add</span> Add
+                Notice
               </button>
             </div>
 

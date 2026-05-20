@@ -30,6 +30,7 @@ import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentp
 import ParentDashboardLayout from "./layouts/parentdashboardlayout";
 import NoticePage from "./features/admin/pages/noticepage";
 import ContactPage from "./shared/pages/contactpage";
+import HomePageLayout from "./layouts/homepagelayout";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -72,8 +73,11 @@ function App() {
 
       <GlobalSessionHandler />
       <Routes>
-        {/* 1. PUBLIC ROUTES (No auth needed) */}
-        <Route path="/" element={<Home />} />
+        {/*  PUBLIC ROUTES (No auth needed) */}
+        <Route path="/" element={<HomePageLayout />}>
+          {/* <Route index element={<Home />} /> */}
+          <Route path="contact" element={<ContactPage />} />
+        </Route>
 
         <Route element={<CoursesLayout />}>
           <Route path="/courses" element={<CourseListingPage />} />
@@ -150,7 +154,7 @@ function App() {
 
         {/* 5. CATCH-ALL */}
         <Route path="*" element={<NotFoundPage />} />
-         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </>
   );
