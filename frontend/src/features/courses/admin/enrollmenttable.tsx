@@ -15,11 +15,13 @@ export interface Enrollment {
   title: string;
   transactionId: string;
   courseId: string; // Added to handle routing
+  course_slug: string;
 }
 
 interface RawEnrollmentData {
   course_id: string; // Added to query
   course_title: string;
+  course_slug: string;
   enrolled_at: number;
   transaction_id: string;
   user_email: string;
@@ -53,6 +55,7 @@ const GET_ALL_ENROLLMENTS = gql`
       data {
         course_id
         course_title
+        course_slug
         enrolled_at
         transaction_id
         user_email
@@ -170,7 +173,7 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
                   {/* Column 3: Course Title with Redirect Icon */}
                   <td className="p-4 align-middle">
                     <a
-                      href={`/course/${enrollment.courseId}`}
+                      href={`/course/${enrollment.course_slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-[#dfe2eb] hover:text-[#6fffd9] font-headline font-semibold text-[0.875rem] transition-colors group/link cursor-pointer"
@@ -209,28 +212,31 @@ export default function EnrollmentsDashboard() {
     GET_ALL_ENROLLMENTS,
     {
       fetchPolicy: "cache-and-network",
-    }
+    },
   );
 
   const rawEnrollments = data?.getallEnrollments?.data || [];
 
   // Map the raw backend data into the clean format the Table expects
-  const formattedEnrollments: Enrollment[] = rawEnrollments.map((item: any) => ({
-    id: item.transaction_id,
-    name: `${item.user_firstname} ${item.user_lastname}`.trim(),
-    email: item.user_email,
-    // Add check to ensure the numbers exist, otherwise pass an empty string
-    phone: item.user_phone_number
-      ? `+${item.user_phone_country_code} ${item.user_phone_number}`
-      : "",
-    whatsapp: item.user_whatsapp_number
-      ? `+${item.user_whatsapp_country_code} ${item.user_whatsapp_number}`
-      : "",
-    qualification: item.user_qualification || "",
-    title: item.course_title,
-    transactionId: item.transaction_id,
-    courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
-  }));
+  const formattedEnrollments: Enrollment[] = rawEnrollments.map(
+    (item: any) => ({
+      id: item.transaction_id,
+      name: `${item.user_firstname} ${item.user_lastname}`.trim(),
+      email: item.user_email,
+      // Add check to ensure the numbers exist, otherwise pass an empty string
+      phone: item.user_phone_number
+        ? `+${item.user_phone_country_code} ${item.user_phone_number}`
+        : "",
+      whatsapp: item.user_whatsapp_number
+        ? `+${item.user_whatsapp_country_code} ${item.user_whatsapp_number}`
+        : "",
+      qualification: item.user_qualification || "",
+      title: item.course_title,
+      transactionId: item.transaction_id,
+      courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
+      course_slug: item.course_slug,
+    }),
+  );
 
   return (
     <div className="bg-[#10141a] min-h-screen font-body text-[#dfe2eb] overflow-x-hidden pb-20">

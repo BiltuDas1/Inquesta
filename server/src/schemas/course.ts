@@ -142,11 +142,13 @@ builder.mutationField("courseUpdate", (t) =>
       level: t.arg.string({ required: true }),
       duration: t.arg.string({ required: true }),
       instructor_name: t.arg.string({ required: true }),
+      icon_name: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
         await updateCourse(args.id, {
           ...args,
+          iconName: args.icon_name,
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
         });
@@ -185,11 +187,11 @@ builder.queryField("getCourseInfo", (t) =>
   t.field({
     type: singleCourseResponse,
     args: {
-      courseID: t.arg.string({ required: true }),
+      slug: t.arg.string({ required: true }),
     },
     resolve: async (_parent, args, context) => {
       try {
-        const result = await getCourseInfo(args.courseID);
+        const result = await getCourseInfo(args.slug);
         if (!result) {
           return {
             success: false,

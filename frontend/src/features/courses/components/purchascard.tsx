@@ -7,7 +7,6 @@ import type { Course } from "../types/courses";
 import { useAuth } from "../../auth/context/authcontext";
 import { EnrollmentSuccess } from "./enrollmentsuccessmodal";
 
-
 interface PurchaseCardProps {
   course: Course;
 }
@@ -81,11 +80,10 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
       skip: !user,
     });
 
-    //  Fetch User Info to check onboarding status
-  const [fetchUserInfo] =
-    useLazyQuery<UserInfoData>(GET_USER_INFO, {
-      fetchPolicy: "network-only",
-    });
+  //  Fetch User Info to check onboarding status
+  const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
+    fetchPolicy: "network-only",
+  });
 
   // Check if the current course ID exists in the user's list
   const isAlreadyEnrolled = enrollmentData?.enrolledCourses?.data?.some(
@@ -97,7 +95,7 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
     EnrollCourseVariables
   >(ENROLL_COURSE_MUTATION);
 
-const handleEnroll = async () => {
+  const handleEnroll = async () => {
     if (!user) {
       toast.error("Please log in to enroll in this course.");
       navigate("/login");
@@ -117,7 +115,7 @@ const handleEnroll = async () => {
 
       if (userInfoError || !userInfoData?.getUserInfo?.success) {
         toast.error("Please complete your profile details before enrolling.");
-        navigate("/onboard"); 
+        navigate("/onboard");
         return;
       }
 

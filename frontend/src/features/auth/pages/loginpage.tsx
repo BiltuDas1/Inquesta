@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { gql } from "@apollo/client";
-import { useLazyQuery } from "@apollo/client/react";
+import { useLazyQuery, useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router";
 import { google_login } from "../utils/googleauth";
 import toast from "react-hot-toast";
@@ -8,10 +8,9 @@ import { useAuth } from "../context/authcontext";
 import GoogleSVG from "../../../shared/svg/google";
 import InputField from "../../../shared/components/inputfield";
 
-
 // QUERY to get user data
-const LOGIN_QUERY = gql`
-  query login($email: String!, $password: String!) {
+const LOGIN_MUTATION = gql`
+  mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       data {
         firstname
@@ -69,7 +68,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   // Initialize Apollo Lazy Query
-  const [loginUser, { loading, error }] = useLazyQuery<LoginData>(LOGIN_QUERY);
+  const [loginUser, { loading, error }] =
+    useMutation<LoginData>(LOGIN_MUTATION);
   const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
     fetchPolicy: "network-only",
   });
@@ -116,7 +116,6 @@ export default function LoginPage() {
           return;
         }
 
-   
         const isDetailsFilled =
           !userInfoError && userInfoData?.getUserInfo?.success === true;
         console.log("Isfilled", isDetailsFilled);
@@ -129,8 +128,8 @@ export default function LoginPage() {
         });
 
         if (userData.role === "admin") {
-          navigate("/dashboard");
-        }else {
+          navigate("/admin/dashboard");
+        } else {
           navigate("/courses");
         }
 
@@ -159,7 +158,7 @@ export default function LoginPage() {
     );
 
   return (
-    <div className="h-screen overflow-hidden flex bg-[#0a1515] font-sans">
+    <div className="h-screen overflow-hidden flex bg-[#0a1515] font-headline">
       {/* LEFT PANEL */}
       <div
         className="hidden lg:flex lg:w-[52%] relative flex-col justify-center items-center px-10 py-8 overflow-hidden"
@@ -389,7 +388,7 @@ export default function LoginPage() {
                   : "bg-[#0c1a1a] border-[#1e3535]"
               }`}
             > */}
-              {/* {remember && (
+            {/* {remember && (
                 <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
                   <path
                     d="M2 6l3 3 5-5"

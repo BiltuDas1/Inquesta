@@ -11,7 +11,7 @@ import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
 import type { FastifyContext } from "../types/fastify.ts";
-import { isProduction } from "../environment.ts";
+import { isMockTestingEnabled, isProduction } from "../environment.ts";
 
 async function sendEmail(email: string, verify_link: string) {
   const { error } = await emailObj.send_email({
@@ -32,10 +32,26 @@ async function sendEmail(email: string, verify_link: string) {
   return error;
 }
 
-export async function registerUser(data: User, context: FastifyContext) {
+export async function registerUser(
+  data: User,
+  is_student: boolean,
+  context: FastifyContext,
+) {
   try {
     data.password = await hash(data.password);
-    await db.insert(users).values(data);
+    await db.insert(users).values({
+      ...data,
+      isActive: isMockTestingEnabled,
+      role: is_student ? "student" : "parent",
+    });
+
+    if (isMockTestingEnabled) {
+      return {
+        success: true,
+        message: "registration complete",
+      };
+    }
+
     const token = generateUrlSafeToken();
     await redis.setEx("inquesta:user:email:" + token, 10 * 60, data.email); // Expire in 10 minutes
     const emailError = await sendEmail(

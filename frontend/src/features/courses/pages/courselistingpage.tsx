@@ -6,7 +6,6 @@ import { FilterPanel } from "../components/filterpanel";
 import { NumberedCursorPagination } from "../../../shared/components/cursorpagination";
 import { CourseCard } from "../components/coursecard";
 
-
 // Query to get courses
 const GET_COURSES = gql`
   query GetCourses($limit: Int!, $lastID: String) {
@@ -22,6 +21,7 @@ const GET_COURSES = gql`
         level
         price
         icon
+        slug
       }
     }
   }
@@ -125,8 +125,6 @@ export default function CourseListingPage() {
       handleJumpToFirst();
     }
   };
-
-  
 
   return (
     <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] pb-12">

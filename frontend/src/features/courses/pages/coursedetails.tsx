@@ -9,8 +9,8 @@ import { PurchaseCard } from "../components/purchascard";
 // --- GraphQL Query ---
 // Note: Adjust the query name ('courseGetById') if your backend uses a different name for fetching a single course!
 const GET_COURSE_DETAILS = gql`
-  query getCourseInfo($courseID: String!) {
-    getCourseInfo(courseID: $courseID) {
+  query getCourseInfo($slug: String!) {
+    getCourseInfo(slug: $slug) {
       success
       message
       data {
@@ -22,6 +22,7 @@ const GET_COURSE_DETAILS = gql`
         level
         price
         icon
+        slug
       }
     }
   }
@@ -36,15 +37,15 @@ interface GetCourseResponse {
 }
 
 const CourseDetails: React.FC = () => {
-  // 1. Grab the course ID from the URL (e.g., /course/12345)
-  const { courseID } = useParams<{ courseID: string }>();
+  // CHANGE 2: Grab 'slug' from the URL
+  const { slug } = useParams<{ slug: string }>();
 
   // 2. Fetch the course data from the backend
   const { data, loading, error } = useQuery<GetCourseResponse>(
     GET_COURSE_DETAILS,
     {
-      variables: { courseID },
-      skip: !courseID, // Don't run the query if there's no ID in the URL
+      variables: { slug },
+      skip: !slug, // Don't run the query if there's no ID in the URL
     },
   );
 
