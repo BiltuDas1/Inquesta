@@ -30,7 +30,7 @@ import ParentDashboardLayout from "./layouts/parentdashboardlayout";
 import NoticePage from "./features/admin/pages/noticepage";
 import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
-
+import AboutPage from "./shared/pages/aboutpage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -75,8 +75,8 @@ function App() {
       <Routes>
         {/*  PUBLIC ROUTES (No auth needed) */}
         <Route path="/" element={<HomePageLayout />}>
-          {/* <Route index element={<Home />} /> */}
           <Route path="contact" element={<ContactPage />} />
+          <Route path="about" element={<AboutPage />} />
         </Route>
 
         <Route element={<CoursesLayout />}>

@@ -15,7 +15,7 @@ export interface Enrollment {
   title: string;
   transactionId: string;
   courseId: string; // Added to handle routing
-  course_slug:string
+  course_slug: string;
 }
 
 interface RawEnrollmentData {
@@ -234,7 +234,7 @@ export default function EnrollmentsDashboard() {
       title: item.course_title,
       transactionId: item.transaction_id,
       courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
-      course_slug: item.course_slug
+      course_slug: item.course_slug,
     }),
   );
 
