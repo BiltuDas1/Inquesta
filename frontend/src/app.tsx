@@ -29,6 +29,7 @@ import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
 import ParentDashboardLayout from "./layouts/parentdashboardlayout";
 import NoticePage from "./features/admin/pages/noticepage";
+import ContactPage from "./shared/pages/contactpage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -149,6 +150,7 @@ function App() {
 
         {/* 5. CATCH-ALL */}
         <Route path="*" element={<NotFoundPage />} />
+         <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </>
   );
