@@ -15,11 +15,13 @@ export interface Enrollment {
   title: string;
   transactionId: string;
   courseId: string; // Added to handle routing
+  course_slug:string
 }
 
 interface RawEnrollmentData {
   course_id: string; // Added to query
   course_title: string;
+  course_slug: string;
   enrolled_at: number;
   transaction_id: string;
   user_email: string;
@@ -53,6 +55,7 @@ const GET_ALL_ENROLLMENTS = gql`
       data {
         course_id
         course_title
+        course_slug
         enrolled_at
         transaction_id
         user_email
@@ -170,7 +173,7 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
                   {/* Column 3: Course Title with Redirect Icon */}
                   <td className="p-4 align-middle">
                     <a
-                      href={`/course/${enrollment.courseId}`}
+                      href={`/course/${enrollment.course_slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-[#dfe2eb] hover:text-[#6fffd9] font-headline font-semibold text-[0.875rem] transition-colors group/link cursor-pointer"
@@ -231,6 +234,7 @@ export default function EnrollmentsDashboard() {
       title: item.course_title,
       transactionId: item.transaction_id,
       courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
+      course_slug: item.course_slug
     }),
   );
 
