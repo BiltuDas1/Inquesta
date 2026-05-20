@@ -86,9 +86,6 @@ const noticesResponse = builder
 
 builder.queryField("getNotices", (t) =>
   t.field({
-    authScopes: {
-      isValidSession: true,
-    },
     type: noticesResponse,
     args: {},
     resolve: async (_parent, {}, context) => {
