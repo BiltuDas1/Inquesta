@@ -33,7 +33,7 @@
 
 //   const [imagePreview, setImagePreview] = useState<string | null>(null);
 //   const [isDragging, setIsDragging] = useState(false);
-  
+
 //   const modalRef = useRef<HTMLDivElement>(null);
 //   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -199,7 +199,7 @@
 //             <label className="text-[0.75rem] tracking-wider font-headline font-bold text-[#b9cac3]">
 //               Notice Header Image
 //             </label>
-            
+
 //             <input
 //               type="file"
 //               ref={fileInputRef}
@@ -335,11 +335,6 @@
 //     </div>
 //   );
 // }
-
-
-
-
-
 
 // import React, { useState, useEffect, useRef } from "react";
 
@@ -697,7 +692,6 @@
 //   );
 // }
 
-
 import React, { useState, useEffect, useRef } from "react";
 
 // ── 1. Component Props ──
@@ -719,7 +713,7 @@ interface NoticeModalProps {
       badge: string;
       isActive: boolean;
     },
-    file: File | null
+    file: File | null,
   ) => void;
   isSubmitting: boolean;
 }
@@ -732,17 +726,19 @@ export default function NoticeModal({
   onSave,
   isSubmitting,
 }: NoticeModalProps) {
-  
   // Initialize state with editing values if they exist
   const [formData, setFormData] = useState({
     title: editing?.title || "",
     description: editing?.description || "",
     badge: editing?.badge || "Beginner Friendly",
-    isActive: editing !== null && editing !== undefined ? editing.isActive : true,
+    isActive:
+      editing !== null && editing !== undefined ? editing.isActive : true,
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(editing?.image || null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    editing?.image || null,
+  );
   const [isDragging, setIsDragging] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -773,7 +769,8 @@ export default function NoticeModal({
         title: editing?.title || "",
         description: editing?.description || "",
         badge: editing?.badge || "Beginner Friendly",
-        isActive: editing !== null && editing !== undefined ? editing.isActive : true,
+        isActive:
+          editing !== null && editing !== undefined ? editing.isActive : true,
       });
       setSelectedFile(null);
       setImagePreview(editing?.image || null);
@@ -793,7 +790,7 @@ export default function NoticeModal({
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
@@ -862,8 +859,8 @@ export default function NoticeModal({
               {editing ? "Edit Notice" : "Create New Notice"}
             </h2>
             <p className="text-[0.78rem] font-body text-[#b9cac3] mt-0.5">
-              {editing 
-                ? "Update the details for this notification card." 
+              {editing
+                ? "Update the details for this notification card."
                 : "Fill in the form to broadcast a new notification card."}
             </p>
           </div>
@@ -946,11 +943,14 @@ export default function NoticeModal({
                     : "border-[#3b4a44] bg-[#10141a] hover:border-[#84948e]/60"
                 } ${isSubmitting ? "opacity-50 pointer-events-none" : ""}`}
               >
-                <span className={`material-symbols-outlined text-2xl mb-1.5 transition-colors ${isDragging ? 'text-[#6fffd9]' : 'text-[#84948e]'}`}>
+                <span
+                  className={`material-symbols-outlined text-2xl mb-1.5 transition-colors ${isDragging ? "text-[#6fffd9]" : "text-[#84948e]"}`}
+                >
                   add_photo_alternate
                 </span>
                 <p className="text-[0.82rem] font-body text-[#dfe2eb] font-medium">
-                  Click to upload <span className="text-[#84948e]">or drag and drop</span>
+                  Click to upload{" "}
+                  <span className="text-[#84948e]">or drag and drop</span>
                 </p>
                 <p className="text-[0.7rem] text-[#84948e] mt-0.5">
                   PNG, JPG, or WEBP formats preferred
@@ -980,7 +980,9 @@ export default function NoticeModal({
                   className="mr-2 w-7 h-7 rounded-[6px] bg-[#262a31] text-[#84948e] hover:text-[#ffb4ab] hover:bg-[#321c1a] flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-40"
                   title="Remove image"
                 >
-                  <span className="material-symbols-outlined text-lg">delete</span>
+                  <span className="material-symbols-outlined text-lg">
+                    delete
+                  </span>
                 </button>
               </div>
             )}
@@ -1025,7 +1027,9 @@ export default function NoticeModal({
               <label className="text-[0.75rem] tracking-wider font-headline font-bold text-[#b9cac3]">
                 Status
               </label>
-              <label className={`flex items-center justify-between bg-[#10141a] border border-[#3b4a44] rounded-[8px] px-4 py-2 h-[42px] cursor-pointer hover:border-[#84948e]/60 transition-colors ${isSubmitting ? "opacity-50 pointer-events-none" : ""}`}>
+              <label
+                className={`flex items-center justify-between bg-[#10141a] border border-[#3b4a44] rounded-[8px] px-4 py-2 h-[42px] cursor-pointer hover:border-[#84948e]/60 transition-colors ${isSubmitting ? "opacity-50 pointer-events-none" : ""}`}
+              >
                 <span className="text-[0.82rem] font-body font-medium text-[#dfe2eb]">
                   {formData.isActive ? "Live (Active)" : "Draft (Hidden)"}
                 </span>
