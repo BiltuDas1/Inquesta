@@ -10,12 +10,14 @@ def test_login_successful(api_request_context: APIRequestContext):
                 mutation Register(
                   $email: String!
                   $firstname: String!
+                  $is_student: Boolean!
                   $lastname: String
                   $password: String!
                 ) {
                   register(
                     email: $email
                     firstname: $firstname
+                    is_student: $is_student
                     lastname: $lastname
                     password: $password
                   ) {
@@ -27,6 +29,7 @@ def test_login_successful(api_request_context: APIRequestContext):
       "variables": {
         "email": "rohan123@gmail.com",
         "firstname": "rohan",
+        "is_student": True,
         "lastname": "manna",
         "password": "Pass@123",
       },
@@ -102,7 +105,7 @@ def test_login_successful(api_request_context: APIRequestContext):
   assert login_result["data"]["email"] == "rohan123@gmail.com"
   assert login_result["data"]["firstname"] == "rohan"
   assert login_result["data"]["lastname"] == "manna"
-  assert "role" in login_result["data"]
+  assert login_result["data"]["role"] == "student"
 
 
 def test_login_email_not_exist(api_request_context: APIRequestContext):
@@ -162,12 +165,14 @@ def test_login_password_incorrect(api_request_context: APIRequestContext):
                 mutation Register(
                   $email: String!
                   $firstname: String!
+                  $is_student: Boolean!
                   $lastname: String
                   $password: String!
                 ) {
                   register(
                     email: $email
                     firstname: $firstname
+                    is_student: $is_student
                     lastname: $lastname
                     password: $password
                   ) {
@@ -177,8 +182,9 @@ def test_login_password_incorrect(api_request_context: APIRequestContext):
                 }
             """,
       "variables": {
-        "email": "rohandas@gmail.com",
+        "email": "rohan@gmail.com",
         "firstname": "rohan",
+        "is_student": True,
         "lastname": "das",
         "password": "Pass@123",
       },
@@ -262,12 +268,14 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
                 mutation Register(
                   $email: String!
                   $firstname: String!
+                  $is_student: Boolean!
                   $lastname: String
                   $password: String!
                 ) {
                   register(
                     email: $email
                     firstname: $firstname
+                    is_student: $is_student
                     lastname: $lastname
                     password: $password
                   ) {
@@ -279,6 +287,7 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
       "variables": {
         "email": "rohannayak@gmail.com",
         "firstname": "rohan",
+        "is_student": False,
         "lastname": "nayak",
         "password": "Pass@123",
       },
@@ -354,7 +363,7 @@ def test_login_email_case_mismatch(api_request_context: APIRequestContext):
   assert login_result["data"]["email"] == "rohannayak@gmail.com"
   assert login_result["data"]["firstname"] == "rohan"
   assert login_result["data"]["lastname"] == "nayak"
-  assert "role" in login_result["data"]
+  assert login_result["data"]["role"] == "parent"
 
 
 def test_login_email_empty(api_request_context: APIRequestContext):
