@@ -71,48 +71,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ==========================================
-          STATS / IMPACT SECTION
-          ========================================== */}
-      <section className="py-24 bg-[#181c22] border-y border-[#3b4a44]">
-        <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-x-0 md:divide-x divide-[#3b4a44]">
-          <div className="text-center px-4">
-            <h4 className="text-4xl md:text-5xl font-headline font-black text-[#6fffd9] mb-2">
-              8+
-            </h4>
-            <p className="text-[#b9cac3] text-sm font-medium tracking-wide uppercase">
-              Domains Covered
-            </p>
-          </div>
-
-          <div className="text-center px-4">
-            <h4 className="text-4xl md:text-5xl font-headline font-black text-[#6fffd9] mb-2">
-              365
-            </h4>
-            <p className="text-[#b9cac3] text-sm font-medium tracking-wide uppercase">
-              Days a Year
-            </p>
-          </div>
-
-          <div className="text-center px-4">
-            <h4 className="text-4xl md:text-5xl font-headline font-black text-[#6fffd9] mb-2">
-              3
-            </h4>
-            <p className="text-[#b9cac3] text-sm font-medium tracking-wide uppercase">
-              Core Registrations
-            </p>
-          </div>
-
-          <div className="text-center px-4">
-            <h4 className="text-4xl md:text-5xl font-headline font-black text-[#6fffd9] mb-2">
-              ∞
-            </h4>
-            <p className="text-[#b9cac3] text-sm font-medium tracking-wide uppercase">
-              Possibilities
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* ==========================================
           WHO WE ARE (SPLIT LAYOUT)
