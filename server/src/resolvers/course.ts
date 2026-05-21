@@ -1,4 +1,4 @@
-import { desc, eq, like, lte } from "drizzle-orm";
+import { and, desc, eq, like, lt, lte, or, sql } from "drizzle-orm";
 import { db, redis, s3PublicEndpoint } from "../config.ts";
 import {
   courseEnrollments,
@@ -161,7 +161,7 @@ export async function getAllEnrolledCourses(access_token: string) {
         duration: courses.duration,
         instructorName: courses.instructorName,
         iconName: courses.iconName,
-        slug: courses.slug
+        slug: courses.slug,
       })
       .from(courseEnrollments)
       .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))
@@ -245,4 +245,53 @@ export async function getAllEnrollments(access_token: string) {
       message: "failed to fetch enrollment details",
     };
   }
+}
+
+export async function searchCourses(text: string, limit: number, lastID?: string, lastRelevance?: number) {
+  const relevanceSql = sql<number>`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`;
+
+  let cursorCondition = undefined;
+  if (lastID && lastRelevance) {
+    // Logic: score is lower OR (score is tied AND UUIDv7 is older/alphabetically lower)
+    cursorCondition = or(
+      lt(relevanceSql, lastRelevance),
+      and(
+        sql`${relevanceSql} = ${lastRelevance}`,
+        lte(courses.id, lastID)
+      )
+    );
+  }
+
+  const response = await db
+    .select({
+      id: courses.id,
+      title: courses.title,
+      description: courses.description,
+      price: courses.price,
+      level: courses.level,
+      duration: courses.duration,
+      instructorName: courses.instructorName,
+      iconName: courses.iconName,
+      slug: courses.slug,
+      relevance: relevanceSql,
+    })
+    .from(courses)
+    .where(
+      and(
+        sql`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`,
+        cursorCondition
+      )
+    )
+    .orderBy(desc(relevanceSql), desc(courses.id))
+    .limit(limit);
+
+  const data = [];
+  for (const item of response) {
+    data.push({
+      ...item,
+      iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+    });
+  }
+  
+  return data;
 }

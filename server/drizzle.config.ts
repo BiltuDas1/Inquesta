@@ -7,4 +7,6 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.MYSQL_URI!,
   },
+  verbose: true,
+  strict: true,
 });
