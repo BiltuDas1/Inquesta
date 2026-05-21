@@ -7,11 +7,13 @@ import {
   getAllEnrollments,
   getCourseInfo,
   getCourses,
+  searchCourses,
   updateCourse,
 } from "../resolvers/course.ts";
 import {
   CourseEnrolledObject,
   CourseObject,
+  SearchableCourseObject,
   type Course,
   type CourseLevel,
 } from "../types/course.ts";
@@ -322,6 +324,48 @@ builder.queryField("getallEnrollments", (t) =>
       }
 
       return await getAllEnrollments(cookieObj["access_token"]);
+    },
+  }),
+);
+
+const searchedCourseResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: (Course & { id: string, relevance: number })[];
+  }>("SearchedCourseResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [SearchableCourseObject],
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("searchCourses", (t) =>
+  t.field({
+    type: searchedCourseResponse,
+    args: {
+      text: t.arg.string({ required: true }),
+      limit: t.arg.int({ required: true }),
+      lastRelevance: t.arg.float({ required: false }),
+      lastID: t.arg.string({ required: false })
+    },
+    resolve: async (_parent, args, context) => {
+      const result = await searchCourses(
+        args.text, 
+        args.limit, 
+        args.lastID ? args.lastID : undefined,
+        args.lastRelevance ? args.lastRelevance : undefined
+      );
+      return {
+        success: true,
+        message: "Course fetched successfully",
+        data: result
+      };
     },
   }),
 );

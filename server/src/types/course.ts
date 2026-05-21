@@ -67,3 +67,20 @@ export const CourseEnrolledObject = builder
       course_slug: t.exposeString("slug"),
     }),
   });
+
+export const SearchableCourseObject = builder
+  .objectRef<Course & { id: string, relevance: number }>("SearchableCourse")
+  .implement({
+    fields: (t) => ({
+      id: t.exposeString("id"),
+      title: t.exposeString("title"),
+      icon: t.exposeString("iconName"),
+      description: t.exposeString("description", { nullable: true }),
+      price: t.exposeFloat("price"),
+      level: t.exposeString("level"),
+      duration: t.exposeString("duration"),
+      instructorName: t.exposeString("instructorName"),
+      slug: t.exposeString("slug"),
+      relevance: t.exposeFloat("relevance")
+    }),
+  });
