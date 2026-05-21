@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function ContactPage() {
   const [inquiryType, setInquiryType] = useState("General Inquiry");
