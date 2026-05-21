@@ -1,7 +1,7 @@
 from playwright.sync_api import APIRequestContext
 
 
-def test_register_true(api_request_context: APIRequestContext):
+def test_register_student(api_request_context: APIRequestContext):
   response = api_request_context.post(
     "/",
     data={
@@ -52,7 +52,7 @@ def test_register_true(api_request_context: APIRequestContext):
   )
 
 
-def test_register_false(api_request_context: APIRequestContext):
+def test_register_parent(api_request_context: APIRequestContext):
   response = api_request_context.post(
     "/",
     data={
