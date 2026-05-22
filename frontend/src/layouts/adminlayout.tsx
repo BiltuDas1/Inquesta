@@ -33,7 +33,10 @@ export default function DashboardLayout() {
     {
       name: "Settings",
       icon: "settings",
-      subItems: [{ name: "Notice", path: "/admin/settings/notice" }],
+      subItems: [
+        { name: "Notice", path: "/admin/settings/notice" },
+        { name: "Hero Section", path: "/admin/settings/hero-section" },
+      ],
     },
   ];
 

@@ -200,8 +200,19 @@ function App() {
             <Route path="settings">
               <Route index element={<Navigate to="notice" replace />} />
               <Route path="notice" element={<NoticePage />} />
+              <Route
+                path="hero-section"
+                element={
+                  <div className="p-8 text-center text-[#b9cac3]">
+                    <h2>Hero Section Configuration</h2>
+                    <p>This feature is currently under development. Check back soon!</p>
+                  </div>
+                }
+              />
             </Route>
           </Route>
+
+          
         </Route>
 
         {/* 5. CATCH-ALL */}
