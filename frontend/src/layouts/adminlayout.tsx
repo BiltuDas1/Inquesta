@@ -26,10 +26,10 @@ export default function DashboardLayout() {
     { name: "Courses", icon: "library_books", path: "/admin/courses" },
     { name: "Students", icon: "group", path: "/admin/students" },
     {
-    name: "Teacher Registration",
-    icon: "person_add", // 'how_to_reg' or 'badge' are also good icon choices
-    path: "/admin/teacher-registration",
-  },
+      name: "Teacher Registration",
+      icon: "person_add", // 'how_to_reg' or 'badge' are also good icon choices
+      path: "/admin/teacher-registration",
+    },
     {
       name: "Settings",
       icon: "settings",

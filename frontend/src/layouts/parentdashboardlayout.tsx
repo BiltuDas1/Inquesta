@@ -39,13 +39,6 @@ export default function ParentDashboardLayout() {
     },
   ];
 
-  const currentTitle =
-    navItems.find(
-      (item) =>
-        currentUrl === item.path ||
-        (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
-    )?.name || "Dashboard";
-
   // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
