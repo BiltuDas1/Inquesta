@@ -39,20 +39,26 @@ export function HeroSection() {
   const { data, loading } = useQuery<GetHeroSectionResponse>(GET_HERO_SECTION);
 
   const heroData = data?.getHeroSection?.data;
-  
+
   const rawHeading = heroData?.heading || "Learn.\nBuild.\nInnovate.";
-  const description = heroData?.description || "Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.";
-  const statusBadge = heroData?.statusBadge || "REGISTRATION IS CURRENTLY GOING ON";
-  const heroImageUrl = heroData?.heroImageUrl || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800";
+  const description =
+    heroData?.description ||
+    "Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.";
+  const statusBadge =
+    heroData?.statusBadge || "REGISTRATION IS CURRENTLY GOING ON";
+  const heroImageUrl =
+    heroData?.heroImageUrl ||
+    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800";
 
   // Split heading into parts (supports both \n from DB or standard spaces)
-  const delimiter = rawHeading.includes('\n') ? '\n' : ' ';
-  const headingParts = rawHeading.split(delimiter).filter(part => part.trim() !== '');
+  const delimiter = rawHeading.includes("\n") ? "\n" : " ";
+  const headingParts = rawHeading
+    .split(delimiter)
+    .filter((part) => part.trim() !== "");
 
   return (
     <section className="relative min-h-[550px] md:min-h-[650px] flex items-center overflow-hidden px-8 pt-24">
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-        
         {/* Left Content Area */}
         <div className="space-y-8">
           {/* Status Badge */}
@@ -67,7 +73,7 @@ export function HeroSection() {
           <h1 className="text-6xl md:text-7xl font-headline font-extrabold tracking-tighter leading-[1.1]">
             {headingParts.map((part, index) => {
               const isLast = index === headingParts.length - 1;
-              
+
               // If it's the last word/line, apply the gradient
               if (isLast) {
                 return (
@@ -113,8 +119,8 @@ export function HeroSection() {
 
         {/* Right Image Area */}
         <div className="hidden lg:block relative">
-          <div 
-            className={`glass-card rounded-[2rem] p-4 border border-outline-variant shadow-2xl relative overflow-hidden group transition-opacity duration-500 ${loading ? 'opacity-50 blur-sm' : 'opacity-100'}`}
+          <div
+            className={`glass-card rounded-[2rem] p-4 border border-outline-variant shadow-2xl relative overflow-hidden group transition-opacity duration-500 ${loading ? "opacity-50 blur-sm" : "opacity-100"}`}
           >
             <img
               alt="Hero Section Visual"
@@ -123,7 +129,6 @@ export function HeroSection() {
             />
           </div>
         </div>
-
       </div>
     </section>
   );

@@ -330,7 +330,6 @@
 //   );
 // }
 
-
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "./logo";
 import { useNavigate, useLocation, Link } from "react-router"; // Added useLocation
@@ -595,10 +594,10 @@ export default function Navbar() {
                     user.role === "admin"
                       ? "/admin/dashboard"
                       : user.role === "teacher"
-                      ? "/teacher/dashboard"
-                      : user.role === "parent"
-                      ? "/parent/dashboard"
-                      : "/students/dashboard"
+                        ? "/teacher/dashboard"
+                        : user.role === "parent"
+                          ? "/parent/dashboard"
+                          : "/students/dashboard"
                   }
                   className="flex items-center gap-2 text-[#b9cac3] hover:text-[#6fffd9] transition-colors font-semibold text-sm tracking-wide"
                 >
