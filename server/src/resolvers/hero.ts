@@ -53,10 +53,10 @@ export async function updateHeroSection(
 ) {
   try {
     await db.transaction(async (tx) => {
-      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("status_badge", "${statusBadge}")`);
-      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("heading", "${heading}")`);
-      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("description", "${description}")`);
-      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("hero_image", "${heroImage}")`);
+      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("status_badge", ${statusBadge})`);
+      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("heading", ${heading})`);
+      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("description", ${description})`);
+      await tx.execute(sql`REPLACE INTO ${hero_settings} VALUES ("hero_image", ${heroImage})`);
     });
 
     return true;
