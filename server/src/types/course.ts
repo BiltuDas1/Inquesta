@@ -69,7 +69,7 @@ export const CourseEnrolledObject = builder
   });
 
 export const SearchableCourseObject = builder
-  .objectRef<Course & { id: string, relevance: number }>("SearchableCourse")
+  .objectRef<Course & { id: string; relevance: number }>("SearchableCourse")
   .implement({
     fields: (t) => ({
       id: t.exposeString("id"),
@@ -81,6 +81,6 @@ export const SearchableCourseObject = builder
       duration: t.exposeString("duration"),
       instructorName: t.exposeString("instructorName"),
       slug: t.exposeString("slug"),
-      relevance: t.exposeFloat("relevance")
+      relevance: t.exposeFloat("relevance"),
     }),
   });

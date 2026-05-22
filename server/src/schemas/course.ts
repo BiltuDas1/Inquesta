@@ -332,7 +332,7 @@ const searchedCourseResponse = builder
   .objectRef<{
     success: boolean;
     message: string;
-    data?: (Course & { id: string, relevance: number })[];
+    data?: (Course & { id: string; relevance: number })[];
   }>("SearchedCourseResponse")
   .implement({
     fields: (t) => ({
@@ -352,19 +352,19 @@ builder.queryField("searchCourses", (t) =>
       text: t.arg.string({ required: true }),
       limit: t.arg.int({ required: true }),
       lastRelevance: t.arg.float({ required: false }),
-      lastID: t.arg.string({ required: false })
+      lastID: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       const result = await searchCourses(
-        args.text, 
-        args.limit, 
+        args.text,
+        args.limit,
         args.lastID ? args.lastID : undefined,
-        args.lastRelevance ? args.lastRelevance : undefined
+        args.lastRelevance ? args.lastRelevance : undefined,
       );
       return {
         success: true,
         message: "Course fetched successfully",
-        data: result
+        data: result,
       };
     },
   }),
