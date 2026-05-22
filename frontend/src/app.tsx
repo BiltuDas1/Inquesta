@@ -109,6 +109,24 @@ function App() {
             {/* The actual dashboard page */}
             <Route path="dashboard" element={<StudentEnrollmentsPage />} />
             <Route path="courses" element={<StudentEnrollmentsPage />} />
+
+            {/* Coming Soon pages */}
+            <Route
+              path="attendance"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
+            <Route
+              path="assignments"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
           </Route>
         </Route>
 
