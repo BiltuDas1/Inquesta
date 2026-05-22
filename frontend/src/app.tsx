@@ -131,19 +131,44 @@ function App() {
         </Route>
 
         {/* =========================================
-          PARENT DASHBOARD
-          Base URL: /parent
-        ========================================= */}
+    PARENT DASHBOARD
+    Base URL: /parents
+========================================= */}
         <Route element={<ProtectedRoute allowedRoles={["parent"]} />}>
-          <Route path="/parent" element={<ParentDashboardLayout />}>
+          <Route path="/parents" element={<ParentDashboardLayout />}>
+            {/* Default redirect to dashboard */}
             <Route index element={<Navigate to="dashboard" replace />} />
+
+            {/* Main dashboard for multiple children */}
             <Route
               path="dashboard"
               element={<div>Detailed Student Progress</div>}
             />
+
+            {/* Coming Soon pages matching the sidebar navItems */}
             <Route
-              path="student-reports"
-              element={<div>Detailed Student Progress</div>}
+              path="attendance-policy"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
+            <Route
+              path="fees"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
+            <Route
+              path="grades"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
             />
           </Route>
         </Route>
