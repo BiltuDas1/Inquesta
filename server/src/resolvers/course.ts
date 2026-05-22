@@ -247,7 +247,12 @@ export async function getAllEnrollments(access_token: string) {
   }
 }
 
-export async function searchCourses(text: string, limit: number, lastID?: string, lastRelevance?: number) {
+export async function searchCourses(
+  text: string,
+  limit: number,
+  lastID?: string,
+  lastRelevance?: number,
+) {
   const relevanceSql = sql<number>`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`;
 
   let cursorCondition = undefined;
@@ -255,10 +260,7 @@ export async function searchCourses(text: string, limit: number, lastID?: string
     // Logic: score is lower OR (score is tied AND UUIDv7 is older/alphabetically lower)
     cursorCondition = or(
       lt(relevanceSql, lastRelevance),
-      and(
-        sql`${relevanceSql} = ${lastRelevance}`,
-        lte(courses.id, lastID)
-      )
+      and(sql`${relevanceSql} = ${lastRelevance}`, lte(courses.id, lastID)),
     );
   }
 
@@ -279,8 +281,8 @@ export async function searchCourses(text: string, limit: number, lastID?: string
     .where(
       and(
         sql`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`,
-        cursorCondition
-      )
+        cursorCondition,
+      ),
     )
     .orderBy(desc(relevanceSql), desc(courses.id))
     .limit(limit);
@@ -292,6 +294,6 @@ export async function searchCourses(text: string, limit: number, lastID?: string
       iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
     });
   }
-  
+
   return data;
 }

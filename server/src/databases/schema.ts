@@ -84,3 +84,8 @@ export const notices = mysqlTable("notices", {
   imagePath: varchar("image_path", { length: 255 }).notNull(),
   isActive: boolean("is_active").notNull().default(false),
 });
+
+export const hero_settings = mysqlTable("hero_settings", {
+  key: varchar("key", { length: 50 }).primaryKey(),
+  value: text("value"),
+});
