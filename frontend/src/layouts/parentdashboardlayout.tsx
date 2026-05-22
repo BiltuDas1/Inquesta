@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Outlet, useNavigate } from "react-router"; // Ensure this matches your router package
+import { Link, Outlet, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
 import { useAuth } from "../features/auth/context/authcontext";
 import { Logo } from "../shared/components/logo";
 
@@ -13,23 +13,38 @@ export default function ParentDashboardLayout() {
   const navigate = useNavigate();
   const profileRef = useRef<HTMLDivElement>(null);
 
-  //   const location = useLocation();
-  //   const currentUrl = location.pathname;
+  const location = useLocation();
+  const currentUrl = location.pathname;
 
-  //   const navItems = [
-  //     {
-  //       name: "My Enrollments",
-  //       icon: "library_books",
-  //       path: "/students/courses",
-  //     },
-  //   ];
+  const navItems = [
+    {
+      name: "Children Dashboard",
+      icon: "family_restroom",
+      path: "/parents/dashboard",
+    },
+    {
+      name: "Attendance Policy",
+      icon: "policy",
+      path: "/parents/attendance-policy",
+    },
+    {
+      name: "Fees Payment Status",
+      icon: "payments",
+      path: "/parents/fees",
+    },
+    {
+      name: "Term Grade History",
+      icon: "history_edu",
+      path: "/parents/grades",
+    },
+  ];
 
-  // const currentTitle =
-  //   navItems.find(
-  //     (item) =>
-  //       currentUrl === item.path ||
-  //       (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
-  //   )?.name || "Dashboard";
+  const currentTitle =
+    navItems.find(
+      (item) =>
+        currentUrl === item.path ||
+        (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
+    )?.name || "Dashboard";
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -99,7 +114,7 @@ export default function ParentDashboardLayout() {
 
         {/* Navigation Links */}
         <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">
-          {/* {navItems.map((item) => {
+          {navItems.map((item) => {
             const isActive =
               currentUrl === item.path ||
               (item.path !== "/dashboard" && currentUrl.startsWith(item.path));
@@ -120,7 +135,6 @@ export default function ParentDashboardLayout() {
                   {item.icon}
                 </span>
 
-              
                 <span
                   className={`whitespace-nowrap overflow-hidden transition-all duration-300 ml-3 max-w-[200px] opacity-100 ${
                     isDesktopCollapsed ? "lg:max-w-0 lg:ml-0 lg:opacity-0" : ""
@@ -130,7 +144,7 @@ export default function ParentDashboardLayout() {
                 </span>
               </Link>
             );
-          })}  */}
+          })}
         </nav>
 
         {/* Sidebar Footer / Logout */}
