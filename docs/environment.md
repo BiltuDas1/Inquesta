@@ -24,4 +24,3 @@
 | `VITE_API_URL`                  | The connection URI of the backend endpoint(GraphQL)                    | :white_check_mark: |
 | `VITE_GOOGLE_CLIENT_ID`         | The client ID of the Google OAuth 2.0 Application                      | :white_check_mark: |
 | `VITE_GOOGLE_AUTH_REDIRECT_URL` | The redirection url which will be redirect after Google Authentication | :white_check_mark: |
-| `VITE_SUPERBASE_PUBLIC_URL`     | The Public URL to access the images from superbase                     | :white_check_mark: |

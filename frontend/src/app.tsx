@@ -31,6 +31,7 @@ import NoticePage from "./features/admin/pages/noticepage";
 import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
 import AboutPage from "./shared/pages/aboutpage";
+import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -200,8 +201,16 @@ function App() {
             <Route path="settings">
               <Route index element={<Navigate to="notice" replace />} />
               <Route path="notice" element={<NoticePage />} />
+              <Route
+                path="hero-section"
+                element={
+                  <HeroSectionSettings></HeroSectionSettings>
+                }
+              />
             </Route>
           </Route>
+
+          
         </Route>
 
         {/* 5. CATCH-ALL */}
