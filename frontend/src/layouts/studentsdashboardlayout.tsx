@@ -23,6 +23,16 @@ export default function StudentsDashboardLayout() {
       icon: "library_books",
       path: "/students/courses",
     },
+    {
+      name: "Attendance",
+      icon: "co_present", // or "calendar_today"
+      path: "/students/attendance",
+    },
+    {
+      name: "Assignments",
+      icon: "assignment",
+      path: "/students/assignments",
+    },
   ];
 
   // const currentTitle =

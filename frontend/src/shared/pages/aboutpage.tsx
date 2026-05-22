@@ -71,7 +71,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-
       {/* ==========================================
           WHO WE ARE (SPLIT LAYOUT)
           ========================================== */}
