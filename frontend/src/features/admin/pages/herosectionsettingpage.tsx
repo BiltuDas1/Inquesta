@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
 import toast from "react-hot-toast";
 
-// --- 1. GraphQL Queries & Mutations ---
+// --- GraphQL Queries & Mutations ---
 const GET_HERO_SECTION = gql`
   query getHeroSection {
     getHeroSection {
