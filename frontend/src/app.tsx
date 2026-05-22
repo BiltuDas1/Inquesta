@@ -131,9 +131,9 @@ function App() {
         </Route>
 
         {/* =========================================
-    PARENT DASHBOARD
-    Base URL: /parents
-========================================= */}
+                      PARENT DASHBOARD
+                      Base URL: /parents
+          ========================================= */}
         <Route element={<ProtectedRoute allowedRoles={["parent"]} />}>
           <Route path="/parents" element={<ParentDashboardLayout />}>
             {/* Default redirect to dashboard */}
@@ -187,6 +187,13 @@ function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="courses" element={<DashboardPage />} />
             <Route path="students" element={<EnrollmentsDashboard />} />
+
+            <Route 
+      path="teacher-registration" 
+      element={ <div>
+                  This feature is currently under development. Check back soon!
+                </div>} 
+    />
 
             <Route path="settings">
               <Route index element={<Navigate to="notice" replace />} />
