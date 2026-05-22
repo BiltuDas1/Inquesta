@@ -1,10 +1,10 @@
 import { builder } from "../libraries/builder.ts";
 
 export type HeroSection = {
-  statusBadge: string,
-  heading: string,
-  description: string,
-  heroImageUrl: string
+  statusBadge: string;
+  heading: string;
+  description: string;
+  heroImageUrl: string;
 };
 
 export const HeroSectionObject = builder
