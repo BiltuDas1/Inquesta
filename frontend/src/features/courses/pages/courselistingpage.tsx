@@ -678,17 +678,16 @@ export default function CourseListingPage() {
   // );
   const location = useLocation();
 
-const searchParams = useMemo(() => {
-  return new URLSearchParams(location.search);
-}, [location.search]);
-
+  const searchParams = useMemo(() => {
+    return new URLSearchParams(location.search);
+  }, [location.search]);
 
   const initialPage = parseInt(searchParams.get("p") || "1", 10);
   const searchQuery = searchParams.get("q"); // Read search term from Navbar URL
   const initialCursorID = searchParams.get("cursor");
   const initialCursorRel = searchParams.get("rel");
 
-    console.log("Search",searchQuery)
+  console.log("Search", searchQuery);
 
   const [lastID, setLastID] = useState<string | null>(initialCursorID);
   const [lastRelevance, setLastRelevance] = useState<string | null>(
@@ -879,8 +878,7 @@ const searchParams = useMemo(() => {
               </p>
             )}
 
-          
-           {/* For No Course */}
+            {/* For No Course */}
             {!loading && !error && !appError && displayCourses.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in zoom-in duration-500">
                 {/* Awesome Icon with subtle glow */}
