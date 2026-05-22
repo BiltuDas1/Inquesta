@@ -188,12 +188,14 @@ function App() {
             <Route path="courses" element={<DashboardPage />} />
             <Route path="students" element={<EnrollmentsDashboard />} />
 
-            <Route 
-      path="teacher-registration" 
-      element={ <div>
+            <Route
+              path="teacher-registration"
+              element={
+                <div>
                   This feature is currently under development. Check back soon!
-                </div>} 
-    />
+                </div>
+              }
+            />
 
             <Route path="settings">
               <Route index element={<Navigate to="notice" replace />} />
