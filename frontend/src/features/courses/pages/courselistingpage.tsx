@@ -590,6 +590,7 @@ import type { Course } from "../types/courses";
 import { FilterPanel } from "../components/filterpanel";
 import { NumberedCursorPagination } from "../../../shared/components/cursorpagination";
 import { CourseCard } from "../components/coursecard";
+import { useLocation } from "react-router";
 
 // --- 1. GraphQL Queries ---
 
@@ -671,15 +672,23 @@ export default function CourseListingPage() {
   // const [sortBy, setSortBy] = useState<string>("Most Popular");
 
   // ---Init from URL Params ---
-  const searchParams = useMemo(
-    () => new URLSearchParams(window.location.search),
-    [window.location.search],
-  );
+  // const searchParams = useMemo(
+  //   () => new URLSearchParams(window.location.search),
+  //   [window.location.search],
+  // );
+  const location = useLocation();
+
+const searchParams = useMemo(() => {
+  return new URLSearchParams(location.search);
+}, [location.search]);
+
 
   const initialPage = parseInt(searchParams.get("p") || "1", 10);
   const searchQuery = searchParams.get("q"); // Read search term from Navbar URL
   const initialCursorID = searchParams.get("cursor");
   const initialCursorRel = searchParams.get("rel");
+
+    console.log("Search",searchQuery)
 
   const [lastID, setLastID] = useState<string | null>(initialCursorID);
   const [lastRelevance, setLastRelevance] = useState<string | null>(
@@ -751,7 +760,8 @@ export default function CourseListingPage() {
       lastRelevance: lastRelevance ? parseFloat(lastRelevance) : 0,
     },
     skip: !searchQuery, // Skip this query if searchQuery is empty/null
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only",
+    notifyOnNetworkStatusChange: true,
   });
 
   // Consolidate results based on which query ran
@@ -869,30 +879,8 @@ export default function CourseListingPage() {
               </p>
             )}
 
-            {/* {!loading && !error && !appError && displayCourses.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16">
-                <span className="material-symbols-outlined text-[#84948e] text-5xl mb-4">
-                  inventory_2
-                </span>
-                <p className="text-[#dfe2eb] font-bold text-lg mb-2">
-                  End of the Line!
-                </p>
-                <p className="text-[#84948e] mb-6">
-                  {searchQuery 
-                    ? `No courses found matching "${searchQuery}".` 
-                    : "You have reached the end of the courses list."}
-                </p>
-                {(cursorHistory.length > 0 || page > 1) && (
-                  <button
-                    onClick={handlePreviousPage}
-                    className="px-6 py-2 bg-[#6a35ff] text-white font-bold rounded hover:bg-[#5a2ce0] transition-colors"
-                  >
-                    Go Back to Previous Page
-                  </button>
-                )}
-              </div>
-            )} */}
-            {/* The Awesome Empty State UI */}
+          
+           {/* For No Course */}
             {!loading && !error && !appError && displayCourses.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in zoom-in duration-500">
                 {/* Awesome Icon with subtle glow */}
