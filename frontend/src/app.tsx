@@ -31,6 +31,7 @@ import NoticePage from "./features/admin/pages/noticepage";
 import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
 import AboutPage from "./shared/pages/aboutpage";
+import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -203,10 +204,7 @@ function App() {
               <Route
                 path="hero-section"
                 element={
-                  <div className="p-8 text-center text-[#b9cac3]">
-                    <h2>Hero Section Configuration</h2>
-                    <p>This feature is currently under development. Check back soon!</p>
-                  </div>
+                  <HeroSectionSettings></HeroSectionSettings>
                 }
               />
             </Route>
