@@ -37,7 +37,7 @@ def clear_session():
   It wipes the databases
   """
   # Cleaning tables of mysql
-  MYSQL_URI = os.getenv("MYSQL_URI", "mysql://root:password@mysql:3306/inquesta")
+  MYSQL_URI = os.getenv("MYSQL_URI", "mysql://root:pass123@mysql:3306/inquesta")
   parsed_uri = urlparse(MYSQL_URI)
 
   db_config = {
