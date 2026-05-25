@@ -57,8 +57,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 mt-2 md:hidden">
-        </div>
+        <div className="flex items-center gap-2 mt-2 md:hidden"></div>
         <Link
           to={`/course/${course.slug}`}
           className="relative z-20 mt-3 md:hidden w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
@@ -68,7 +67,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       </div>
 
       <div className="hidden md:flex flex-col items-end justify-start flex-shrink-0 w-24">
-         <Link
+        <Link
           to={`/course/${course.slug}`}
           className="relative z-20 mt-3  w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
         >

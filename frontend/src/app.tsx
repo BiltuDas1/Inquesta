@@ -203,14 +203,10 @@ function App() {
               <Route path="notice" element={<NoticePage />} />
               <Route
                 path="hero-section"
-                element={
-                  <HeroSectionSettings></HeroSectionSettings>
-                }
+                element={<HeroSectionSettings></HeroSectionSettings>}
               />
             </Route>
           </Route>
-
-          
         </Route>
 
         {/* 5. CATCH-ALL */}

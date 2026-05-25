@@ -71,7 +71,7 @@ export default function ContactPage() {
                   href="mailto:hello@inquesta.org"
                   className="text-[#6fffd9] font-medium hover:underline"
                 >
-                 inquestasolutions@gmail.com
+                  inquestasolutions@gmail.com
                 </a>
               </div>
               <div className="flex flex-col">

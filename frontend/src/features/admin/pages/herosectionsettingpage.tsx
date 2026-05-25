@@ -96,19 +96,26 @@ export function HeroSectionSettings() {
     titleLine1: "Learn.",
     titleLine2: "Build.",
     titleLine3: "Innovate",
-    description: "Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.",
-    imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800",
+    description:
+      "Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800",
     imageFile: null,
   });
 
   // Fetch the dynamic data
-  const { data, loading, error, refetch } = useQuery<GetHeroSectionResponse>(GET_HERO_SECTION, {
-    fetchPolicy: "network-only", // Ensures we get the freshest data for the editor
-  });
+  const { data, loading, error, refetch } = useQuery<GetHeroSectionResponse>(
+    GET_HERO_SECTION,
+    {
+      fetchPolicy: "network-only", // Ensures we get the freshest data for the editor
+    },
+  );
 
   // Setup Mutations
-  const [updateHero, { loading: updating }] = useMutation<UpdateHeroResponse>(UPDATE_HERO);
-  const [requestUpload, { loading: uploading }] = useMutation<RequestUploadResponse>(REQUEST_UPLOAD);
+  const [updateHero, { loading: updating }] =
+    useMutation<UpdateHeroResponse>(UPDATE_HERO);
+  const [requestUpload, { loading: uploading }] =
+    useMutation<RequestUploadResponse>(REQUEST_UPLOAD);
 
   const isBusy = loading || updating || uploading;
 
@@ -116,20 +123,26 @@ export function HeroSectionSettings() {
   useEffect(() => {
     if (data?.getHeroSection?.data) {
       const dbData = data.getHeroSection.data;
-      
+
       // Handle the heading split logic (split by \n or space)
       const rawHeading = dbData.heading || "";
-      const delimiter = rawHeading.includes('\n') ? '\n' : ' ';
-      const headingParts = rawHeading.split(delimiter).filter(p => p.trim() !== '');
+      const delimiter = rawHeading.includes("\n") ? "\n" : " ";
+      const headingParts = rawHeading
+        .split(delimiter)
+        .filter((p) => p.trim() !== "");
 
       setFormData({
         badgeText: dbData.statusBadge || "REGISTRATION IS CURRENTLY GOING ON",
         titleLine1: headingParts[0] || "Learn.",
         titleLine2: headingParts[1] || "Build.",
         // Grab everything else for the 3rd line in case it contains multiple words
-        titleLine3: headingParts.slice(2).join(" ") || "Innovate", 
-        description: dbData.description || "Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.",
-        imageUrl: dbData.heroImageUrl || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800",
+        titleLine3: headingParts.slice(2).join(" ") || "Innovate",
+        description:
+          dbData.description ||
+          "Hands-on STEM Courses for K-12 students across India. From PictoBlox to Arduino.",
+        imageUrl:
+          dbData.heroImageUrl ||
+          "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800",
         imageFile: null, // Keep null as this is only for newly uploaded files
       });
     }
@@ -148,7 +161,7 @@ export function HeroSectionSettings() {
   type FieldKey = keyof typeof inputRefs;
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -186,15 +199,15 @@ export function HeroSectionSettings() {
 
       // Extract ONLY the 'uploads/...' portion if a full URL is present and no new file is uploaded
       if (!formData.imageFile && finalImage) {
-        const uploadIndex = finalImage.indexOf('uploads/');
+        const uploadIndex = finalImage.indexOf("uploads/");
         if (uploadIndex !== -1) {
           // This ensures we keep exactly the 'uploads/filename.ext' structure
           finalImage = finalImage.substring(uploadIndex);
         }
-        
+
         // Remove query parameters if present (e.g., from Unsplash links)
-        if (finalImage.includes('?')) {
-          finalImage = finalImage.split('?')[0];
+        if (finalImage.includes("?")) {
+          finalImage = finalImage.split("?")[0];
         }
       }
 
@@ -222,24 +235,26 @@ export function HeroSectionSettings() {
 
       // 2. Save entire Hero configuration to DB
       const fullHeadingToSave = `${formData.titleLine1}\n${formData.titleLine2}\n${formData.titleLine3}`;
-      
+
       const { data: updateData } = await updateHero({
         variables: {
           description: formData.description,
           heading: fullHeadingToSave,
           heroImage: finalImage,
           statusBadge: formData.badgeText,
-        }
+        },
       });
 
       if (updateData?.updateHero?.success) {
         toast.success("Hero section settings saved successfully!");
-        setFormData(prev => ({ ...prev, imageFile: null })); // Reset file so it doesn't re-upload on next save
+        setFormData((prev) => ({ ...prev, imageFile: null })); // Reset file so it doesn't re-upload on next save
         refetch(); // Refresh cache
       } else {
-        throw new Error(updateData?.updateHero?.message || "Failed to update hero configuration.");
+        throw new Error(
+          updateData?.updateHero?.message ||
+            "Failed to update hero configuration.",
+        );
       }
-
     } catch (err: any) {
       console.error("Error saving hero settings:", err);
       toast.error(err.message || "An unexpected error occurred while saving.");
@@ -261,14 +276,17 @@ export function HeroSectionSettings() {
 
   return (
     <div className="flex flex-col xl:flex-row h-full gap-6 p-4 sm:p-6 lg:p-8 overflow-y-auto xl:overflow-hidden bg-[#10141a] relative">
-      
       {/* Loading Overlay while fetching, updating, or uploading */}
       {isBusy && (
         <div className="absolute inset-0 z-50 bg-[#10141a]/80 backdrop-blur-sm flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <span className="w-8 h-8 border-4 border-[#3b4a44] border-t-[#6fffd9] rounded-full animate-spin"></span>
             <p className="text-[#dfe2eb] font-medium">
-              {uploading ? "Uploading image..." : updating ? "Saving settings..." : "Loading settings..."}
+              {uploading
+                ? "Uploading image..."
+                : updating
+                  ? "Saving settings..."
+                  : "Loading settings..."}
             </p>
           </div>
         </div>
@@ -380,7 +398,7 @@ export function HeroSectionSettings() {
               </p>
             ) : (
               <p className="text-xs text-[#84948e] mt-2 truncate">
-                Current: {formData.imageUrl.split('/').pop()}
+                Current: {formData.imageUrl.split("/").pop()}
               </p>
             )}
           </div>
@@ -399,7 +417,6 @@ export function HeroSectionSettings() {
         <section className="relative min-h-[550px] md:min-h-[650px] flex items-center overflow-hidden px-8 pt-24 pb-12 w-full">
           <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
             <div className="space-y-8 min-w-0">
-              
               {/* Badge Preview */}
               <div className="relative group w-fit max-w-full">
                 <div className="inline-flex items-center space-x-2 bg-surface-container-low/50 border border-outline-variant px-4 py-2 rounded-full backdrop-blur-md">
@@ -412,7 +429,9 @@ export function HeroSectionSettings() {
                   onClick={() => focusInput("badgeText")}
                   className="absolute -top-3 -right-3 bg-[#6fffd9] text-[#003829] w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110"
                 >
-                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                  <span className="material-symbols-outlined text-[16px]">
+                    edit
+                  </span>
                 </button>
               </div>
 
@@ -422,12 +441,14 @@ export function HeroSectionSettings() {
                   {formData.titleLine1} <br /> {formData.titleLine2} <br />
                   <span className="text-gradient">{formData.titleLine3}</span>
                 </h1>
-                
+
                 <button
                   onClick={() => focusInput("titleLine3")}
                   className="absolute top-0 -right-4 bg-[#6fffd9] text-[#003829] w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110"
                 >
-                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                  <span className="material-symbols-outlined text-[16px]">
+                    edit
+                  </span>
                 </button>
               </div>
 
@@ -440,7 +461,9 @@ export function HeroSectionSettings() {
                   onClick={() => focusInput("description")}
                   className="absolute top-0 -right-4 bg-[#6fffd9] text-[#003829] w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110"
                 >
-                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                  <span className="material-symbols-outlined text-[16px]">
+                    edit
+                  </span>
                 </button>
               </div>
             </div>

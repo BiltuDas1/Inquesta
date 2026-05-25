@@ -282,50 +282,51 @@ export default function AboutPage() {
           LOCATION & REACH (FOOTER PRE-SECTION)
           ========================================== */}
       <section className="py-20 px-4 md:px-8 lg:px-12">
-  <div className="max-w-6xl mx-auto bg-[#1c2026] border border-[#3b4a44] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center">
-    
-    {/* Updated Icon: Business/Corporate */}
-    <div className="bg-[#262a31] w-16 h-16 flex items-center justify-center rounded-full shrink-0 border border-[#3b4a44]">
-      <span className="material-symbols-outlined text-[32px] text-[#6fffd9]">
-        business
-      </span>
-    </div>
+        <div className="max-w-6xl mx-auto bg-[#1c2026] border border-[#3b4a44] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center">
+          {/* Updated Icon: Business/Corporate */}
+          <div className="bg-[#262a31] w-16 h-16 flex items-center justify-center rounded-full shrink-0 border border-[#3b4a44]">
+            <span className="material-symbols-outlined text-[32px] text-[#6fffd9]">
+              business
+            </span>
+          </div>
 
-    <div className="flex-grow">
-      <span className="text-[#84948e] text-xs font-bold tracking-widest uppercase mb-1 block">
-        Corporate Information
-      </span>
-      <h3 className="font-headline text-2xl font-bold text-white mb-3">
-        Registration & Signatory Details
-      </h3>
-      <p className="text-[#b9cac3] text-sm md:text-base mb-6 max-w-3xl">
-        Inquesta is officially registered as a Limited Liability Partnership (LLP). Below are our official registration credentials and designated partners.
-      </p>
+          <div className="flex-grow">
+            <span className="text-[#84948e] text-xs font-bold tracking-widest uppercase mb-1 block">
+              Corporate Information
+            </span>
+            <h3 className="font-headline text-2xl font-bold text-white mb-3">
+              Registration & Signatory Details
+            </h3>
+            <p className="text-[#b9cac3] text-sm md:text-base mb-6 max-w-3xl">
+              Inquesta is officially registered as a Limited Liability
+              Partnership (LLP). Below are our official registration credentials
+              and designated partners.
+            </p>
 
-      {/* Replaced Pills with LLPIN and Directors */}
-      <div className="flex flex-wrap gap-3">
-        <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
-          <span className="material-symbols-outlined text-[16px] text-[#bdc2ff]">
-            tag
-          </span>{" "}
-          LLPIN: ACS-9542
+            {/* Replaced Pills with LLPIN and Directors */}
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
+                <span className="material-symbols-outlined text-[16px] text-[#bdc2ff]">
+                  tag
+                </span>{" "}
+                LLPIN: ACS-9542
+              </div>
+              <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
+                <span className="material-symbols-outlined text-[16px] text-[#6fffd9]">
+                  person
+                </span>{" "}
+                Director: Sreerup Banerjee
+              </div>
+              <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
+                <span className="material-symbols-outlined text-[16px] text-[#6fffd9]">
+                  person
+                </span>{" "}
+                Director: Srijib Kumar Dhara
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
-          <span className="material-symbols-outlined text-[16px] text-[#6fffd9]">
-            person
-          </span>{" "}
-          Director: Sreerup Banerjee
-        </div>
-        <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
-          <span className="material-symbols-outlined text-[16px] text-[#6fffd9]">
-            person
-          </span>{" "}
-          Director: Srijib Kumar Dhara
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
     </div>
   );
 }
