@@ -110,14 +110,14 @@ const CourseDetails: React.FC = () => {
             </div>
 
             {/* Metadata Row */}
-            <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-[#b9cac3]">
+            {/* <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-[#b9cac3]">
               <p>
                 Created by{" "}
                 <span className="text-[#6fffd9] underline font-bold cursor-pointer hover:text-[#00e5bc] transition-colors">
                   {course.instructorName}
                 </span>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
