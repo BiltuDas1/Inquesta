@@ -32,6 +32,7 @@ import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
 import AboutPage from "./shared/pages/aboutpage";
 import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpage";
+import CourseCartPage from "./features/courses/pages/coursecartpage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ function App() {
         <Route element={<CoursesLayout />}>
           <Route path="/courses" element={<CourseListingPage />} />
           <Route path="/course/:slug" element={<CourseDetails />} />
+          <Route path="/cart" element={<CourseCartPage />} />
         </Route>
 
         {/* 2. AUTH ROUTES (Blocked if already logged in) */}
