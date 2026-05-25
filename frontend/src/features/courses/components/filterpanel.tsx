@@ -59,99 +59,31 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     price: false,
   });
 
+  // State added for the range slider
+  const [maxPrice, setMaxPrice] = useState<number>(300);
+
   const toggle = (key: keyof FilterSectionState) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const durations = [
-    { label: "0-1 Hour", count: "3,591" },
-    { label: "1-3 Hours", count: "10,000" },
-    { label: "3-6 Hours", count: "9,475" },
-    { label: "6-17 Hours", count: "10,000" },
-  ];
-
   // NEW Data Arrays
   const levels = [
-    { label: "All Levels", count: "5,432" },
-    { label: "Beginner", count: "3,120" },
-    { label: "Intermediate", count: "1,890" },
-    { label: "Expert", count: "450" },
+    { label: "Beginner" },
+    { label: "Intermediate" },
+    { label: "Advanced" },
   ];
 
-  const modes = [
-    { label: "Online", count: "9,850" },
-    { label: "Offline", count: "150" },
-  ];
-
-  const prices = [
-    { label: "Paid", count: "8,200" },
-    { label: "Free", count: "1,800" },
+  const grades = [
+    { label: "10th" },
+    { label: "12th" },
+    { label: "UG" },
+    { label: "PG" },
   ];
 
   return (
     <div
       className={`text-on-surface font-headline isSidebar ? px-4 py-2: px-2  `}
     >
-      {isSidebar && onClose && (
-        <div className="flex items-center justify-between py-3 border-b border-[#3b4a44] font-headline ">
-          <span className="text-sm font-semibold text-[#dfe2eb]">
-            10,000 results
-          </span>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-[#31353c] text-[#b9cac3]"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-      )}
-
-      <Section
-        label="Course Duration"
-        sKey="courseDuration"
-        isOpen={openSections.courseDuration}
-        toggle={toggle}
-      >
-        {durations.map((d) => (
-          <label
-            key={d.label}
-            className="flex items-center gap-2 cursor-pointer group"
-          >
-            <input
-              type="checkbox"
-              className="accent-[#6fffd9] w-4 h-4 rounded bg-[#1c2026] border-[#84948e]"
-            />
-            <span className="text-sm text-[#dfe2eb]">{d.label}</span>
-            <span className="text-xs text-[#84948e]">({d.count})</span>
-          </label>
-        ))}
-        <button className="text-xs text-[#6fffd9] font-semibold  mt-1 flex items-center">
-          Show more{" "}
-          <span className="material-symbols-outlined">keyboard_arrow_down</span>
-        </button>
-      </Section>
-
-      <Section
-        label="Topic"
-        sKey="topic"
-        isOpen={openSections.topic}
-        toggle={toggle}
-      >
-        <p className="text-xs text-[#84948e]">Filter options...</p>
-      </Section>
-
       {/* Level Section */}
       <Section
         label="Level"
@@ -169,19 +101,18 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               className="accent-[#6fffd9] w-4 h-4 rounded bg-[#1c2026] border-[#84948e]"
             />
             <span className="text-sm text-[#dfe2eb]">{l.label}</span>
-            <span className="text-xs text-[#84948e]">({l.count})</span>
           </label>
         ))}
       </Section>
 
-      {/* --- Mode Section --- */}
+      {/* --- Grade Section --- */}
       <Section
-        label="Mode"
+        label="Grade"
         sKey="mode"
         isOpen={openSections.mode}
         toggle={toggle}
       >
-        {modes.map((m) => (
+        {grades.map((m) => (
           <label
             key={m.label}
             className="flex items-center gap-2 cursor-pointer group"
@@ -191,7 +122,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               className="accent-[#6fffd9] w-4 h-4 rounded bg-[#1c2026] border-[#84948e]"
             />
             <span className="text-sm text-[#dfe2eb]">{m.label}</span>
-            <span className="text-xs text-[#84948e]">({m.count})</span>
           </label>
         ))}
       </Section>
@@ -203,19 +133,29 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         isOpen={openSections.price}
         toggle={toggle}
       >
-        {prices.map((p) => (
-          <label
-            key={p.label}
-            className="flex items-center gap-2 cursor-pointer group"
-          >
+        {/* Custom Price Range Slider */}
+        <div className="pt-5">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-xs text-[#84948e] font-bold uppercase tracking-wider">
+              Max Price
+            </span>
+            <span className="text-sm font-bold text-[#6fffd9] bg-[#10141a] px-2 py-1 rounded border border-[#3b4a44]">
+              ₹ {maxPrice}
+            </span>
+          </div>
+
+          <div className="relative w-full">
             <input
-              type="checkbox"
-              className="accent-[#6fffd9] w-4 h-4 rounded bg-[#1c2026] border-[#84948e]"
+              type="range"
+              min="0"
+              max="300"
+              step="5"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(Number(e.target.value))}
+              className="w-full h-1.5 bg-[#10141a] rounded-lg  cursor-pointer accent-[#6fffd9] outline-none"
             />
-            <span className="text-sm text-[#dfe2eb]">{p.label}</span>
-            <span className="text-xs text-[#84948e]">({p.count})</span>
-          </label>
-        ))}
+          </div>
+        </div>
       </Section>
 
       {isSidebar && onClose && (

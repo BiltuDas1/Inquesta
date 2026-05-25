@@ -668,8 +668,7 @@ interface SearchCoursesResponse {
 // --- Main Page Component ---
 export default function CourseListingPage() {
   const [filterOpen, setFilterOpen] = useState<boolean>(false); // Mobile modal state
-  // const [desktopFilterOpen, setDesktopFilterOpen] = useState<boolean>(true); // Desktop sidebar state
-  // const [sortBy, setSortBy] = useState<string>("Most Popular");
+  const [desktopFilterOpen, setDesktopFilterOpen] = useState<boolean>(true); // Desktop sidebar state
 
   // ---Init from URL Params ---
   // const searchParams = useMemo(
@@ -734,7 +733,6 @@ export default function CourseListingPage() {
   };
 
   // --Conditional GraphQL Execution ---
-
   //Default Query (Runs if NO search query exists)
   const {
     loading: defaultLoading,
@@ -776,7 +774,6 @@ export default function CourseListingPage() {
     ? (searchData?.searchCourses?.data ?? [])
     : (defaultData?.courseGet?.data ?? []);
   // ---  Pagination Data Prep ---
-  // Filter out the duplicate item caused by the backend's 'lte' logic
   const cleanCourses = courses.filter((course) => course.id !== lastID);
 
   // Show exactly 10 items to the user
@@ -856,13 +853,44 @@ export default function CourseListingPage() {
           {searchQuery ? `Search Results for "${searchQuery}"` : "All courses"}
         </h1>
 
-        {/* Filter + Sort bar (Currently Commented Out in original) */}
-        {/* <div className="flex items-center gap-3 mb-6"> ... </div> */}
+        {/* Filter + Sort bar */}
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => setFilterOpen(true)}
+            className="flex items-center gap-2 border border-[#84948e] text-[#dfe2eb] text-sm font-semibold px-4 py-2 rounded hover:bg-[#181c22] transition-colors lg:hidden"
+          >
+            <span className="material-symbols-outlined">filter_list</span>
+            Filter
+          </button>
+
+          <button
+            onClick={() => setDesktopFilterOpen(!desktopFilterOpen)}
+            className="hidden lg:flex items-center gap-2 border border-[#84948e] text-[#dfe2eb] text-sm font-bold px-4 py-[9px] rounded hover:bg-[#181c22] transition-colors cursor-pointer"
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "20px" }}
+            >
+              filter_list
+            </span>
+            Filter
+          </button>
+        </div>
 
         {/* Main Content Area */}
         <div className="flex overflow-hidden">
-          {/* Desktop Sidebar Filters (Currently Commented Out in original) */}
-          {/* <aside className={`hidden lg:block flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ...`}> ... </aside> */}
+          {/* Desktop Sidebar Filters */}
+          <aside
+            className={`hidden lg:block flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              desktopFilterOpen ? "w-64 mr-8 opacity-100" : "w-0 mr-0 opacity-0"
+            }`}
+          >
+            <div className="w-64 text-on-surface font-headline">
+              <div className="sticky top-6">
+                <FilterPanel isSidebar={false} />
+              </div>
+            </div>
+          </aside>
 
           {/* Course List */}
           <main className="flex-1 min-w-0">
