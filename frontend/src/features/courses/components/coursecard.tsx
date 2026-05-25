@@ -45,9 +45,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           {truncatedDescription}
         </p>
 
-        <p className="text-xs text-[#00e5bc] mt-1 font-medium">
+        {/* <p className="text-xs text-[#00e5bc] mt-1 font-medium">
           {course.instructorName}
-        </p>
+        </p> */}
 
         <div className="flex items-center gap-2 mt-2">
           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#31353c] text-[#dfe2eb] uppercase tracking-wider">
