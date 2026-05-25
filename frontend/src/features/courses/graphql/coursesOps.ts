@@ -57,11 +57,38 @@ export const ADD_COURSE = gql`
   }
 `;
 
+// export const UPDATE_COURSE = gql`
+//   mutation courseUpdate(
+//     $id: String!
+//     $description: String
+//     $duration: String!
+//     $icon_name:String!
+//     $instructor_name: String!
+//     $level: String!
+//     $price: Int!
+//     $title: String!
+//   ) {
+//     courseUpdate(
+//       id: $id
+//       description: $description
+//       duration: $duration
+//       $icon_name:$icon_name
+//       instructor_name: $instructor_name
+//       level: $level
+//       price: $price
+//       title: $title
+//     ) {
+//       message
+//       success
+//     }
+//   }
+// `;
 export const UPDATE_COURSE = gql`
   mutation courseUpdate(
     $id: String!
     $description: String
     $duration: String!
+    $icon_name: String!
     $instructor_name: String!
     $level: String!
     $price: Int!
@@ -71,6 +98,7 @@ export const UPDATE_COURSE = gql`
       id: $id
       description: $description
       duration: $duration
+      icon_name: $icon_name
       instructor_name: $instructor_name
       level: $level
       price: $price
