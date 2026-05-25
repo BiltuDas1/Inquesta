@@ -45,10 +45,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           {truncatedDescription}
         </p>
 
-        {/* <p className="text-xs text-[#00e5bc] mt-1 font-medium">
-          {course.instructorName}
-        </p> */}
-
         <div className="flex items-center gap-2 mt-2">
           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#31353c] text-[#dfe2eb] uppercase tracking-wider">
             {course.level}
@@ -62,9 +58,6 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         </div>
 
         <div className="flex items-center gap-2 mt-2 md:hidden">
-          <span className="text-sm font-bold text-[#dfe2eb]">
-            ₹{course.price}
-          </span>
         </div>
         <Link
           to={`/course/${course.slug}`}
@@ -75,9 +68,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
       </div>
 
       <div className="hidden md:flex flex-col items-end justify-start flex-shrink-0 w-24">
-        <span className="text-lg font-bold text-[#dfe2eb]">
-          ₹{course.price}
-        </span>
+         <Link
+          to={`/course/${course.slug}`}
+          className="relative z-20 mt-3  w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
+        >
+          Enroll Now
+        </Link>
       </div>
     </div>
   );
