@@ -41,9 +41,7 @@
       "compositePrimaryKeys": {
         "countries_code": {
           "name": "countries_code",
-          "columns": [
-            "code"
-          ]
+          "columns": ["code"]
         }
       },
       "uniqueConstraints": {},
@@ -95,12 +93,8 @@
           "name": "course_enrollments_courses_id_courses_id_fk",
           "tableFrom": "course_enrollments",
           "tableTo": "courses",
-          "columnsFrom": [
-            "courses_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["courses_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -108,12 +102,8 @@
           "name": "course_enrollments_user_id_users_id_fk",
           "tableFrom": "course_enrollments",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -121,17 +111,13 @@
       "compositePrimaryKeys": {
         "course_enrollments_id": {
           "name": "course_enrollments_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "course_enrollments_transaction_id_unique": {
           "name": "course_enrollments_transaction_id_unique",
-          "columns": [
-            "transaction_id"
-          ]
+          "columns": ["transaction_id"]
         }
       },
       "checkConstraint": {}
@@ -208,17 +194,13 @@
       "compositePrimaryKeys": {
         "courses_id": {
           "name": "courses_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "courses_slug_unique": {
           "name": "courses_slug_unique",
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "checkConstraint": {}
@@ -246,9 +228,7 @@
       "compositePrimaryKeys": {
         "filterSettings_key": {
           "name": "filterSettings_key",
-          "columns": [
-            "key"
-          ]
+          "columns": ["key"]
         }
       },
       "uniqueConstraints": {},
@@ -277,17 +257,13 @@
       "compositePrimaryKeys": {
         "grades_id": {
           "name": "grades_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "grades_name_unique": {
           "name": "grades_name_unique",
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "checkConstraint": {}
@@ -315,9 +291,7 @@
       "compositePrimaryKeys": {
         "hero_settings_key": {
           "name": "hero_settings_key",
-          "columns": [
-            "key"
-          ]
+          "columns": ["key"]
         }
       },
       "uniqueConstraints": {},
@@ -346,17 +320,13 @@
       "compositePrimaryKeys": {
         "levels_id": {
           "name": "levels_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "levels_name_unique": {
           "name": "levels_name_unique",
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "checkConstraint": {}
@@ -413,9 +383,7 @@
       "compositePrimaryKeys": {
         "notices_id": {
           "name": "notices_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -479,9 +447,7 @@
       "indexes": {
         "active_status_idx": {
           "name": "active_status_idx",
-          "columns": [
-            "is_active"
-          ],
+          "columns": ["is_active"],
           "isUnique": false
         }
       },
@@ -489,17 +455,13 @@
       "compositePrimaryKeys": {
         "users_id": {
           "name": "users_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "checkConstraint": {}
@@ -556,12 +518,8 @@
           "name": "users_info_users_id_users_id_fk",
           "tableFrom": "users_info",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -569,9 +527,7 @@
       "compositePrimaryKeys": {
         "users_info_users_id": {
           "name": "users_info_users_id",
-          "columns": [
-            "users_id"
-          ]
+          "columns": ["users_id"]
         }
       },
       "uniqueConstraints": {},

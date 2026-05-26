@@ -29,12 +29,15 @@ export async function addCourse(data: Course) {
     ...data,
     slug: slug,
   });
-  
-  await db.insert(filterSettings).values({ key: "maxPrice", value: `${data.price}` }).onDuplicateKeyUpdate({
-    set: {
-      value: sql`IF(${data.price} > CAST(value AS UNSIGNED), ${data.price}, value)`
-    }
-  })
+
+  await db
+    .insert(filterSettings)
+    .values({ key: "maxPrice", value: `${data.price}` })
+    .onDuplicateKeyUpdate({
+      set: {
+        value: sql`IF(${data.price} > CAST(value AS UNSIGNED), ${data.price}, value)`,
+      },
+    });
 
   await redis.del("inquesta:courses:list");
   return true;

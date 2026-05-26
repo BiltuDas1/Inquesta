@@ -94,20 +94,20 @@ export const levels = mysqlTable("levels", {
   id: varchar("id", { length: 36 })
     .primaryKey()
     .$defaultFn(() => uuidv7()),
-  name: varchar("name", { length: 50 }).unique().notNull()
-})
+  name: varchar("name", { length: 50 }).unique().notNull(),
+});
 
 export const grades = mysqlTable("grades", {
   id: varchar("id", { length: 36 })
     .primaryKey()
     .$defaultFn(() => uuidv7()),
-  name: varchar("name", { length: 50 }).unique().notNull()
-})
+  name: varchar("name", { length: 50 }).unique().notNull(),
+});
 
 export const filterSettings = mysqlTable("filterSettings", {
   key: varchar("key", { length: 50 }).primaryKey(),
   value: text("value"),
-})
+});
 
 export const cart = mysqlTable("cart", {
   id: int().autoincrement().primaryKey(),
@@ -119,4 +119,4 @@ export const cart = mysqlTable("cart", {
     onDelete: "cascade",
   }),
   addedAt: timestamp("added_at").defaultNow().notNull(),
-})
+});
