@@ -71,6 +71,20 @@
       "when": 1779418085100,
       "tag": "0009_nappy_white_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1779807807668,
+      "tag": "0010_slippery_obadiah_stane",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1779815897514,
+      "tag": "0011_magenta_tinkerer",
+      "breakpoints": true
     }
   ]
 }
