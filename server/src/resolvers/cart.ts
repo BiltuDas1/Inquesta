@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../config.ts";
 import { cart, courses } from "../databases/schema.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
@@ -64,6 +64,32 @@ export async function getItemsFromCart(access_token: string) {
     return {
       success: false,
       message: "failed to add course in the cart",
+    };
+  }
+}
+
+export async function removeFromCart(access_token: string, courseId: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token",
+    };
+  }
+
+  const userId = accessToken.getSub();
+  try {
+    await db
+      .delete(cart)
+      .where(and(eq(cart.user_id, userId), eq(cart.course_id, courseId)));
+    return {
+      success: true,
+      message: "successfully removed course from the cart",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "failed to remove course from the cart",
     };
   }
 }
