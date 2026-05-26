@@ -322,8 +322,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "./logo";
-import { useNavigate, useLocation, Link } from "react-router"; 
+import { useNavigate, useLocation, Link } from "react-router";
 import { useAuth } from "../../features/auth/context/authcontext";
+import { useCart } from "../../features/auth/context/cartcontext";
 
 export default function Navbar() {
   const [searchInput, setSearchInput] = useState("");
@@ -331,9 +332,9 @@ export default function Navbar() {
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  
+
   // Mock cart count - replace this with your actual Cart Context / State
-  const [cartCount] = useState(3); 
+  const { cartCount } = useCart();
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -621,10 +622,7 @@ export default function Navbar() {
             )}
 
             {/* Desktop Cart Icon */}
-            <button
-              onClick={() => navigate("/cart")}
-              className={iconBtnClass}
-            >
+            <button onClick={() => navigate("/cart")} className={iconBtnClass}>
               <span
                 className="material-symbols-outlined"
                 style={{

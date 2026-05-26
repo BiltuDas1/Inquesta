@@ -63,7 +63,7 @@ createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <BrowserRouter>
         <AuthProvider>
-         <CartProvider>
+          <CartProvider>
             <App />
           </CartProvider>
         </AuthProvider>

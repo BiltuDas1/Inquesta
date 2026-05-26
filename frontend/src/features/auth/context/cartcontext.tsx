@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState } from "react";
 
 // GraphQL mutation
 const ADD_COURSE_TO_CART = gql`
-  mutation addCourseToCart ($courseId: String!) {
+  mutation addCourseToCart($courseId: String!) {
     addCourseToCart(courseId: $courseId) {
       success
       message
@@ -21,16 +21,21 @@ interface AddToCartResponse {
 
 interface CartContextType {
   cartCount: number;
-  addToCart: (courseId: string) => Promise<{ success: boolean; message: string }>;
+  addToCart: (
+    courseId: string,
+  ) => Promise<{ success: boolean; message: string }>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [cartCount, setCartCount] = useState(0);
 
   // Initialize the mutation hook
-  const [addCourseToCartMutation] = useMutation<AddToCartResponse>(ADD_COURSE_TO_CART);
+  const [addCourseToCartMutation] =
+    useMutation<AddToCartResponse>(ADD_COURSE_TO_CART);
 
   const addToCart = async (courseId: string) => {
     try {
@@ -47,7 +52,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true, message: result.message };
       }
 
-      return { success: false, message: result?.message || "Failed to add to cart" };
+      return {
+        success: false,
+        message: result?.message || "Failed to add to cart",
+      };
     } catch (error) {
       console.error("Cart error:", error);
       return { success: false, message: "Network error adding to cart" };

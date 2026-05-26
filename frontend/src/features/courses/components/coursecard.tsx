@@ -78,31 +78,45 @@
 //   );
 // };
 
-
 import React from "react";
 import { Link } from "react-router";
 import type { Course } from "../types/courses";
+import { useCart } from "../../auth/context/cartcontext";
+import toast from "react-hot-toast";
 
 interface CourseCardProps {
   course: Course;
-  // Optional: Pass a function from the parent to handle the cart logic
-  // onAddToCart?: (courseId: string) => void;
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
+  // 2. GET THE ADD FUNCTION FROM CONTEXT
+  const { addToCart } = useCart();
+
   const safeDescription = course?.description || "";
   const truncatedDescription =
     safeDescription.length > 121
       ? `${safeDescription.substring(0, 121)}...`
       : safeDescription;
 
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //  MAKE THIS ASYNC AND CALL THE MUTATION
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // Prevents the card's outer link from triggering when clicking the button
     e.preventDefault();
     e.stopPropagation();
-    
-    // Add your GraphQL mutation/cart logic here
-    console.log("Added to cart:", course.id);
+
+    try {
+      const result = await addToCart(course.id);
+
+      if (result.success) {
+        toast.success(result.message);
+        console.log("Success:", result.message);
+      } else {
+        toast.error(result.message);
+        console.error("Failed:", result.message);
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   return (
