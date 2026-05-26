@@ -108,3 +108,15 @@ export const filterSettings = mysqlTable("filterSettings", {
   key: varchar("key", { length: 50 }).primaryKey(),
   value: text("value"),
 })
+
+export const cart = mysqlTable("cart", {
+  id: int().autoincrement().primaryKey(),
+  course_id: varchar("courses_id", { length: 36 }).references(
+    () => courses.id,
+    { onDelete: "restrict" },
+  ),
+  user_id: varchar("user_id", { length: 36 }).references(() => users.id, {
+    onDelete: "cascade",
+  }),
+  addedAt: timestamp("added_at").defaultNow().notNull(),
+})
