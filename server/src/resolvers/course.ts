@@ -3,6 +3,7 @@ import { db, redis, s3PublicEndpoint } from "../config.ts";
 import {
   courseEnrollments,
   courses,
+  filterSettings,
   users,
   users_info,
 } from "../databases/schema.ts";
@@ -28,6 +29,13 @@ export async function addCourse(data: Course) {
     ...data,
     slug: slug,
   });
+  
+  await db.insert(filterSettings).values({ key: "maxPrice", value: `${data.price}` }).onDuplicateKeyUpdate({
+    set: {
+      value: sql`IF(${data.price} > CAST(value AS UNSIGNED), ${data.price}, value)`
+    }
+  })
+
   await redis.del("inquesta:courses:list");
   return true;
 }

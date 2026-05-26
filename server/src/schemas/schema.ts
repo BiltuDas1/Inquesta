@@ -6,5 +6,6 @@ import "./course.ts";
 import "./file.ts";
 import "./notice.ts";
 import "./hero.ts";
+import "./filter.ts";
 
 export const schema = builder.toSchema();
