@@ -1,10 +1,23 @@
 from playwright.sync_api import APIRequestContext
-from helpers.auth_token import get_access_token
-from helpers.db_update import promote_to_admin
+from dataclasses import dataclass, asdict
+from typing import Optional
 
 
-def register_and_login_admin(api_request_context: APIRequestContext):
+@dataclass
+class RegisterData:
+  email: str
+  firstname: str
+  password: str
+  is_student: bool
+  lastname: Optional[str] = None
 
+
+def asdict_filtered(obj):
+  """Converts dataclass to dict, removing fields that are None."""
+  return asdict(obj, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})
+
+
+def register(api_request_context: APIRequestContext, data: RegisterData):
   register_response = api_request_context.post(
     "/",
     data={
@@ -28,13 +41,7 @@ def register_and_login_admin(api_request_context: APIRequestContext):
                   }
                 }
             """,
-      "variables": {
-        "email": "rohanmahato@gmail.com",
-        "firstname": "rohan",
-        "is_student": False,
-        "lastname": "mahato",
-        "password": "Pass@123",
-      },
+      "variables": asdict_filtered(data),
     },
   )
 
@@ -60,8 +67,10 @@ def register_and_login_admin(api_request_context: APIRequestContext):
     f"Expected str message, got {type(register_result.get('message'))}"
   )
 
-  promote_to_admin("rohanmahato@gmail.com")
+  return True
 
+
+def login(api_request_context: APIRequestContext, email: str, password: str):
   login_response = api_request_context.post(
     "/",
     data={
@@ -80,8 +89,8 @@ def register_and_login_admin(api_request_context: APIRequestContext):
                 }
             """,
       "variables": {
-        "email": "rohanmahato@gmail.com",
-        "password": "Pass@123",
+        "email": email,
+        "password": password,
       },
     },
   )
@@ -106,12 +115,5 @@ def register_and_login_admin(api_request_context: APIRequestContext):
   assert login_result.get("data") is not None, (
     f"Expected data, got {login_result.get('data')}"
   )
-  assert login_result["data"]["email"] == "rohanmahato@gmail.com"
-  assert login_result["data"]["firstname"] == "rohan"
-  assert login_result["data"]["lastname"] == "mahato"
-  assert login_result["data"]["role"] == "admin"
 
-  access_token = get_access_token(login_response)
-  assert access_token is not None, "Access token not found in cookies"
-
-  return access_token
+  return (login_response, login_result)
