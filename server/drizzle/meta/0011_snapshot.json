@@ -1,9 +1,72 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "a6dbd1cc-fa3a-4e04-8ba7-04a4f2a96cd4",
-  "prevId": "a11a375d-689a-4f3c-9839-639c2690593d",
+  "id": "c0269284-28d8-483a-8c2b-0cbea50c1949",
+  "prevId": "a6dbd1cc-fa3a-4e04-8ba7-04a4f2a96cd4",
   "tables": {
+    "cart": {
+      "name": "cart",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "courses_id": {
+          "name": "courses_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "added_at": {
+          "name": "added_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "cart_courses_id_courses_id_fk": {
+          "name": "cart_courses_id_courses_id_fk",
+          "tableFrom": "cart",
+          "tableTo": "courses",
+          "columnsFrom": ["courses_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "cart_user_id_users_id_fk": {
+          "name": "cart_user_id_users_id_fk",
+          "tableFrom": "cart",
+          "tableTo": "users",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "cart_id": {
+          "name": "cart_id",
+          "columns": ["id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "countries": {
       "name": "countries",
       "columns": {

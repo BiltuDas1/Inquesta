@@ -44,7 +44,7 @@ builder.queryField("getHeroSection", (t) =>
 builder.mutationField("updateHero", (t) =>
   t.field({
     authScopes: {
-      isValidSession: true
+      isValidSession: true,
     },
     type: GQLResponse,
     args: {

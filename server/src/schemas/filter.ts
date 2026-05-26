@@ -4,19 +4,19 @@ import { FilterObject, type Filter } from "../types/filter.ts";
 
 const getFiltersResponse = builder
   .objectRef<{
-    success: boolean,
-    message: string,
-    data?: Filter
+    success: boolean;
+    message: string;
+    data?: Filter;
   }>("GetFiltersResponse")
   .implement({
     fields: (t) => ({
       success: t.exposeBoolean("success"),
       message: t.exposeString("message"),
       data: t.expose("data", {
-        type: FilterObject
-      })
-    })
-  })
+        type: FilterObject,
+      }),
+    }),
+  });
 
 builder.queryField("getFilters", (t) =>
   t.field({
@@ -28,14 +28,14 @@ builder.queryField("getFilters", (t) =>
         return {
           success: true,
           message: "filters data has been fetched successfully",
-          data: result
-        }
+          data: result,
+        };
       } else {
         return {
           success: false,
-          message: "failed to fetch filters fields"
-        }
+          message: "failed to fetch filters fields",
+        };
       }
-    }
-  })
-)
+    },
+  }),
+);
