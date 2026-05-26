@@ -10,6 +10,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { client } from "./providers/apolloclient";
 import { BrowserRouter } from "react-router";
 import { AuthProvider } from "./features/auth/context/authcontext";
+import { CartProvider } from "./features/auth/context/cartcontext";
 
 const _sysCfg = {
   a: "aHR0cHM6Ly9zY2hlbWEub3Jn",
@@ -62,7 +63,9 @@ createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <CartProvider>
+            <App />
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </StrictMode>

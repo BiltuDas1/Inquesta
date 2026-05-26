@@ -1,6 +1,6 @@
 // import { useState, useEffect, useRef } from "react";
 // import { Logo } from "./logo";
-// import { useNavigate, Link } from "react-router";
+// import { useNavigate, useLocation, Link } from "react-router"; // Added useLocation
 // import { useAuth } from "../../features/auth/context/authcontext";
 
 // export default function Navbar() {
@@ -12,10 +12,12 @@
 
 //   const { user, logout } = useAuth();
 //   const navigate = useNavigate();
+//   const location = useLocation();
 
 //   const desktopRef = useRef<HTMLDivElement>(null);
 //   const mobileRef = useRef<HTMLDivElement>(null);
 
+//   // Close dropdowns on outside click
 //   useEffect(() => {
 //     const handleClickOutside = (event: MouseEvent) => {
 //       const target = event.target as Node;
@@ -33,6 +35,7 @@
 //     return () => document.removeEventListener("click", handleClickOutside);
 //   }, []);
 
+//   // Handle resize for mobile search
 //   useEffect(() => {
 //     const handleResize = () => {
 //       if (window.innerWidth >= 768) {
@@ -42,6 +45,53 @@
 //     window.addEventListener("resize", handleResize);
 //     return () => window.removeEventListener("resize", handleResize);
 //   }, []);
+
+//   // Sync the search input with the URL when the page loads or URL changes
+//   useEffect(() => {
+//     if (location.pathname === "/courses") {
+//       const params = new URLSearchParams(location.search);
+//       setSearchInput(params.get("q") || "");
+//     } else {
+//       setSearchInput(""); // Clear search bar if we navigate away from courses
+//     }
+//   }, [location.pathname, location.search]);
+
+//   // Live filtering ONLY when already on the courses page
+//   useEffect(() => {
+//     if (location.pathname !== "/courses") return;
+
+//     const handler = setTimeout(() => {
+//       const params = new URLSearchParams(location.search);
+//       const currentQ = params.get("q") || "";
+//       const newQ = searchInput.trim();
+
+//       // Only push to URL if the search actually changed (prevents loop with sync useEffect)
+//       if (currentQ !== newQ) {
+//         if (newQ) {
+//           params.set("q", newQ);
+//         } else {
+//           params.delete("q");
+//         }
+//         navigate(`/courses?${params.toString()}`, { replace: true });
+//       }
+//     }, 400); // 400ms debounce
+
+//     return () => clearTimeout(handler);
+//   }, [searchInput, location.pathname, location.search, navigate]);
+
+//   // Pressing 'Enter' forces the search globally
+//   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+//     if (e.key === "Enter") {
+//       const query = searchInput.trim();
+//       if (query) {
+//         navigate(`/courses?q=${encodeURIComponent(query)}`);
+//       } else {
+//         navigate(`/courses`);
+//       }
+//       setIsMobileSearchOpen(false);
+//       (e.target as HTMLInputElement).blur(); // Remove focus after searching
+//     }
+//   };
 
 //   const getInitials = (fname?: string, lname?: string) => {
 //     const first = fname ? fname.charAt(0).toUpperCase() : "";
@@ -60,56 +110,6 @@
 //     }
 //   };
 
-//   // 2. ADDED: Handler to trigger search when "Enter" is pressed
-//   // const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-//   //   if (e.key === "Enter" && searchInput.trim()) {
-//   //     // Navigate to the courses page with the search term in the URL
-//   //     navigate(`/courses?q=${encodeURIComponent(searchInput.trim())}`);
-
-//   //     // Close mobile search and clear input if desired
-//   //     setIsMobileSearchOpen(false);
-//   //     setSearchInput("");
-//   //   }
-//   // };
-
-//   // 1. Add Debounce State
-//   const [debouncedInput, setDebouncedInput] = useState(searchInput);
-
-//   // 2. Debounce logic
-//   useEffect(() => {
-//     const handler = setTimeout(() => {
-//       setDebouncedInput(searchInput);
-//     }, 400); // Wait 400ms after user stops typing
-
-//     return () => clearTimeout(handler);
-//   }, [searchInput]);
-
-//   // 3. Update URL when debouncedInput changes (if on courses page)
-//   useEffect(() => {
-//     const handler = setTimeout(() => {
-//       const params = new URLSearchParams(window.location.search);
-
-//       if (searchInput.trim()) {
-//         params.set("q", searchInput.trim());
-//       } else {
-//         params.delete("q");
-//       }
-
-//       // Update URL without reloading the page.
-//       // If NOT on the courses page, navigate there.
-//       const newSearch = params.toString();
-//       const targetPath = newSearch ? `/courses?${newSearch}` : "/courses";
-
-//       if (window.location.pathname !== "/courses" && searchInput.trim()) {
-//         navigate(targetPath);
-//       } else if (window.location.pathname === "/courses") {
-//         navigate(`?${newSearch}`, { replace: true });
-//       }
-//     }, 400); // 400ms delay to prevent server spam
-
-//     return () => clearTimeout(handler);
-//   }, [searchInput, location.pathname]);
-
 //   const iconBtnClass =
 //     "relative flex items-center justify-center w-9 h-9 rounded-lg border-none cursor-pointer shrink-0 bg-transparent hover:bg-[#262a31] text-[#b9cac3] hover:text-[#dfe2eb] transition-colors";
 
@@ -119,7 +119,6 @@
 //         {/* ── Mobile Layout ── */}
 //         <div className="flex md:hidden items-center justify-between w-full h-full px-4">
 //           {isMobileSearchOpen ? (
-//             // Mobile Search Mode (Replaces normal mobile nav)
 //             <div className="flex items-center w-full h-full gap-3 animate-in fade-in slide-in-from-right-4 duration-200">
 //               <span
 //                 className="material-symbols-outlined text-[#84948e]"
@@ -127,35 +126,27 @@
 //               >
 //                 search
 //               </span>
-
-//               {/* 3. CHANGED: Wired up the Mobile Search Input */}
 //               <input
 //                 type="text"
-//                 placeholder="Search for anything"
+//                 placeholder="Search for anything..."
 //                 autoFocus
 //                 value={searchInput}
 //                 onChange={(e) => setSearchInput(e.target.value)}
-//                 // onKeyDown={handleSearchKeyDown}
+//                 onKeyDown={handleSearchKeyDown}
 //                 className="flex-1 bg-transparent border-none outline-none text-[#dfe2eb] text-base w-full h-full"
 //               />
-
 //               <button
-//                 onClick={() => {
-//                   setIsMobileSearchOpen(false);
-//                   setSearchInput(""); // Clear input when closed manually
-//                 }}
+//                 onClick={() => setIsMobileSearchOpen(false)}
 //                 className="bg-transparent border-none cursor-pointer text-[#b9cac3] p-1 flex items-center justify-center hover:bg-[#262a31] rounded-full transition-colors"
 //               >
 //                 <span className="material-symbols-outlined">close</span>
 //               </button>
 //             </div>
 //           ) : (
-//             // Default Mobile Nav Mode
 //             <>
 //               <div className="flex items-center shrink-0">
 //                 <Logo />
 //               </div>
-
 //               <div className="flex items-center gap-3">
 //                 <button
 //                   onClick={() => setIsMobileSearchOpen(true)}
@@ -247,13 +238,12 @@
 //               </span>
 //             </span>
 
-//             {/* 4. CHANGED: Wired up the Desktop Search Input */}
 //             <input
 //               type="text"
-//               placeholder="Search for anything"
+//               placeholder="Search for anything... (Press Enter)"
 //               value={searchInput}
 //               onChange={(e) => setSearchInput(e.target.value)}
-//               // onKeyDown={handleSearchKeyDown}
+//               onKeyDown={handleSearchKeyDown}
 //               onFocus={() => setSearchFocused(true)}
 //               onBlur={() => setSearchFocused(false)}
 //               className={`w-full py-2 pr-4 pl-10 rounded-full bg-[#1c2026] outline-none text-[#dfe2eb] text-sm transition-all duration-200 border ${
@@ -332,8 +322,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "./logo";
-import { useNavigate, useLocation, Link } from "react-router"; // Added useLocation
+import { useNavigate, useLocation, Link } from "react-router";
 import { useAuth } from "../../features/auth/context/authcontext";
+import { useCart } from "../../features/auth/context/cartcontext";
 
 export default function Navbar() {
   const [searchInput, setSearchInput] = useState("");
@@ -341,6 +332,9 @@ export default function Navbar() {
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // Mock cart count - replace this with your actual Cart Context / State
+  const { cartCount } = useCart();
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -479,7 +473,7 @@ export default function Navbar() {
               <div className="flex items-center shrink-0">
                 <Logo />
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsMobileSearchOpen(true)}
                   className={iconBtnClass}
@@ -495,6 +489,27 @@ export default function Navbar() {
                   </span>
                 </button>
 
+                {/* Mobile Cart Icon */}
+                <button
+                  onClick={() => navigate("/cart")}
+                  className={iconBtnClass}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{
+                      fontSize: "25px",
+                      fontVariationSettings: "'wght' 300",
+                    }}
+                  >
+                    shopping_cart
+                  </span>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-[#10141a] bg-[#6fffd9] rounded-full shadow-sm">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
+                </button>
+
                 {user && (
                   <Link
                     to={
@@ -502,7 +517,7 @@ export default function Navbar() {
                         ? "/admin/dashboard"
                         : "/student/dashboard"
                     }
-                    className="text-[#b9cac3] hover:text-[#dfe2eb] transition-colors text-sm font-semibold"
+                    className="text-[#b9cac3] hover:text-[#dfe2eb] transition-colors text-sm font-semibold ml-1"
                   >
                     Dashboard
                   </Link>
@@ -512,7 +527,7 @@ export default function Navbar() {
                   <div className="relative" ref={mobileRef}>
                     <button
                       onClick={() => setIsProfileOpen(!isProfileOpen)}
-                      className="w-9 h-9 rounded-full bg-[#343d96] text-[#bdc2ff] font-bold text-xs border-2 border-[#3b4a44] hover:border-[#6fffd9] cursor-pointer flex items-center justify-center transition-colors shrink-0 ml-2"
+                      className="w-9 h-9 rounded-full bg-[#343d96] text-[#bdc2ff] font-bold text-xs border-2 border-[#3b4a44] hover:border-[#6fffd9] cursor-pointer flex items-center justify-center transition-colors shrink-0 ml-1"
                     >
                       {getInitials(user.firstname, user.lastname)}
                     </button>
@@ -541,7 +556,7 @@ export default function Navbar() {
                 ) : (
                   <button
                     onClick={() => navigate("/login")}
-                    className="px-3 py-1.5 rounded-lg bg-[#6fffd9] text-[#1c2026] font-bold text-xs hover:bg-[#5cebc5] transition-colors shrink-0 ml-2"
+                    className="px-3 py-1.5 rounded-lg bg-[#6fffd9] text-[#1c2026] font-bold text-xs hover:bg-[#5cebc5] transition-colors shrink-0 ml-1"
                   >
                     Login
                   </button>
@@ -586,7 +601,7 @@ export default function Navbar() {
             />
           </div>
 
-          <div className="flex items-center gap-6 shrink-0">
+          <div className="flex items-center gap-4 lg:gap-6 shrink-0">
             {user && (
               <div className="flex items-center gap-6">
                 <Link
@@ -605,6 +620,24 @@ export default function Navbar() {
                 </Link>
               </div>
             )}
+
+            {/* Desktop Cart Icon */}
+            <button onClick={() => navigate("/cart")} className={iconBtnClass}>
+              <span
+                className="material-symbols-outlined"
+                style={{
+                  fontSize: "25px",
+                  fontVariationSettings: "'wght' 300",
+                }}
+              >
+                shopping_cart
+              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-[#10141a] bg-[#6fffd9] rounded-full shadow-sm">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </button>
 
             {user ? (
               <div className="relative" ref={desktopRef}>
