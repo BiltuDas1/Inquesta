@@ -247,3 +247,918 @@ def test_course_add_by_admin(api_request_context: APIRequestContext):
   assert isinstance(result.get("message"), str), (
     f"Expected str message, got {type(result.get('message'))}"
   )
+
+
+def test_course_add_title_empty(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="rohandas@gmail.com",
+      firstname="rohan",
+      lastname="das",
+      password="Pass@123",
+      is_student=True,
+    ),
+  )
+
+  promote_to_admin("rohandas@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="rohandas@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "rohandas@gmail.com"
+  assert login_result["data"]["firstname"] == "rohan"
+  assert login_result["data"]["lastname"] == "das"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "",
+        "price": 800,
+        "level": "Beginner",
+        "duration": "2 Months",
+        "instructor_name": "Biltu",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_by_prise_zero(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="rohanmahato@gmail.com",
+      firstname="rohan",
+      lastname="mahato",
+      password="Pass@123",
+      is_student=True,
+    ),
+  )
+
+  promote_to_admin("rohanmahato@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="rohanmahato@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "rohanmahato@gmail.com"
+  assert login_result["data"]["firstname"] == "rohan"
+  assert login_result["data"]["lastname"] == "mahato"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "Python Full Stack",
+        "price": 0,
+        "level": "Beginner",
+        "duration": "2 Months",
+        "instructor_name": "Aman",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_price_negative(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="rohanmahato123@gmail.com",
+      firstname="rohan",
+      lastname="mahato",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("rohanmahato123@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="rohanmahato123@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "rohanmahato123@gmail.com"
+  assert login_result["data"]["firstname"] == "rohan"
+  assert login_result["data"]["lastname"] == "mahato"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "Python Full Stack",
+        "price": -900,
+        "level": "Beginner",
+        "duration": "2 Months",
+        "instructor_name": "Aman",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_price_verylarge(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="rohanmanna@gmail.com",
+      firstname="rohan",
+      lastname="manna",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("rohanmanna@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="rohanmanna@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "rohanmanna@gmail.com"
+  assert login_result["data"]["firstname"] == "rohan"
+  assert login_result["data"]["lastname"] == "manna"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "Spoken English",
+        "price": 2147483648,
+        "level": "Beginner",
+        "duration": "2 Months",
+        "instructor_name": "Harish",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_price_string(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="nil123@gmail.com",
+      firstname="nil",
+      lastname="pramanik",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("nil123@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="nil123@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "nil123@gmail.com"
+  assert login_result["data"]["firstname"] == "nil"
+  assert login_result["data"]["lastname"] == "pramanik"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "React",
+        "price": "900",
+        "level": "Beginner",
+        "duration": "2 Months",
+        "instructor_name": "Aman",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_level_invalid(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="sumandas@gmail.com",
+      firstname="suman",
+      lastname="das",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("sumandas@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="sumandas@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "sumandas@gmail.com"
+  assert login_result["data"]["firstname"] == "suman"
+  assert login_result["data"]["lastname"] == "das"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "Soft Computing",
+        "price": 1000,
+        "level": "Expert",
+        "duration": "3 Months",
+        "instructor_name": "Aman",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_level_lowercase(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="sameer@gmail.com",
+      firstname="sameer",
+      lastname="mahato",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("sameer@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="sameer@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "sameer@gmail.com"
+  assert login_result["data"]["firstname"] == "sameer"
+  assert login_result["data"]["lastname"] == "mahato"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "JavaScript ",
+        "price": 700,
+        "level": "beginner",
+        "duration": "2 Months",
+        "instructor_name": "Harry",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_duration_empty(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="sameer123@gmail.com",
+      firstname="sameer",
+      lastname="mahato",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("sameer123@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="sameer123@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "sameer123@gmail.com"
+  assert login_result["data"]["firstname"] == "sameer"
+  assert login_result["data"]["lastname"] == "mahato"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "JavaScript",
+        "price": 700,
+        "level": "beginner",
+        "duration": "",
+        "instructor_name": "Harry",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_level_duration_invalid_format(
+  api_request_context: APIRequestContext,
+):
+  register(
+    api_request_context,
+    RegisterData(
+      email="sameergupta@gmail.com",
+      firstname="sameer",
+      lastname="gupta",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("sameergupta@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="sameergupta@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "sameergupta@gmail.com"
+  assert login_result["data"]["firstname"] == "sameer"
+  assert login_result["data"]["lastname"] == "gupta"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "JavaScript ",
+        "price": 700,
+        "level": "beginner",
+        "duration": "Two Months",
+        "instructor_name": "Harry",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_instructor_name_empty(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="sameergupta123@gmail.com",
+      firstname="sameer",
+      lastname="gupta",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("sameergupta123@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="sameergupta123@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "sameergupta123@gmail.com"
+  assert login_result["data"]["firstname"] == "sameer"
+  assert login_result["data"]["lastname"] == "gupta"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "JavaScript",
+        "price": 700,
+        "level": "beginner",
+        "duration": "2 Months",
+        "instructor_name": "",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
+
+
+def test_course_add_instructor_name_numeric(api_request_context: APIRequestContext):
+  register(
+    api_request_context,
+    RegisterData(
+      email="sameerali@gmail.com",
+      firstname="sameer",
+      lastname="ali",
+      password="Pass@123",
+      is_student=False,
+    ),
+  )
+
+  promote_to_admin("sameerali@gmail.com")
+
+  login_response, login_result = login(
+    api_request_context, email="sameerali@gmail.com", password="Pass@123"
+  )
+
+  assert login_result["data"]["email"] == "sameerali@gmail.com"
+  assert login_result["data"]["firstname"] == "sameer"
+  assert login_result["data"]["lastname"] == "ali"
+  assert login_result["data"]["role"] == "admin"
+
+  access_token = get_access_token(login_response)
+  assert access_token is not None, "Access token not found in cookies"
+
+  course_response = api_request_context.post(
+    "/",
+    headers={"Cookie": f"access_token={access_token}"},
+    data={
+      "query": """
+                mutation CourseAdd(
+                  $title: String!
+                  $price: Int!
+                  $level: String!
+                  $duration: String!
+                  $instructor_name: String!
+                  $description: String
+                  $icon_name: String
+                ) {
+                  courseAdd(
+                    title: $title
+                    price: $price
+                    level: $level
+                    duration: $duration
+                    instructor_name: $instructor_name
+                    description: $description
+                    icon_name: $icon_name
+                  ) {
+                    success
+                    message
+                  }
+                }
+            """,
+      "variables": {
+        "title": "JavaScript ",
+        "price": 700,
+        "level": "beginner",
+        "duration": "2 Months",
+        "instructor_name": "Harry123",
+        "description": "",
+        "icon_name": "",
+      },
+    },
+  )
+
+  assert course_response.ok, f"API failed with status {course_response.status}"
+  res_json = course_response.json()
+
+  assert "errors" not in res_json, f"Courseadd GraphQL Errors: {res_json['errors']}"
+
+  assert "data" in res_json, "Response missing 'data' field"
+  result = res_json["data"].get("courseAdd")
+
+  assert result is not None, (
+    f"courseAdd result was null. Errors: {res_json.get('errors')}"
+  )
+  assert result.get("success") is False, f"Expected False, got {result.get('success')}"
+  assert isinstance(result.get("message"), str), (
+    f"Expected str message, got {type(result.get('message'))}"
+  )
