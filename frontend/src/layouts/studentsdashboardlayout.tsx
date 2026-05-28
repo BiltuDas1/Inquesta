@@ -25,13 +25,28 @@ export default function StudentsDashboardLayout() {
     },
     {
       name: "Attendance",
-      icon: "co_present", // or "calendar_today"
+      icon: "co_present", 
       path: "/students/attendance",
+    },
+     {
+      name: "Schedule",
+      icon: "calendar_clock", 
+      path: "/students/schedule",
     },
     {
       name: "Assignments",
       icon: "assignment",
       path: "/students/assignments",
+    },
+    {
+      name: "Grades",
+      icon: "grading",
+      path: "/students/grades",
+    },
+    {
+      name: "Resources",
+      icon: "books_movies_and_music",
+      path: "/students/resources",
     },
   ];
 

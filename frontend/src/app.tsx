@@ -122,8 +122,32 @@ function App() {
                 </div>
               }
             />
+             <Route
+              path="schedule"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
             <Route
               path="assignments"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
+              <Route
+              path="grades"
+              element={
+                <div>
+                  This feature is currently under development. Check back soon!
+                </div>
+              }
+            />
+              <Route
+              path="resources"
               element={
                 <div>
                   This feature is currently under development. Check back soon!
