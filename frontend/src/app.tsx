@@ -35,6 +35,7 @@ import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpa
 import CourseCartPage from "./features/courses/pages/coursecartpage";
 import SchedulePage from "./features/students/schedule/pages/schedulepage";
 import AssignmentsPage from "./features/students/assignment/pages/assignmentspage";
+import GradesPage from "./features/students/grades/pages/gradespages";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -139,9 +140,7 @@ function App() {
               <Route
               path="grades"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+                <GradesPage></GradesPage>
               }
             />
               <Route
