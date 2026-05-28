@@ -34,6 +34,7 @@ import AboutPage from "./shared/pages/aboutpage";
 import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpage";
 import CourseCartPage from "./features/courses/pages/coursecartpage";
 import SchedulePage from "./features/students/schedule/pages/schedulepage";
+import AssignmentsPage from "./features/students/assignment/pages/assignmentspage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -132,9 +133,7 @@ function App() {
             <Route
               path="assignments"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+                <AssignmentsPage></AssignmentsPage>
               }
             />
               <Route
