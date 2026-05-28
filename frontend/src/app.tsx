@@ -33,6 +33,7 @@ import HomePageLayout from "./layouts/homepagelayout";
 import AboutPage from "./shared/pages/aboutpage";
 import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpage";
 import CourseCartPage from "./features/courses/pages/coursecartpage";
+import SchedulePage from "./features/students/schedule/pages/schedulepage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -125,9 +126,7 @@ function App() {
              <Route
               path="schedule"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+               <SchedulePage></SchedulePage>
               }
             />
             <Route
