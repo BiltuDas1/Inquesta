@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "../config.ts";
+import { db, s3PublicEndpoint } from "../config.ts";
 import { cart, courses } from "../databases/schema.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
 
@@ -55,10 +55,16 @@ export async function getItemsFromCart(access_token: string) {
       .from(cart)
       .innerJoin(courses, eq(cart.course_id, courses.id))
       .where(eq(cart.user_id, accessToken.getSub()));
+
+      const formattedData = result.map((item) => ({
+      ...item,
+      iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+    }));
+
     return {
       success: true,
       message: "successfully fetch cart items",
-      data: result,
+      data: formattedData,
     };
   } catch (error) {
     return {
