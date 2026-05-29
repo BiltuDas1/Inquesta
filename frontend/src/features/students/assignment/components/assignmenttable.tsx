@@ -1,6 +1,3 @@
-import React from "react";
-
-// --- Types (Exported so the parent page can use them) ---
 export type AssignmentStatus = "Pending" | "Draft saved" | "Not started" | "Submitted" | "Graded";
 
 export interface Assignment {
