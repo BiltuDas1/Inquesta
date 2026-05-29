@@ -49,12 +49,16 @@ interface AddToCartResponse {
 interface CartContextType {
   cartCount: number;
   loading: boolean;
-  addToCart: (courseId: string) => Promise<{ success: boolean; message: string }>;
+  addToCart: (
+    courseId: string,
+  ) => Promise<{ success: boolean; message: string }>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   // 2. Fetch the cart globally to drive the count
   const { data, loading } = useQuery<GetCartItemsResponse>(GET_CART_ITEMS, {
     fetchPolicy: "cache-and-network", // Keeps it fast but checks server for updates
@@ -64,9 +68,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const cartCount = data?.getCartItems?.data?.length || 0;
 
   // 4. Add refetchQueries so adding an item updates the GET_CART_ITEMS data
-  const [addCourseToCartMutation] = useMutation<AddToCartResponse>(ADD_COURSE_TO_CART, {
-    refetchQueries: [{ query: GET_CART_ITEMS }],
-  });
+  const [addCourseToCartMutation] = useMutation<AddToCartResponse>(
+    ADD_COURSE_TO_CART,
+    {
+      refetchQueries: [{ query: GET_CART_ITEMS }],
+    },
+  );
 
   const addToCart = async (courseId: string) => {
     try {
@@ -77,7 +84,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = mutationData?.addCourseToCart;
 
       if (result?.success) {
-        // We no longer need setCartCount() here. The refetchQueries above 
+        // We no longer need setCartCount() here. The refetchQueries above
         // will automatically fetch the new list and update the cartCount variable!
         return { success: true, message: result.message };
       }

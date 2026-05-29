@@ -1,10 +1,8 @@
-import { gql, } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import toast from "react-hot-toast";
 import { Link } from "react-router";
 import { GET_CART_ITEMS } from "../../auth/context/cartcontext";
-
-
 
 // --- TypeScript Interfaces ---
 
@@ -51,7 +49,7 @@ export default function CourseCartPage() {
     GET_CART_ITEMS,
     {
       fetchPolicy: "cache-first", // Prioritize the cache to keep the UI instant
-    }
+    },
   );
 
   // 2. Initialize the Remove Mutation
@@ -60,7 +58,7 @@ export default function CourseCartPage() {
     {
       // Automatically refresh the cache (and navbar count!) after a successful delete
       refetchQueries: [{ query: GET_CART_ITEMS }],
-    }
+    },
   );
 
   const cartItems = data?.getCartItems?.data || [];
@@ -68,18 +66,18 @@ export default function CourseCartPage() {
   // 3. Calculations
   const totalPrice = cartItems.reduce(
     (sum: number, item: CartItem) => sum + item.price,
-    0
+    0,
   );
-  
+
   const totalOriginalPrice = cartItems.reduce(
     (sum: number, item: CartItem) => sum + item.price * 1.2, // Assuming a 20% mock discount for original price
-    0
+    0,
   );
-  
+
   const discountPercentage =
     totalOriginalPrice > 0
       ? Math.round(
-          ((totalOriginalPrice - totalPrice) / totalOriginalPrice) * 100
+          ((totalOriginalPrice - totalPrice) / totalOriginalPrice) * 100,
         )
       : 0;
 
@@ -116,7 +114,9 @@ export default function CourseCartPage() {
     return (
       <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] flex items-center justify-center">
         <p className="text-[#6fffd9] font-headline text-xl flex items-center gap-2">
-          <span className="material-symbols-outlined animate-spin text-[24px]">sync</span>
+          <span className="material-symbols-outlined animate-spin text-[24px]">
+            sync
+          </span>
           Loading cart...
         </p>
       </div>
@@ -126,7 +126,9 @@ export default function CourseCartPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] flex items-center justify-center flex-col gap-4">
-        <span className="material-symbols-outlined text-[48px] text-[#ffb4ab]">error</span>
+        <span className="material-symbols-outlined text-[48px] text-[#ffb4ab]">
+          error
+        </span>
         <p className="text-[#ffb4ab]">
           Failed to load cart items. Please try again later.
         </p>
@@ -142,11 +144,11 @@ export default function CourseCartPage() {
         </h1>
 
         <div className="flex flex-col lg:flex-row gap-10 items-start">
-          
           {/* --- Left Column: Cart Items --- */}
           <div className="flex-1 w-full">
             <h2 className="text-sm font-bold mb-4 text-[#dfe2eb] border-b border-[#3b4a44] pb-4">
-              {cartItems.length} Course{cartItems.length !== 1 ? "s" : ""} in Cart
+              {cartItems.length} Course{cartItems.length !== 1 ? "s" : ""} in
+              Cart
             </h2>
 
             <div className="flex flex-col">
@@ -162,7 +164,7 @@ export default function CourseCartPage() {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(
-                        e: React.SyntheticEvent<HTMLImageElement, Event>
+                        e: React.SyntheticEvent<HTMLImageElement, Event>,
                       ) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.style.background = "#1c2026";
@@ -201,7 +203,9 @@ export default function CourseCartPage() {
                           onClick={() => handleRemove(item.id)}
                           className="hover:text-[#5cebc5] transition-colors relative z-20 flex items-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-[14px]">delete</span>
+                          <span className="material-symbols-outlined text-[14px]">
+                            delete
+                          </span>
                           Remove
                         </button>
                       </div>
@@ -252,7 +256,9 @@ export default function CourseCartPage() {
           {/* --- Right Column: Checkout Summary --- */}
           <div className="w-full lg:w-[340px] shrink-0">
             <div className="bg-[#1c2026] border border-[#3b4a44] p-6 rounded-xl sticky top-24 shadow-2xl">
-              <h2 className="text-[#84948e] font-bold mb-2 uppercase tracking-wider text-sm">Total:</h2>
+              <h2 className="text-[#84948e] font-bold mb-2 uppercase tracking-wider text-sm">
+                Total:
+              </h2>
 
               <div className="text-4xl font-bold text-[#dfe2eb] font-headline tracking-tight mb-2">
                 {formatINR(totalPrice)}
@@ -260,7 +266,9 @@ export default function CourseCartPage() {
 
               {discountPercentage > 0 && (
                 <div className="flex items-center gap-2 mb-6 text-[#84948e] text-sm">
-                  <span className="line-through">{formatINR(totalOriginalPrice)}</span>
+                  <span className="line-through">
+                    {formatINR(totalOriginalPrice)}
+                  </span>
                   <span className="text-[#6fffd9] font-semibold bg-[#6fffd9]/10 px-2 py-0.5 rounded">
                     {discountPercentage}% off
                   </span>
@@ -278,12 +286,13 @@ export default function CourseCartPage() {
               </button>
 
               <p className="text-xs text-[#84948e] text-center flex items-center justify-center gap-1.5">
-                <span className="material-symbols-outlined text-[14px]">lock</span>
+                <span className="material-symbols-outlined text-[14px]">
+                  lock
+                </span>
                 Secure checkout
               </p>
             </div>
           </div>
-          
         </div>
       </div>
     </div>

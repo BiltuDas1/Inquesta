@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 import type { Course } from "../types/courses";
 import toast from "react-hot-toast";
 
-
 import { useCart, GET_CART_ITEMS } from "../../auth/context/cartcontext";
 import { useQuery } from "@apollo/client/react";
 
@@ -28,7 +27,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
   //  Check if this specific course is already in the cart
   const cartItems = data?.getCartItems?.data || [];
-  const isInCart = cartItems.some((item: { id: string }) => item.id === course.id);
+  const isInCart = cartItems.some(
+    (item: { id: string }) => item.id === course.id,
+  );
 
   const safeDescription = course?.description || "";
   const truncatedDescription =

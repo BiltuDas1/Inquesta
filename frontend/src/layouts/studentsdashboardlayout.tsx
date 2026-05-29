@@ -25,12 +25,12 @@ export default function StudentsDashboardLayout() {
     },
     {
       name: "Attendance",
-      icon: "co_present", 
+      icon: "co_present",
       path: "/students/attendance",
     },
-     {
+    {
       name: "Schedule",
-      icon: "calendar_clock", 
+      icon: "calendar_clock",
       path: "/students/schedule",
     },
     {
