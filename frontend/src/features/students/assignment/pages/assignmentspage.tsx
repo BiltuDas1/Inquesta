@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import type { Assignment } from "../components/assignmenttable";
 import AssignmentTable from "../components/assignmenttable";
 
-
 type FilterOption = "All" | "Pending" | "Submitted" | "Graded";
 
 export default function AssignmentsPage() {
@@ -11,14 +10,56 @@ export default function AssignmentsPage() {
   // --- Mock Data ---
   const assignmentsData: Assignment[] = useMemo(
     () => [
-      { id: "1", subject: "Mathematics", title: "Problem set 4 — Quadratic equations", dueDate: "8 May", status: "Pending", score: "—" },
-      { id: "2", subject: "History", title: "Essay: Causes of WWI (500 words)", dueDate: "10 May", status: "Draft saved", score: "—" },
-      { id: "3", subject: "Science", title: "Lab report: Photosynthesis experiment", dueDate: "12 May", status: "Not started", score: "—" },
-      { id: "4", subject: "English", title: "Chapter 5 comprehension questions", dueDate: "6 May", status: "Submitted", score: "—" },
-      { id: "5", subject: "Mathematics", title: "Problem set 3 — Linear equations", dueDate: "2 May", status: "Graded", score: "88/100" },
-      { id: "6", subject: "Science", title: "Quiz: Periodic table", dueDate: "30 Apr", status: "Graded", score: "76/100" },
+      {
+        id: "1",
+        subject: "Mathematics",
+        title: "Problem set 4 — Quadratic equations",
+        dueDate: "8 May",
+        status: "Pending",
+        score: "—",
+      },
+      {
+        id: "2",
+        subject: "History",
+        title: "Essay: Causes of WWI (500 words)",
+        dueDate: "10 May",
+        status: "Draft saved",
+        score: "—",
+      },
+      {
+        id: "3",
+        subject: "Science",
+        title: "Lab report: Photosynthesis experiment",
+        dueDate: "12 May",
+        status: "Not started",
+        score: "—",
+      },
+      {
+        id: "4",
+        subject: "English",
+        title: "Chapter 5 comprehension questions",
+        dueDate: "6 May",
+        status: "Submitted",
+        score: "—",
+      },
+      {
+        id: "5",
+        subject: "Mathematics",
+        title: "Problem set 3 — Linear equations",
+        dueDate: "2 May",
+        status: "Graded",
+        score: "88/100",
+      },
+      {
+        id: "6",
+        subject: "Science",
+        title: "Quiz: Periodic table",
+        dueDate: "30 Apr",
+        status: "Graded",
+        score: "76/100",
+      },
     ],
-    []
+    [],
   );
 
   const filters: FilterOption[] = ["All", "Pending", "Submitted", "Graded"];
@@ -26,11 +67,13 @@ export default function AssignmentsPage() {
   // --- Filtering Logic ---
   const filteredAssignments = useMemo(() => {
     if (activeFilter === "All") return assignmentsData;
-    
+
     return assignmentsData.filter((assignment) => {
       // Grouping unsubmitted states under the "Pending" filter tab
       if (activeFilter === "Pending") {
-        return ["Pending", "Draft saved", "Not started"].includes(assignment.status);
+        return ["Pending", "Draft saved", "Not started"].includes(
+          assignment.status,
+        );
       }
       return assignment.status === activeFilter;
     });
@@ -38,11 +81,14 @@ export default function AssignmentsPage() {
 
   return (
     <div className="absolute inset-0 p-4 sm:p-6 lg:p-8 flex flex-col bg-[#10141a] font-body text-[#dfe2eb]">
-      
       {/* --- Header Section --- */}
       <div className="mb-6 shrink-0">
-        <h1 className="text-3xl font-headline font-bold text-[#dfe2eb]">Assignments</h1>
-        <p className="text-[#84948e] mt-1">All assignments — track submissions and grades</p>
+        <h1 className="text-3xl font-headline font-bold text-[#dfe2eb]">
+          Assignments
+        </h1>
+        <p className="text-[#84948e] mt-1">
+          All assignments — track submissions and grades
+        </p>
       </div>
 
       {/* --- Filters Section --- */}
@@ -64,7 +110,6 @@ export default function AssignmentsPage() {
 
       {/* --- Extracted Table Component --- */}
       <AssignmentTable assignments={filteredAssignments} />
-      
     </div>
   );
 }

@@ -1,4 +1,9 @@
-export type AssignmentStatus = "Pending" | "Draft saved" | "Not started" | "Submitted" | "Graded";
+export type AssignmentStatus =
+  | "Pending"
+  | "Draft saved"
+  | "Not started"
+  | "Submitted"
+  | "Graded";
 
 export interface Assignment {
   id: string;
@@ -36,7 +41,6 @@ export default function AssignmentTable({ assignments }: AssignmentTableProps) {
     // min-h-0 and overflow-auto allow this container to scroll independently
     <div className="flex-1 min-h-0 overflow-auto custom-scrollbar rounded-xl border border-[#3b4a44] bg-[#1c2026] shadow-lg">
       <table className="w-full text-left border-collapse min-w-[800px]">
-        
         {/* Table Header */}
         <thead className="bg-[#262a31] sticky top-0 z-10">
           <tr>
@@ -62,8 +66,8 @@ export default function AssignmentTable({ assignments }: AssignmentTableProps) {
         <tbody className="divide-y divide-[#3b4a44]/50">
           {assignments.length > 0 ? (
             assignments.map((assignment) => (
-              <tr 
-                key={assignment.id} 
+              <tr
+                key={assignment.id}
                 className="hover:bg-[#262a31]/40 transition-colors group"
               >
                 <td className="py-4 px-6 text-[#dfe2eb] font-medium text-sm">
@@ -76,7 +80,7 @@ export default function AssignmentTable({ assignments }: AssignmentTableProps) {
                   {assignment.dueDate}
                 </td>
                 <td className="py-4 px-6">
-                  <span 
+                  <span
                     className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusStyles(assignment.status)}`}
                   >
                     {assignment.status}
@@ -95,7 +99,6 @@ export default function AssignmentTable({ assignments }: AssignmentTableProps) {
             </tr>
           )}
         </tbody>
-        
       </table>
     </div>
   );

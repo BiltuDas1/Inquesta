@@ -125,25 +125,13 @@ function App() {
                 </div>
               }
             />
-             <Route
-              path="schedule"
-              element={
-               <SchedulePage></SchedulePage>
-              }
-            />
+            <Route path="schedule" element={<SchedulePage></SchedulePage>} />
             <Route
               path="assignments"
-              element={
-                <AssignmentsPage></AssignmentsPage>
-              }
+              element={<AssignmentsPage></AssignmentsPage>}
             />
-              <Route
-              path="grades"
-              element={
-                <GradesPage></GradesPage>
-              }
-            />
-              <Route
+            <Route path="grades" element={<GradesPage></GradesPage>} />
+            <Route
               path="resources"
               element={
                 <div>
