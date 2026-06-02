@@ -125,7 +125,7 @@ export default function ApprovalsPage() {
                   <td className="py-4 px-6">
                     <span
                       className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-[12px] font-bold ${getDocsBadgeStyle(
-                        row.docsStatus
+                        row.docsStatus,
                       )}`}
                     >
                       {row.docsStatus}

@@ -1,6 +1,9 @@
 import React, { useState, useRef } from "react";
 import type { Course, Level } from "../../../features/courses/types/courses";
-import { formatLevel, LEVELS } from "../../../features/courses/utils/courseutils";
+import {
+  formatLevel,
+  LEVELS,
+} from "../../../features/courses/utils/courseutils";
 
 interface ModalProps {
   editing: Course | null;

@@ -1,28 +1,68 @@
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb]">
+      
       {/* ==========================================
-          HEADER SECTION
+          HERO SECTION (From Reference Image)
           ========================================== */}
-      <section className="pt-32 pb-20 px-4 md:px-8 lg:px-12 relative overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#6fffd9] opacity-5 blur-[120px] rounded-full pointer-events-none"></div>
+      <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 md:px-8 lg:px-12 overflow-hidden pt-20 pb-16">
+        {/* Background Glowing Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-[#343d96] opacity-20 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-[#00e5bc] opacity-10 blur-[100px] rounded-full pointer-events-none"></div>
 
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <span className="text-[#6fffd9] text-xs font-bold tracking-widest uppercase mb-4 block">
-            Our Purpose
-          </span>
-          <h1 className="font-headline text-5xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
-            Driven by a <span className="text-[#6fffd9]">Clear</span> Purpose
+        <div className="max-w-5xl mx-auto text-center relative z-10 flex flex-col items-center mt-10">
+          
+          {/* Top Pill Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00e5bc]/30 bg-[#00e5bc]/10 text-[#6fffd9] text-[11px] font-bold tracking-widest uppercase mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#6fffd9]"></span>
+            About Inquesta.org
+          </div>
+
+          {/* Headline */}
+          <h1 className="font-headline text-5xl md:text-6xl lg:text-[72px] font-extrabold text-[#dfe2eb] mb-6 leading-[1.1] tracking-tight">
+            Where Curiosity Meets <br className="hidden md:block" />
+            <span className="text-[#6fffd9]">Real-World Innovation</span>
           </h1>
-          <p className="text-[#b9cac3] text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Everything we do at Inquesta is anchored in two foundational
-            commitments.
+
+          {/* Subtext */}
+          <p className="text-[#b9cac3] text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-12">
+            An interdisciplinary experiential learning platform bridging the gap
+            between academic education and the tools, workflows, and mindsets of
+            tomorrow's innovators.
           </p>
+
+          {/* Bottom Info Pills */}
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#3b4a44] bg-[#1c2026]/80 text-[#dfe2eb] text-sm backdrop-blur-sm shadow-sm">
+              <span className="material-symbols-outlined text-[18px] text-[#b9cac3]">account_balance</span>
+              DPIIT Registered
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#3b4a44] bg-[#1c2026]/80 text-[#dfe2eb] text-sm backdrop-blur-sm shadow-sm">
+              <span className="material-symbols-outlined text-[18px] text-[#bdc2ff]">precision_manufacturing</span>
+              MSME Certified
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#3b4a44] bg-[#1c2026]/80 text-[#dfe2eb] text-sm backdrop-blur-sm shadow-sm">
+              <span className="material-symbols-outlined text-[18px] text-[#f59e0b]">receipt_long</span>
+              GST Registered
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#3b4a44] bg-[#1c2026]/80 text-[#dfe2eb] text-sm backdrop-blur-sm shadow-sm">
+              <span className="material-symbols-outlined text-[18px] text-[#ffb4ab]">location_on</span>
+              Behala, Kolkata
+            </div>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="flex flex-col items-center gap-3 text-[#84948e] animate-bounce mt-4">
+            <span className="text-[10px] font-bold tracking-widest uppercase">Scroll</span>
+            <div className="w-7 h-7 rounded-full border border-[#84948e]/50 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ==========================================
-          TWO COMMITMENTS SECTION
+          TWO COMMITMENTS SECTION (Vision & Mission)
           ========================================== */}
       <section className="pb-24 px-4 md:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -30,12 +70,10 @@ export default function AboutPage() {
           <div className="bg-gradient-to-br from-[#1c2026] to-[#181c22] border border-[#3b4a44] rounded-3xl p-8 md:p-12 shadow-lg relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#343d96] opacity-10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500"></div>
             <div className="bg-[#262a31] w-12 h-12 flex items-center justify-center rounded-xl text-[#bdc2ff] mb-8">
-              <span className="material-symbols-outlined text-[24px]">
-                public
-              </span>
+              <span className="material-symbols-outlined">visibility</span>
             </div>
             <span className="text-[#84948e] text-xs font-bold tracking-widest uppercase mb-2 block">
-              Commitment 1
+              Vision
             </span>
             <h3 className="font-headline text-2xl font-bold text-white mb-4">
               The Most Trusted Experiential Learning Destination
@@ -51,12 +89,10 @@ export default function AboutPage() {
           <div className="bg-[#1c2026] border border-[#3b4a44] rounded-3xl p-8 md:p-12 shadow-lg relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#6fffd9] opacity-5 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500"></div>
             <div className="bg-[#262a31] w-12 h-12 flex items-center justify-center rounded-xl text-[#6fffd9] mb-8">
-              <span className="material-symbols-outlined text-[24px]">
-                architecture
-              </span>
+              <span className="material-symbols-outlined">ads_click</span>
             </div>
             <span className="text-[#84948e] text-xs font-bold tracking-widest uppercase mb-2 block">
-              Commitment 2
+              Mission
             </span>
             <h3 className="font-headline text-2xl font-bold text-white mb-4">
               Bridging Education & Real-World Innovation
@@ -283,7 +319,6 @@ export default function AboutPage() {
           ========================================== */}
       <section className="py-20 px-4 md:px-8 lg:px-12">
         <div className="max-w-6xl mx-auto bg-[#1c2026] border border-[#3b4a44] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center">
-          {/* Updated Icon: Business/Corporate */}
           <div className="bg-[#262a31] w-16 h-16 flex items-center justify-center rounded-full shrink-0 border border-[#3b4a44]">
             <span className="material-symbols-outlined text-[32px] text-[#6fffd9]">
               business
@@ -303,7 +338,6 @@ export default function AboutPage() {
               and designated partners.
             </p>
 
-            {/* Replaced Pills with LLPIN and Directors */}
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center gap-2 bg-[#181c22] border border-[#3b4a44] px-4 py-2 rounded-full text-sm font-medium text-[#dfe2eb]">
                 <span className="material-symbols-outlined text-[16px] text-[#bdc2ff]">

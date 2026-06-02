@@ -44,7 +44,6 @@ export default function OrganisationReportsPage() {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
-      
       {/* ── Header ── */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold font-headline text-[#dfe2eb]">
@@ -73,7 +72,6 @@ export default function OrganisationReportsPage() {
 
       {/* ── Charts Split Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
         {/* Left Column: Monthly Enrolments */}
         <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm flex flex-col">
           <h2 className="text-[#84948e] text-xs font-bold tracking-wider mb-6 uppercase border-b border-[#3b4a44]/50 pb-3">
@@ -81,7 +79,10 @@ export default function OrganisationReportsPage() {
           </h2>
           <div className="space-y-5 flex-1">
             {enrolments.map((item, index) => {
-              const barWidth = Math.max((item.count / maxEnrolmentCount) * 100, 2);
+              const barWidth = Math.max(
+                (item.count / maxEnrolmentCount) * 100,
+                2,
+              );
               return (
                 <div key={index} className="flex items-center gap-4">
                   <span className="w-10 shrink-0 text-[#dfe2eb] text-sm font-medium">
@@ -130,7 +131,6 @@ export default function OrganisationReportsPage() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );
