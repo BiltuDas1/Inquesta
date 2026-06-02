@@ -85,6 +85,13 @@
       "when": 1779815897514,
       "tag": "0011_magenta_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1780420711807,
+      "tag": "0012_acoustic_sprite",
+      "breakpoints": true
     }
   ]
 }
