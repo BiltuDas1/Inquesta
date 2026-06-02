@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Outlet, useNavigate } from "react-router"; // Ensure this matches your router package
-import { useAuth } from "../features/auth/context/authcontext";
-import { Logo } from "../shared/components/logo";
+import { Link, Outlet, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
+import { useAuth } from "../../../features/auth/context/authcontext";
+import { Logo } from "../../../shared/components/logo";
 
-export default function TeachersDashboardLayout() {
+export default function ParentDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
@@ -13,23 +13,36 @@ export default function TeachersDashboardLayout() {
   const navigate = useNavigate();
   const profileRef = useRef<HTMLDivElement>(null);
 
-  //   const location = useLocation();
-  //   const currentUrl = location.pathname;
+  const location = useLocation();
+  const currentUrl = location.pathname;
 
-  //   const navItems = [
-  //     {
-  //       name: "My Enrollments",
-  //       icon: "library_books",
-  //       path: "/students/courses",
-  //     },
-  //   ];
-
-  // const currentTitle =
-  //   navItems.find(
-  //     (item) =>
-  //       currentUrl === item.path ||
-  //       (item.path !== "/dashboard" && currentUrl.startsWith(item.path)),
-  //   )?.name || "Dashboard";
+  const navItems = [
+    {
+      name: "My Classes",
+      icon: "book",
+      path: "/teacher/dashboard",
+    },
+    {
+      name: "Assignments",
+      icon: "assignment",
+      path: "/teacher/assignments",
+    },
+    {
+      name: "Curriculum",
+      icon: "export_notes",
+      path: "/teacher/curriculum",
+    },
+    {
+      name: "Reports",
+      icon: "clock_loader_60",
+      path: "/teacher/reports",
+    },
+    {
+      name: "Time Table",
+      icon: "calendar_clock",
+      path: "/teacher/timetable",
+    },
+  ];
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -99,7 +112,7 @@ export default function TeachersDashboardLayout() {
 
         {/* Navigation Links */}
         <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">
-          {/* {navItems.map((item) => {
+          {navItems.map((item) => {
             const isActive =
               currentUrl === item.path ||
               (item.path !== "/dashboard" && currentUrl.startsWith(item.path));
@@ -120,7 +133,6 @@ export default function TeachersDashboardLayout() {
                   {item.icon}
                 </span>
 
-              
                 <span
                   className={`whitespace-nowrap overflow-hidden transition-all duration-300 ml-3 max-w-[200px] opacity-100 ${
                     isDesktopCollapsed ? "lg:max-w-0 lg:ml-0 lg:opacity-0" : ""
@@ -130,7 +142,7 @@ export default function TeachersDashboardLayout() {
                 </span>
               </Link>
             );
-          })}  */}
+          })}
         </nav>
 
         {/* Sidebar Footer / Logout */}
@@ -169,7 +181,7 @@ export default function TeachersDashboardLayout() {
             <h2 className="font-headline font-bold text-[#dfe2eb] text-lg hidden sm:block capitalize">
               {/* {getGreeting()} {", "}
               {user?.firstname} 👋🏼 */}
-              Teacher Dashboard
+              Parent Dashboard
             </h2>
           </div>
 

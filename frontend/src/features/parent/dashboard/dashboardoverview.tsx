@@ -29,7 +29,6 @@ export default function DashboardOverview() {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
-      
       {/* ── Header ── */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold font-headline text-[#dfe2eb]">
@@ -47,7 +46,9 @@ export default function DashboardOverview() {
             key={s.label}
             className="bg-[#1c2026] border border-[#3b4a44] p-5 rounded-xl flex flex-col justify-between shadow-sm"
           >
-            <span className="text-[#b9cac3] text-sm font-medium">{s.label}</span>
+            <span className="text-[#b9cac3] text-sm font-medium">
+              {s.label}
+            </span>
             <span className="text-3xl font-bold text-[#dfe2eb] my-3">
               {s.value}
             </span>
@@ -58,7 +59,6 @@ export default function DashboardOverview() {
 
       {/* ── Main Content Split ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
         {/* Left Column: Subject Performance */}
         <div className="lg:col-span-7 bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm">
           <h2 className="text-[#84948e] text-xs font-bold tracking-wider mb-6 uppercase">
@@ -84,7 +84,6 @@ export default function DashboardOverview() {
 
         {/* Right Column: Messages, Alerts, Actions */}
         <div className="lg:col-span-5 space-y-6 flex flex-col">
-          
           {/* Teacher Messages */}
           <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm">
             <h2 className="text-[#84948e] text-xs font-bold tracking-wider mb-4 uppercase">
@@ -128,7 +127,6 @@ export default function DashboardOverview() {
               </button>
             </div>
           </div>
-          
         </div>
       </div>
     </div>

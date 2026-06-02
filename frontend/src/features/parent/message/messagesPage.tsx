@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 // --- Types ---
 interface InboxItem {
@@ -106,7 +106,6 @@ export default function MessagesPage() {
 
       {/* --- Main Layout Grid --- */}
       <div className="flex-1 flex overflow-hidden gap-6 relative">
-        
         {/* --- Left Column: Inbox List --- */}
         <div
           className={`w-full lg:w-1/3 bg-[#1c2026] border border-[#3b4a44] rounded-xl flex flex-col overflow-hidden transition-all duration-300 ${
@@ -141,7 +140,9 @@ export default function MessagesPage() {
                   <p className="text-[13px] text-[#b9cac3] mt-0.5 truncate max-w-[200px]">
                     {item.subject}
                   </p>
-                  <p className="text-[11px] text-[#84948e] mt-1.5">{item.time}</p>
+                  <p className="text-[11px] text-[#84948e] mt-1.5">
+                    {item.time}
+                  </p>
                 </div>
                 {/* Status Indicator Dot */}
                 <div
@@ -222,7 +223,6 @@ export default function MessagesPage() {
               </button>
             </div>
           </div>
-          
         </div>
       </div>
     </div>

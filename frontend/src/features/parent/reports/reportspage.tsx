@@ -1,4 +1,3 @@
-
 // --- Types ---
 interface SummaryCardProps {
   label: string;
@@ -25,22 +24,57 @@ export default function ReportsPage() {
   ];
 
   const tableData: GradeRecord[] = [
-    { subject: "Mathematics", t1: 78, t2: 82, t3: 88, finalGrade: "B+", teacher: "Ms. Sharma" },
-    { subject: "Science", t1: 72, t2: 76, t3: 80, finalGrade: "B", teacher: "Mr. Iyer" },
-    { subject: "English", t1: 89, t2: 91, t3: 94, finalGrade: "A", teacher: "Ms. Pillai" },
-    { subject: "History", t1: 68, t2: 74, t3: 79, finalGrade: "B", teacher: "Mr. Khan" },
-    { subject: "Computer Sc.", t1: 85, t2: 88, t3: 92, finalGrade: "A-", teacher: "Mr. Rao" },
+    {
+      subject: "Mathematics",
+      t1: 78,
+      t2: 82,
+      t3: 88,
+      finalGrade: "B+",
+      teacher: "Ms. Sharma",
+    },
+    {
+      subject: "Science",
+      t1: 72,
+      t2: 76,
+      t3: 80,
+      finalGrade: "B",
+      teacher: "Mr. Iyer",
+    },
+    {
+      subject: "English",
+      t1: 89,
+      t2: 91,
+      t3: 94,
+      finalGrade: "A",
+      teacher: "Ms. Pillai",
+    },
+    {
+      subject: "History",
+      t1: 68,
+      t2: 74,
+      t3: 79,
+      finalGrade: "B",
+      teacher: "Mr. Khan",
+    },
+    {
+      subject: "Computer Sc.",
+      t1: 85,
+      t2: 88,
+      t3: 92,
+      finalGrade: "A-",
+      teacher: "Mr. Rao",
+    },
   ];
 
   // Helper function to color the grade pills using your brand variables
   const getGradeBadgeStyle = (grade: string) => {
     if (grade.startsWith("A")) {
       // Primary colors for top grades
-      return "bg-[#00e5bc]/20 text-[#6fffd9] border border-[#00e5bc]/30"; 
+      return "bg-[#00e5bc]/20 text-[#6fffd9] border border-[#00e5bc]/30";
     }
     if (grade.startsWith("B")) {
       // Secondary colors for good grades
-      return "bg-[#343d96]/40 text-[#bdc2ff] border border-[#343d96]/50"; 
+      return "bg-[#343d96]/40 text-[#bdc2ff] border border-[#343d96]/50";
     }
     // Default fallback
     return "bg-[#31353c] text-[#dfe2eb] border border-[#3b4a44]";
@@ -49,7 +83,6 @@ export default function ReportsPage() {
   return (
     <div className="min-h-screen bg-[#10141a] p-6 md:p-8 font-body text-[#dfe2eb]">
       <div className="max-w-6xl mx-auto space-y-6">
-        
         {/* --- Header Section --- */}
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline text-[#dfe2eb]">
@@ -59,7 +92,8 @@ export default function ReportsPage() {
             Term-wise academic performance overview
           </p>
           <div className="mt-4 text-[13px] font-semibold text-[#6fffd9] uppercase tracking-wide">
-            ARJUN — GRADE 8 <span className="mx-1.5 text-[#84948e]">·</span> Academic Year 2025–26
+            ARJUN — GRADE 8 <span className="mx-1.5 text-[#84948e]">·</span>{" "}
+            Academic Year 2025–26
           </div>
         </div>
 
@@ -70,7 +104,9 @@ export default function ReportsPage() {
               key={index}
               className="bg-[#1c2026] border border-[#3b4a44] border-l-[4px] border-l-[#6fffd9] rounded-xl p-5 shadow-sm flex flex-col justify-between h-28 transition-colors hover:border-[#84948e]"
             >
-              <p className="text-xs font-medium text-[#b9cac3] uppercase tracking-wider">{card.label}</p>
+              <p className="text-xs font-medium text-[#b9cac3] uppercase tracking-wider">
+                {card.label}
+              </p>
               <h3 className="text-3xl font-bold text-[#dfe2eb] mt-1">
                 {card.value}
               </h3>
@@ -95,7 +131,10 @@ export default function ReportsPage() {
               </thead>
               <tbody className="divide-y divide-[#3b4a44]/50">
                 {tableData.map((row, index) => (
-                  <tr key={index} className="hover:bg-[#31353c]/50 transition-colors">
+                  <tr
+                    key={index}
+                    className="hover:bg-[#31353c]/50 transition-colors"
+                  >
                     <td className="py-4 px-6 font-medium text-[#dfe2eb]">
                       {row.subject}
                     </td>
@@ -105,7 +144,7 @@ export default function ReportsPage() {
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold ${getGradeBadgeStyle(
-                          row.finalGrade
+                          row.finalGrade,
                         )}`}
                       >
                         {row.finalGrade}
@@ -118,7 +157,6 @@ export default function ReportsPage() {
             </table>
           </div>
         </div>
-
       </div>
     </div>
   );

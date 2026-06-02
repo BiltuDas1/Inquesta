@@ -80,7 +80,6 @@ export default function FeesPage() {
   return (
     <div className="min-h-screen bg-[#10141a] p-4 md:p-6 lg:p-8 font-body text-[#dfe2eb]">
       <div className="max-w-6xl mx-auto space-y-6">
-        
         {/* --- Header Section --- */}
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline text-[#dfe2eb]">
@@ -93,7 +92,8 @@ export default function FeesPage() {
 
         {/* --- Context Label --- */}
         <div className="mt-8 mb-4 text-[13px] font-semibold text-[#6fffd9] uppercase tracking-wide">
-          Fee schedule — Arjun <span className="mx-1.5 text-[#84948e]">·</span> Academic Year 2025–26
+          Fee schedule — Arjun <span className="mx-1.5 text-[#84948e]">·</span>{" "}
+          Academic Year 2025–26
         </div>
 
         {/* --- Fees Data Table --- */}
@@ -111,7 +111,10 @@ export default function FeesPage() {
               </thead>
               <tbody className="divide-y divide-[#3b4a44]/50">
                 {feeData.map((row) => (
-                  <tr key={row.id} className="hover:bg-[#31353c]/50 transition-colors group">
+                  <tr
+                    key={row.id}
+                    className="hover:bg-[#31353c]/50 transition-colors group"
+                  >
                     <td className="py-4 px-6 font-medium text-[#dfe2eb]">
                       {row.head}
                     </td>
@@ -120,7 +123,7 @@ export default function FeesPage() {
                     <td className="py-4 px-6">
                       <span
                         className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold ${getStatusBadgeStyle(
-                          row.status
+                          row.status,
                         )}`}
                       >
                         {row.status}
@@ -149,7 +152,6 @@ export default function FeesPage() {
             </table>
           </div>
         </div>
-
       </div>
     </div>
   );
