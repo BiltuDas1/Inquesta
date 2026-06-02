@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import toast from "react-hot-toast";
 
-import NoticeTable from "../../courses/admin/noticetable";
-import NoticeModal from "../../courses/admin/noticemodal";
-import type { Notice } from "../../courses/admin/noticetable";
+import NoticeTable from "../../../../components/admin/settings/notice/noticetable";
+import NoticeModal from "../../../../components/admin/settings/notice/noticemodal";
+import type { Notice } from "../../../../components/admin/settings/notice/noticetable";
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 

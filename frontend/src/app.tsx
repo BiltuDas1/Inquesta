@@ -5,7 +5,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router";
-import DashboardPage from "./features/admin/pages/dashboardpage";
+import DashboardPage from "./features/admin1/courses/coursespage";
 import ProtectedRoute from "./shared/routes/protectedroute";
 import PublicRoute from "./shared/routes/publicroute";
 import NotFoundPage from "./shared/pages/notfoundpage";
@@ -14,7 +14,7 @@ import { useEffect } from "react";
 import { client } from "./providers/apolloclient";
 import UserDataCollectionForm from "./features/students/pages/userdatacollectionform";
 import OnboardingRoute from "./shared/routes/onboardingroute";
-import EnrollmentsDashboard from "./features/courses/admin/enrollmenttable";
+import EnrollmentsDashboard from "./components/admin/students/enrollmenttable";
 import CourseListingPage from "./features/courses/pages/courselistingpage";
 import CoursesLayout from "./layouts/courseslayout";
 import CourseDetails from "./features/courses/pages/coursedetails";
@@ -23,15 +23,15 @@ import SignupPage from "./features/auth/pages/signuppage";
 import GoogleLogin from "./features/auth/pages/googleloginpage";
 import VerifyEmailPage from "./features/auth/pages/verifyemailpage";
 import CheckEmailPage from "./features/auth/pages/checkemailpage";
-import DashboardLayout from "./layouts/adminlayout";
+import DashboardLayout from "./components/admin/layout/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
 import ParentDashboardLayout from "./components/parent/layout/parentdashboardlayout";
-import NoticePage from "./features/admin/pages/noticepage";
+import NoticePage from "./features/admin1/setting/notice/noticepage";
 import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
 import AboutPage from "./shared/pages/aboutpage";
-import { HeroSectionSettings } from "./features/admin/pages/herosectionsettingpage";
+import { HeroSectionSettings } from "./features/admin1/setting/herosection/herosectionsettingpage";
 import CourseCartPage from "./features/courses/pages/coursecartpage";
 import SchedulePage from "./features/students/schedule/pages/schedulepage";
 import AssignmentsPage from "./features/students/assignment/pages/assignmentspage";
@@ -46,6 +46,9 @@ import TeacherDashboard from "./features/teacher/myclass/teacherdashboard";
 import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
 import ReportsAnalyticsPage from "./features/teacher/reports/reportspage";
 import TimetablePage from "./features/teacher/timetable/timetablepage";
+import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
+import ApprovalsPage from "./features/admin1/approvals/approvalspage";
+import OrganisationReportsPage from "./features/admin1/reports/reportspage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -179,14 +182,12 @@ function App() {
 
         {/* =========================================
                       PARENT DASHBOARD
-                      Base URL: /parents
+                      Base URL: /teacher
           ========================================= */}
         <Route element={<ProtectedRoute allowedRoles={["teacher"]} />}>
           <Route path="/teacher" element={<TeachersDashboardLayout />}>
             {/* Default redirect to dashboard */}
             <Route index element={<Navigate to="dashboard" replace />} />
-
-            {/* Main dashboard for multiple children */}
             <Route
               path="dashboard"
               element={<TeacherDashboard></TeacherDashboard>}
@@ -219,7 +220,7 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
 
             {/* The actual dashboard page */}
-            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route path="courses" element={<DashboardPage />} />
             <Route path="students" element={<EnrollmentsDashboard />} />
 
@@ -229,6 +230,21 @@ function App() {
                 <div>
                   This feature is currently under development. Check back soon!
                 </div>
+              }
+            />
+
+            <Route
+              path="approvals"
+              element={
+             <ApprovalsPage></ApprovalsPage>
+              }
+            />
+
+            
+            <Route
+              path="reports"
+              element={
+             <OrganisationReportsPage></OrganisationReportsPage>
               }
             />
 

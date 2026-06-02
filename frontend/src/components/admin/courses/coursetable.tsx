@@ -1,5 +1,5 @@
-import LevelBadge from "../components/levelbadge";
-import type { Course, Level } from "../types/courses";
+import LevelBadge from "../../../features/courses/components/levelbadge";
+import type { Course, Level } from "../../../features/courses/types/courses";
 
 interface CourseTableProps {
   courses: Course[];
