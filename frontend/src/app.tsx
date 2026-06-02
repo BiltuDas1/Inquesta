@@ -26,7 +26,7 @@ import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./layouts/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
-import ParentDashboardLayout from "./layouts/parentdashboardlayout";
+import ParentDashboardLayout from "./components/parent/layout/parentdashboardlayout";
 import NoticePage from "./features/admin/pages/noticepage";
 import ContactPage from "./shared/pages/contactpage";
 import HomePageLayout from "./layouts/homepagelayout";
@@ -36,6 +36,11 @@ import CourseCartPage from "./features/courses/pages/coursecartpage";
 import SchedulePage from "./features/students/schedule/pages/schedulepage";
 import AssignmentsPage from "./features/students/assignment/pages/assignmentspage";
 import GradesPage from "./features/students/grades/pages/gradespages";
+import DashboardOverview from "./features/parent/dashboard/dashboardoverview";
+import ReportsPage from "./features/parent/reports/reportspage";
+import FeesPage from "./features/parent/fees/feespage";
+import AttendancePage from "./features/parent/attendance/attendancepage";
+import MessagesPage from "./features/parent/message/messagesPage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -147,39 +152,38 @@ function App() {
                       Base URL: /parents
           ========================================= */}
         <Route element={<ProtectedRoute allowedRoles={["parent"]} />}>
-          <Route path="/parents" element={<ParentDashboardLayout />}>
+          <Route path="/parent" element={<ParentDashboardLayout />}>
             {/* Default redirect to dashboard */}
             <Route index element={<Navigate to="dashboard" replace />} />
 
             {/* Main dashboard for multiple children */}
             <Route
               path="dashboard"
-              element={<div>Detailed Student Progress</div>}
+              element={<DashboardOverview></DashboardOverview>}
             />
-
-            {/* Coming Soon pages matching the sidebar navItems */}
             <Route
-              path="attendance-policy"
+              path="reports"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+                <ReportsPage></ReportsPage>
               }
             />
             <Route
               path="fees"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+               <FeesPage></FeesPage>
               }
             />
             <Route
-              path="grades"
+              path="attendance"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+               <AttendancePage></AttendancePage>
+              }
+            />
+
+              <Route
+              path="messages"
+              element={
+              <MessagesPage></MessagesPage>
               }
             />
           </Route>
