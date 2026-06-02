@@ -1,7 +1,41 @@
 import { useState } from "react";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
+import toast from "react-hot-toast";
+
+// --- GraphQL Mutation ---
+const SEND_NOTIFICATION = gql`
+  mutation sendNotification($title: String!, $description: String!) {
+    sendNotification(title: $title, description: $description) {
+      success
+      message
+    }
+  }
+`;
+
+interface SendNotificationResponse {
+  sendNotification: {
+    success: boolean;
+    message: string;
+  };
+}
 
 export default function ContactPage() {
   const [inquiryType, setInquiryType] = useState("General Inquiry");
+  
+  // --- Form State ---
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    role: "student",
+    message: "",
+    privacyAgreed: false,
+  });
+
+  // --- Apollo Client Mutation ---
+  const [executeSendNotification, { loading: isSubmitting }] = useMutation<SendNotificationResponse>(SEND_NOTIFICATION);
 
   const inquiryOptions = [
     "General Inquiry",
@@ -11,18 +45,15 @@ export default function ContactPage() {
     "Other",
   ];
 
-  // Raw SVG paths for brands since Material Icons doesn't include them
   const socialIcons = [
     {
       name: "Instagram",
       path: "M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.4 5.6 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.6 18.4 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 .4-.02V6.5m-5.25 2.5c2.48 0 4.5 2.03 4.5 4.5s-2.02 4.5-4.5 4.5-4.5-2.03-4.5-4.5 2.02-4.5 4.5-4.5m0 1.5a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z",
-
       url: "https://www.instagram.com/inquestasolutions/",
     },
     {
       name: "LinkedIn",
       path: "M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z",
-
       url: "https://www.linkedin.com/company/inquesta-solutions/",
     },
     {
@@ -32,9 +63,93 @@ export default function ContactPage() {
     },
   ];
 
+  // --- Input Change Handler ---
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  // --- Form Submission Handler ---
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Toast styling to match your brand theme
+    const toastStyle = {
+      style: {
+        background: '#1c2026',
+        color: '#dfe2eb',
+        border: '1px solid #3b4a44',
+      },
+    };
+
+    // Basic validation
+    if (!formData.privacyAgreed) {
+      toast.error("Please agree to the Privacy Policy to continue.", toastStyle);
+      return;
+    }
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+      toast.error("Please fill in all required fields.", toastStyle);
+      return;
+    }
+
+    
+const title = `New ${inquiryType} from ${formData.firstName} ${formData.lastName}`;
+    
+    // Constructing the detailed description string
+    const description = `
+Inquiry Type: ${inquiryType}
+Name: ${formData.firstName} ${formData.lastName}
+Email: ${formData.email}
+Phone: ${formData.phone || "Not provided"}
+Role: ${formData.role}
+
+Message:
+${formData.message}
+    `.trim();
+
+    // Use toast.promise for automatic loading, success, and error states
+    toast.promise(
+      executeSendNotification({
+        variables: {
+          title,
+          description,
+        },
+      }).then(({ data }) => {
+        const result = data?.sendNotification;
+        if (result?.success) {
+          // Reset form on success
+          setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            role: "student",
+            message: "",
+            privacyAgreed: false,
+          });
+          return "Your message has been sent successfully. We will get back to you soon!";
+        } else {
+          throw new Error(result?.message || "Failed to send message.");
+        }
+      }),
+      {
+        loading: 'Sending message...',
+        success: (msg) => msg,
+        error: (err) => err.message || "A network error occurred.",
+      },
+      toastStyle
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#10141a] font-body text-[#dfe2eb] p-4 md:p-8 lg:p-12 mt-15">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
+        
         {/* ==========================================
             LEFT COLUMN (INFO CARDS)
             ========================================== */}
@@ -271,7 +386,7 @@ export default function ContactPage() {
               </p>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Inquiry Pills */}
               <div className="flex flex-wrap gap-2 mb-8">
                 {inquiryOptions.map((option) => (
@@ -298,6 +413,9 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
                     placeholder="e.g. Priya"
                     className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] placeholder-[#84948e] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all"
                   />
@@ -308,6 +426,9 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
                     placeholder="e.g. Sharma"
                     className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] placeholder-[#84948e] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all"
                   />
@@ -319,6 +440,9 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     placeholder="your@email.com"
                     className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] placeholder-[#84948e] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all"
                   />
@@ -330,6 +454,9 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
                     placeholder="+91 98000 00000"
                     className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] placeholder-[#84948e] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all"
                   />
@@ -339,7 +466,12 @@ export default function ContactPage() {
                   <label className="text-sm font-semibold text-[#dfe2eb]">
                     I am a <span className="text-[#ffb4ab]">*</span>
                   </label>
-                  <select className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all appearance-none cursor-pointer">
+                  <select 
+                    name="role"
+                    value={formData.role}
+                    onChange={handleInputChange}
+                    className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all appearance-none cursor-pointer"
+                  >
                     <option value="student">Student</option>
                     <option value="parent">Parent / Guardian</option>
                     <option value="educator">Educator</option>
@@ -354,6 +486,9 @@ export default function ContactPage() {
                   Your Message <span className="text-[#ffb4ab]">*</span>
                 </label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
                   rows={5}
                   placeholder="Tell us what you'd like to know, or what you're looking for in a program..."
                   className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-4 py-3 text-[#dfe2eb] placeholder-[#84948e] focus:outline-none focus:border-[#6fffd9] focus:ring-1 focus:ring-[#6fffd9] transition-all resize-y"
@@ -364,6 +499,9 @@ export default function ContactPage() {
               <div className="flex items-start gap-3 mt-4">
                 <input
                   type="checkbox"
+                  name="privacyAgreed"
+                  checked={formData.privacyAgreed}
+                  onChange={handleInputChange}
                   id="privacy"
                   className="mt-1 w-4 h-4 rounded border-[#3b4a44] bg-[#10141a] checked:bg-[#6fffd9] checked:border-[#6fffd9] cursor-pointer"
                 />
@@ -381,13 +519,20 @@ export default function ContactPage() {
 
               {/* Submit Button */}
               <button
-                type="button"
-                className="w-full md:w-auto mt-6 bg-[#6fffd9] hover:bg-[#00e5bc] text-[#00382c] font-bold text-base px-8 py-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#00e5bc]/10"
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full md:w-auto mt-6 text-[#00382c] font-bold text-base px-8 py-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#00e5bc]/10 ${
+                  isSubmitting ? "bg-[#3b4a44] cursor-not-allowed" : "bg-[#6fffd9] hover:bg-[#00e5bc]"
+                }`}
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  send
-                </span>
-                Send Message
+                {isSubmitting ? (
+                  <span className="animate-spin inline-block w-5 h-5 border-2 border-[#00382c] border-t-transparent rounded-full"></span>
+                ) : (
+                  <span className="material-symbols-outlined text-[20px]">
+                    send
+                  </span>
+                )}
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
