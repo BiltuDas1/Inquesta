@@ -233,19 +233,11 @@ function App() {
               }
             />
 
-            <Route
-              path="approvals"
-              element={
-             <ApprovalsPage></ApprovalsPage>
-              }
-            />
+            <Route path="approvals" element={<ApprovalsPage></ApprovalsPage>} />
 
-            
             <Route
               path="reports"
-              element={
-             <OrganisationReportsPage></OrganisationReportsPage>
-              }
+              element={<OrganisationReportsPage></OrganisationReportsPage>}
             />
 
             <Route path="settings">

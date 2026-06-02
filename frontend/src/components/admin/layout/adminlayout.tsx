@@ -28,15 +28,15 @@ export default function DashboardLayout() {
     { name: "Students", icon: "group", path: "/admin/students" },
     {
       name: "Teacher Registration",
-      icon: "person_add", 
+      icon: "person_add",
       path: "/admin/teacher-registration",
     },
-     {
+    {
       name: "Approvals",
       icon: "done_all",
       path: "/admin/approvals",
     },
-     {
+    {
       name: "Reports",
       icon: "bar_chart",
       path: "/admin/reports",
