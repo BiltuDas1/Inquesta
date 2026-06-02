@@ -1,5 +1,3 @@
-import React from "react";
-
 // --- Types ---
 type AttendanceStatus = "Present" | "Absent" | "Late" | "Holiday" | "Empty";
 
@@ -71,7 +69,6 @@ export default function AttendancePage() {
   return (
     <div className="min-h-screen bg-[#10141a] p-4 md:p-6 lg:p-8 font-body text-[#dfe2eb]">
       <div className="max-w-6xl mx-auto space-y-6">
-        
         {/* --- Header Section --- */}
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline text-[#dfe2eb]">
@@ -85,9 +82,10 @@ export default function AttendancePage() {
         {/* --- Sub-header & Legend --- */}
         <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="text-[13px] font-semibold text-[#6fffd9] uppercase tracking-wide">
-            Attendance calendar — May 2026 <span className="mx-1 text-[#84948e]">(Arjun)</span>
+            Attendance calendar — May 2026{" "}
+            <span className="mx-1 text-[#84948e]">(Arjun)</span>
           </div>
-          
+
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-[#b9cac3]">
             <div className="flex items-center gap-1.5">
@@ -116,7 +114,6 @@ export default function AttendancePage() {
             is a clean trick to create perfect 1px inner borders for the calendar. 
           */}
           <div className="grid grid-cols-7 gap-[1px]">
-            
             {/* Weekday Headers */}
             {weekDays.map((day) => (
               <div
@@ -133,7 +130,7 @@ export default function AttendancePage() {
               <div
                 key={index}
                 className={`min-h-[80px] sm:min-h-[100px] lg:min-h-[120px] p-2 sm:p-3 transition-colors ${getCellStyles(
-                  day.status
+                  day.status,
                 )}`}
               >
                 {day.date && (
@@ -141,17 +138,17 @@ export default function AttendancePage() {
                     {day.date}
                   </span>
                 )}
-                
+
                 {/* Optional visual indicator dot for mobile views (if wanted) */}
-                {day.date && day.status !== "Holiday" && day.status !== "Present" && (
-                   <div className="block sm:hidden w-1.5 h-1.5 rounded-full bg-current mt-1"></div>
-                )}
+                {day.date &&
+                  day.status !== "Holiday" &&
+                  day.status !== "Present" && (
+                    <div className="block sm:hidden w-1.5 h-1.5 rounded-full bg-current mt-1"></div>
+                  )}
               </div>
             ))}
-
           </div>
         </div>
-
       </div>
     </div>
   );

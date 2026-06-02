@@ -41,6 +41,11 @@ import ReportsPage from "./features/parent/reports/reportspage";
 import FeesPage from "./features/parent/fees/feespage";
 import AttendancePage from "./features/parent/attendance/attendancepage";
 import MessagesPage from "./features/parent/message/messagesPage";
+import TeachersDashboardLayout from "./components/teacher/layout/teachersdashboardlayout";
+import TeacherDashboard from "./features/teacher/myclass/teacherdashboard";
+import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
+import ReportsAnalyticsPage from "./features/teacher/reports/reportspage";
+import TimetablePage from "./features/teacher/timetable/timetablepage";
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -149,7 +154,7 @@ function App() {
 
         {/* =========================================
                       PARENT DASHBOARD
-                      Base URL: /parents
+                      Base URL: /parent
           ========================================= */}
         <Route element={<ProtectedRoute allowedRoles={["parent"]} />}>
           <Route path="/parent" element={<ParentDashboardLayout />}>
@@ -161,31 +166,45 @@ function App() {
               path="dashboard"
               element={<DashboardOverview></DashboardOverview>}
             />
-            <Route
-              path="reports"
-              element={
-                <ReportsPage></ReportsPage>
-              }
-            />
-            <Route
-              path="fees"
-              element={
-               <FeesPage></FeesPage>
-              }
-            />
+            <Route path="reports" element={<ReportsPage></ReportsPage>} />
+            <Route path="fees" element={<FeesPage></FeesPage>} />
             <Route
               path="attendance"
-              element={
-               <AttendancePage></AttendancePage>
-              }
+              element={<AttendancePage></AttendancePage>}
             />
 
-              <Route
-              path="messages"
-              element={
-              <MessagesPage></MessagesPage>
-              }
+            <Route path="messages" element={<MessagesPage></MessagesPage>} />
+          </Route>
+        </Route>
+
+        {/* =========================================
+                      PARENT DASHBOARD
+                      Base URL: /parents
+          ========================================= */}
+        <Route element={<ProtectedRoute allowedRoles={["teacher"]} />}>
+          <Route path="/teacher" element={<TeachersDashboardLayout />}>
+            {/* Default redirect to dashboard */}
+            <Route index element={<Navigate to="dashboard" replace />} />
+
+            {/* Main dashboard for multiple children */}
+            <Route
+              path="dashboard"
+              element={<TeacherDashboard></TeacherDashboard>}
             />
+            <Route
+              path="assignments"
+              element={<AssignmentsPage></AssignmentsPage>}
+            />
+            <Route
+              path="curriculum"
+              element={<CurriculumPage></CurriculumPage>}
+            />
+            <Route
+              path="reports"
+              element={<ReportsAnalyticsPage></ReportsAnalyticsPage>}
+            />
+
+            <Route path="timetable" element={<TimetablePage></TimetablePage>} />
           </Route>
         </Route>
 

@@ -37,12 +37,11 @@ export default function ParentDashboardLayout() {
       icon: "person_raised_hand",
       path: "/parent/attendance",
     },
-       {
+    {
       name: "Messages",
       icon: "chat",
       path: "/parent/messages",
     },
-    
   ];
 
   // Close profile dropdown when clicking outside
