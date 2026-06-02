@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
-import { useAuth } from "../features/auth/context/authcontext";
-import { Logo } from "../shared/components/logo";
+import { useAuth } from "../../../features/auth/context/authcontext";
+import { Logo } from "../../../shared/components/logo";
 
 export default function ParentDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
@@ -18,25 +18,31 @@ export default function ParentDashboardLayout() {
 
   const navItems = [
     {
-      name: "Children Dashboard",
-      icon: "family_restroom",
-      path: "/parents/dashboard",
+      name: "Dashboard",
+      icon: "dashboard",
+      path: "/parent/dashboard",
     },
     {
-      name: "Attendance Policy",
+      name: "Reports",
       icon: "policy",
-      path: "/parents/attendance-policy",
+      path: "/parent/reports",
     },
     {
-      name: "Fees Payment Status",
+      name: "Fees",
       icon: "payments",
-      path: "/parents/fees",
+      path: "/parent/fees",
     },
     {
-      name: "Term Grade History",
-      icon: "history_edu",
-      path: "/parents/grades",
+      name: "Attendance",
+      icon: "person_raised_hand",
+      path: "/parent/attendance",
     },
+       {
+      name: "Messages",
+      icon: "chat",
+      path: "/parent/messages",
+    },
+    
   ];
 
   // Close profile dropdown when clicking outside
