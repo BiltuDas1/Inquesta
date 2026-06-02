@@ -120,3 +120,12 @@ export const cart = mysqlTable("cart", {
   }),
   addedAt: timestamp("added_at").defaultNow().notNull(),
 });
+
+export const notification = mysqlTable("notification", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  title: varchar({ length: 255 }).notNull(),
+  description: text().notNull(),
+  addedAt: timestamp("added_at").defaultNow().notNull()
+});
