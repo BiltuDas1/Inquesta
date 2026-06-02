@@ -13,8 +13,8 @@ import { NumberedCursorPagination } from "../../../shared/components/cursorpagin
 import type { Course } from "../../courses/types/courses";
 import { formatLevel, LEVELS, PER_PAGE } from "../../courses/utils/courseutils";
 import toast from "react-hot-toast";
-import CourseTable from "../../courses/admin/coursetable";
-import CourseModal from "../../courses/admin/coursemodal";
+import CourseTable from "../../../components/admin/courses/coursetable";
+import CourseModal from "../../../components/admin/courses/coursemodal";
 
 // Apollo Interfaces
 interface CourseGetQueryResult {
@@ -34,7 +34,7 @@ interface UpdateCourseMutationResult {
   courseUpdate: { success: boolean; message: string };
 }
 
-export default function DashboardPage() {
+export default function CoursesPage() {
   // ── State Management ──
   const [lastID, setLastID] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);

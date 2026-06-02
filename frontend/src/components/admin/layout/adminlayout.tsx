@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router"; // Ensure this matches your router package
-import { useAuth } from "../features/auth/context/authcontext";
-import { Logo } from "../shared/components/logo";
+import { useAuth } from "../../../features/auth/context/authcontext";
+import { Logo } from "../../../shared/components/logo";
 
 export default function DashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
@@ -23,12 +23,23 @@ export default function DashboardLayout() {
 
   // ── Updated Nav Items with SubItems support ──
   const navItems = [
+    { name: "Dashboard", icon: "dashboard", path: "/admin/dashboard" },
     { name: "Courses", icon: "library_books", path: "/admin/courses" },
     { name: "Students", icon: "group", path: "/admin/students" },
     {
       name: "Teacher Registration",
-      icon: "person_add", // 'how_to_reg' or 'badge' are also good icon choices
+      icon: "person_add", 
       path: "/admin/teacher-registration",
+    },
+     {
+      name: "Approvals",
+      icon: "done_all",
+      path: "/admin/approvals",
+    },
+     {
+      name: "Reports",
+      icon: "bar_chart",
+      path: "/admin/reports",
     },
     {
       name: "Settings",
