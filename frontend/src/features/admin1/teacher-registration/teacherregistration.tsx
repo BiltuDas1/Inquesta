@@ -289,7 +289,7 @@ export default function TeacherRegistration() {
     };
   }, [editingTeacherId, data]);
 
-  const [deleteTeacherMutation, { loading: isDeletingTeacher }] =
+  const [deleteTeacherMutation] =
     useMutation<DeleteTeacherResponse>(DELETE_TEACHER_MUTATION);
   const handleDeleteClick = (id: string) => {
     setTeacherToDeleteId(id);
