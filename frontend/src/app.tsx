@@ -50,6 +50,7 @@ import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
 import ApprovalsPage from "./features/admin1/approvals/approvalspage";
 import OrganisationReportsPage from "./features/admin1/reports/reportspage";
 import TeacherRegistration from "./features/admin1/teacher-registration/teacherregistration";
+import TeacherOnboarding from "./components/teacher/onboarding/teacheronboarding";
 
 
 const GlobalSessionHandler = () => {
@@ -119,6 +120,7 @@ function App() {
           <Route path="/onboard" element={<UserDataCollectionForm />} />
         </Route>
 
+      <Route path="teacher-onboard/details/:teacherId" element={<TeacherOnboarding />} />
         {/* =========================================
              STUDENT DASHBOARD
              Base URL: /students

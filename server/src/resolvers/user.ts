@@ -436,7 +436,7 @@ export async function get_user_role(access_token: string) {
 
 export async function addTeacher(
   access_token: string,
-  info: Teacher,
+info: Omit<Teacher, "id">,
   context: FastifyContext,
 ) {
   const accessToken = await JWT.toAccessToken(access_token);
@@ -514,7 +514,9 @@ export async function addedTeacherDetails(
     });
 
     await db.update(users)
-      .set({ isActive: true })
+      .set({ isActive: true ,
+        password:await hash(generateUrlSafeToken())
+      })
       .where(eq(users.id, teacherId));
 
     return {
@@ -536,7 +538,7 @@ export async function addedTeacherDetails(
           .where(eq(teachers_info.users_id, teacherId)); 
 
           await db.update(users)
-          .set({ isActive: true })
+          .set({ isActive: true,password:await hash(generateUrlSafeToken()) })
           .where(eq(users.id, teacherId));
 
         return {
@@ -559,6 +561,7 @@ export async function getTeacherInfo(teacherId: string) {
   try {
     const result = await db
       .select({
+        id: users.id,
         firstname: users.firstname,
         lastname: users.lastname,
         email: users.email,
@@ -589,6 +592,7 @@ export async function getTeacherInfo(teacherId: string) {
       success: true,
       message: "Teacher info retrieved successfully",
       data: {
+        id: teacher.id,
         firstname: teacher.firstname,
         lastname: teacher.lastname,   
         email: teacher.email,
@@ -718,6 +722,37 @@ export async function deleteTeacher(
     return { success: false, message: "Internal server error while deleting teacher" };
   }
 }
+
+export async function getAllTeachers() {
+  try {
+    const result = await db
+      .select({
+        id: users.id,
+        firstname: users.firstname,
+        lastname: users.lastname,
+        email: users.email,
+        qualification: teachers_info.qualification,
+        is_active: users.isActive,
+      })
+      .from(users)
+      .leftJoin(teachers_info, eq(users.id, teachers_info.users_id))
+      .where(eq(users.role, "teacher")); 
+
+    return {
+      success: true,
+      message: "Teachers retrieved successfully",
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error fetching all teachers:", error);
+    return {
+      success: false,
+      message: "Internal server error while fetching teachers",
+      data: null,
+    };
+  }
+}
+
 export async function delete_refresh_token(refresh_token: string) {
   await redis.del(refresh_token);
 }
