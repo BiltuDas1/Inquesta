@@ -49,6 +49,8 @@ import TimetablePage from "./features/teacher/timetable/timetablepage";
 import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
 import ApprovalsPage from "./features/admin1/approvals/approvalspage";
 import OrganisationReportsPage from "./features/admin1/reports/reportspage";
+import TeacherRegistration from "./features/admin1/teacher-registration/teacherregistration";
+
 
 const GlobalSessionHandler = () => {
   const navigate = useNavigate();
@@ -227,9 +229,7 @@ function App() {
             <Route
               path="teacher-registration"
               element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
+              <TeacherRegistration></TeacherRegistration>
               }
             />
 
