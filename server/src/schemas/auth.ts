@@ -637,10 +637,12 @@ builder.mutationField("addedTeacherDetails", (t) =>
     args: {
       teacherId: t.arg.string({ required: true }),
       qualification: t.arg.string({ required: true }),
+      password:t.arg.string({ required: true })
     },
     resolve: async (_parent, args, context) => {
       const teacherInfo = {
         qualification: args.qualification,
+        password: args.password,
       };
 
       return await addedTeacherDetails(args.teacherId, teacherInfo);
