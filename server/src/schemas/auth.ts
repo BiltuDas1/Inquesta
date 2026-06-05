@@ -3,18 +3,26 @@ import { isProduction } from "../environment.ts";
 import { builder, GQLResponse } from "../libraries/builder.ts";
 import { refresh_jwt } from "../resolvers/refreshjwt.ts";
 import {
+  addedTeacherDetails,
+  addTeacher,
   delete_refresh_token,
+  deleteTeacher,
   get_user_role,
   get_userinfo,
+  getTeacherInfo,
   googleLogin,
   loginUser,
   registerUser,
   update_userinfo,
+  updateTeacherByAdmin,
   verify_email,
 } from "../resolvers/user.ts";
 import {
+  TeacherDetailsObject,
   UserInfoObject,
   UserRoleObject,
+  type Teacher,
+  type TeacherDetails,
   type User,
   type UserInfo,
   type UserRole,
@@ -557,6 +565,184 @@ builder.mutationField("logoutUser", (t) =>
         success: true,
         message: "successfully logged out",
       };
+    },
+  }),
+);
+
+const AddTeacherResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: { link: string };
+  }>("AddTeacherResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.field({
+        nullable: true,
+        type: builder
+          .objectRef<{ link: string }>("AddTeacherData")
+          .implement({
+            fields: (tInner) => ({
+              link: tInner.exposeString("link"),
+            }),
+          }),
+        resolve: (parent) => parent.data,
+      }),
+    }),
+  });
+
+builder.mutationField("addTeacher", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: AddTeacherResponse,
+    args: {
+      firstname: t.arg.string({ required: true }),
+      lastname: t.arg.string({ required: true }),
+      email: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+      const teacherInfo: Teacher = {
+        firstname: args.firstname,
+        lastname: args.lastname,
+        email: args.email,
+      };
+
+      return await addTeacher(cookieObj["access_token"], teacherInfo, context);
+    },
+  }),
+);
+
+builder.mutationField("addedTeacherDetails", (t) =>
+  t.field({
+    type: GQLResponse, 
+    args: {
+      teacherId: t.arg.string({ required: true }),
+      qualification: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      const teacherInfo = {
+        qualification: args.qualification,
+      };
+
+      return await addedTeacherDetails(args.teacherId, teacherInfo);
+    },
+  }),
+);
+
+const GetTeacherInfoResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: TeacherDetails | null;
+  }>("GetTeacherInfoResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: TeacherDetailsObject,
+        nullable: true,
+      }),
+    }),
+  });
+
+// 2. Define the Query Field
+builder.queryField("getTeacherInfo", (t) =>
+  t.field({
+    type: GetTeacherInfoResponse,
+    args: {
+      teacherId: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      // Call the database resolver using the ID passed from the frontend
+      const result = await getTeacherInfo(args.teacherId);
+      
+      return {
+        success: result.success,
+        message: result.message,
+        data: result.data,
+      };
+    },
+  }),
+);
+
+builder.mutationField("updateTeacherByAdmin", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GQLResponse, 
+    args: {
+      teacherId: t.arg.string({ required: true }),
+      firstname: t.arg.string({ required: false }),
+      lastname: t.arg.string({ required: false }),
+      email: t.arg.string({ required: false }),
+      qualification: t.arg.string({ required: false }),
+      isActive: t.arg.boolean({ required: false }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return { success: false, message: "no cookie has been passed to the server" };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return { success: false, message: "no access_token cookie" };
+      }
+
+      return await updateTeacherByAdmin(
+        cookieObj["access_token"], 
+        args.teacherId, 
+        {
+          firstname: args.firstname ?? undefined,
+          lastname: args.lastname ?? undefined,
+          email: args.email ?? undefined,
+          qualification: args.qualification ?? undefined,
+          isActive: args.isActive ?? undefined,
+        }
+      );
+    },
+  }),
+);
+
+builder.mutationField("deleteTeacher", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GQLResponse, 
+    args: {
+      teacherId: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return { success: false, message: "no cookie has been passed to the server" };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return { success: false, message: "no access_token cookie" };
+      }
+
+      return await deleteTeacher(cookieObj["access_token"], args.teacherId);
     },
   }),
 );

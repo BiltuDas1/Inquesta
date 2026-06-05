@@ -59,3 +59,38 @@ export type UserDetails = {
   lastname?: string | null;
   email: string;
 } & UserInfo;
+
+export type Teacher = {
+  firstname: string;      
+  lastname: string | null; 
+  email: string;        
+};
+
+export type TeacherDetails = {
+  qualification?: string | null;
+  is_active: boolean;
+} & Teacher;
+
+export type TeacherUpdateInfo = {
+  qualification: string | null;
+};
+
+export const TeacherDetailsObject = builder
+  .objectRef<TeacherDetails>("TeacherDetails")
+  .implement({
+    fields: (t) => ({
+      firstname: t.exposeString("firstname"), 
+      lastname: t.exposeString("lastname", { nullable: true }),
+      email: t.exposeString("email"),       
+      qualification: t.exposeString("qualification", { nullable: true }),
+      is_active: t.exposeBoolean("is_active"),
+    }),
+  });
+
+export type AdminTeacherUpdateInput = {
+  firstname?: string | undefined;
+  lastname?: string | null | undefined;
+  email?: string | undefined;
+  qualification?: string | null | undefined;
+  isActive?: boolean | undefined;
+};

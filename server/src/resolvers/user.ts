@@ -1,11 +1,14 @@
 import { hash, verify } from "argon2";
 import { db, emailObj, FRONTEND_FQDN, redis, templateObj } from "../config.ts";
-import { users, users_info } from "../databases/schema.ts";
+import { teachers_info, users, users_info } from "../databases/schema.ts";
 import {
   type UserRole,
   type User,
   type GoogleUser,
   type UserInfo,
+  type Teacher,
+  type TeacherUpdateInfo,
+  type AdminTeacherUpdateInput,
 } from "../types/user.ts";
 import { and, DrizzleQueryError, eq } from "drizzle-orm";
 import { generateUrlSafeToken } from "../utils/token.ts";
@@ -431,6 +434,290 @@ export async function get_user_role(access_token: string) {
   };
 }
 
+export async function addTeacher(
+  access_token: string,
+  info: Teacher,
+  context: FastifyContext,
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+    };
+  }
+
+  try {
+    const [adminUser] = await db
+      .selectDistinct({ role: users.role })
+      .from(users)
+      .where(eq(users.id, accessToken.getSub()))
+      .limit(1);
+
+    if (!adminUser || adminUser.role !== "admin") {
+      return {
+        success: false,
+        message: "Unauthorized: Only administrators can add teachers.",
+      };
+    }
+
+    await db.insert(users).values({
+      firstname: info.firstname,
+      lastname: info.lastname,
+      email: info.email,
+      password: await hash(generateUrlSafeToken()),
+      role: "teacher",
+      isActive: false,
+    });
+
+    const [newTeacher] = await db
+      .selectDistinct({ id: users.id })
+      .from(users)
+      .where(eq(users.email, info.email))
+      .limit(1);
+
+    const verificationLink =
+      (isProduction ? "https://" : "http://") +
+      `${FRONTEND_FQDN}/teacher/details/${newTeacher?.id}`;
+
+    return {
+      success: true,
+      message: "Teacher added successfully",
+      data: {
+        link: verificationLink,
+      },
+    };
+  } catch (error) {
+    if (!(error instanceof DrizzleQueryError)) {
+      context.logger.error("addTeacher error: " + error);
+      throw error;
+    }
+
+    if (error.cause?.message.includes("Duplicate entry")) {
+      return {
+        success: false,
+        message: "A user with this email address is already registered.",
+      };
+    }
+    throw error;
+  }
+}
+
+export async function addedTeacherDetails(
+  teacherId: string, 
+  info: TeacherUpdateInfo
+) {
+  try {
+    await db.insert(teachers_info).values({
+      users_id: teacherId, 
+      qualification: info.qualification,
+    });
+
+    await db.update(users)
+      .set({ isActive: true })
+      .where(eq(users.id, teacherId));
+
+    return {
+      success: true,
+      message: "Teacher details added successfully",
+    };
+  } catch (error) {
+    if (!(error instanceof DrizzleQueryError)) {
+      throw error;
+    }
+
+    if (error.cause?.message.includes("Duplicate entry")) {
+      try {
+        await db
+          .update(teachers_info)
+          .set({
+            qualification: info.qualification,
+          })
+          .where(eq(teachers_info.users_id, teacherId)); 
+
+          await db.update(users)
+          .set({ isActive: true })
+          .where(eq(users.id, teacherId));
+
+        return {
+          success: true,
+          message: "Teacher details updated successfully",
+        };
+      } catch (updateError) {
+        throw updateError;
+      }
+    }
+
+    return {
+      success: false,
+      message: "Failed to update teacher details",
+    };
+  }
+}
+
+export async function getTeacherInfo(teacherId: string) {
+  try {
+    const result = await db
+      .select({
+        firstname: users.firstname,
+        lastname: users.lastname,
+        email: users.email,
+        qualification: teachers_info.qualification,
+       isActive: users.isActive,
+      })
+      .from(users)
+      .leftJoin(teachers_info, eq(users.id, teachers_info.users_id))
+      .where(
+        and(
+          eq(users.id, teacherId),
+          eq(users.role, "teacher") 
+        )
+      )
+      .limit(1);
+
+    const teacher = result[0];
+
+    if (!teacher) {
+      return {
+        success: false,
+        message: "Teacher not found",
+        data: null,
+      };
+    }
+
+   return {
+      success: true,
+      message: "Teacher info retrieved successfully",
+      data: {
+        firstname: teacher.firstname,
+        lastname: teacher.lastname,   
+        email: teacher.email,
+        qualification: teacher.qualification,
+        is_active:teacher.isActive
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching teacher info:", error);
+    return {
+      success: false,
+      message: "Internal server error while fetching teacher info",
+      data: null,
+    };
+  }
+}
+
+export async function updateTeacherByAdmin(
+  access_token: string,
+  teacherId: string,
+  info: AdminTeacherUpdateInput
+) {
+  // 1. Authenticate the Token
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return { success: false, message: "invalid access token" };
+  }
+
+  try {  
+    const [adminUser] = await db
+      .selectDistinct({ role: users.role })
+      .from(users)
+      .where(eq(users.id, accessToken.getSub()))
+      .limit(1);
+
+    if (!adminUser || adminUser.role !== "admin") {
+      return { success: false, message: "Unauthorized: Only administrators can perform this action." };
+    }
+
+    const userUpdates: any = {};
+    if (info.firstname !== undefined) userUpdates.firstname = info.firstname;
+    if (info.lastname !== undefined) userUpdates.lastname = info.lastname;
+    if (info.email !== undefined) userUpdates.email = info.email;
+    if (info.isActive !== undefined) userUpdates.isActive = info.isActive;
+
+    if (Object.keys(userUpdates).length > 0) {
+      await db.update(users).set(userUpdates).where(eq(users.id, teacherId));
+    }
+
+    if (info.qualification !== undefined) {
+      try {
+        await db.insert(teachers_info).values({
+          users_id: teacherId,
+          qualification: info.qualification,
+        });
+      } catch (error) {
+        if (!(error instanceof DrizzleQueryError)) throw error;
+        if (error.cause?.message.includes("Duplicate entry")) {
+          await db
+            .update(teachers_info)
+            .set({ qualification: info.qualification })
+            .where(eq(teachers_info.users_id, teacherId));
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    return {
+      success: true,
+      message: "Teacher details updated successfully by admin",
+    };
+
+  } catch (error) {
+    console.error("Admin update teacher error:", error);
+    if (error instanceof DrizzleQueryError && error.cause?.message.includes("Duplicate entry")) {
+      return { success: false, message: "Email address is already in use by another account." };
+    }
+
+    return { success: false, message: "Internal server error" };
+  }
+}
+
+export async function deleteTeacher(
+  access_token: string,
+  teacherId: string
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return { success: false, message: "invalid access token" };
+  }
+
+  try {
+    const [adminUser] = await db
+      .selectDistinct({ role: users.role })
+      .from(users)
+      .where(eq(users.id, accessToken.getSub()))
+      .limit(1);
+
+    if (!adminUser || adminUser.role !== "admin") {
+      return { success: false, message: "Unauthorized action." };
+    }
+
+    const [targetTeacher] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(
+        and(
+          eq(users.id, teacherId),
+          eq(users.role, "teacher") 
+        )
+      )
+      .limit(1);
+
+    if (!targetTeacher) {
+      return { success: false, message: "Teacher not found or already deleted." };
+    }
+
+    await db.delete(users).where(eq(users.id, teacherId));
+
+    return {
+      success: true,
+      message: "Teacher and all related details deleted successfully",
+    };
+  } catch (error) {
+    console.error("Delete teacher error:", error);
+    return { success: false, message: "Internal server error while deleting teacher" };
+  }
+}
 export async function delete_refresh_token(refresh_token: string) {
   await redis.del(refresh_token);
 }
