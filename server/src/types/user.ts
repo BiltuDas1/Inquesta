@@ -61,6 +61,7 @@ export type UserDetails = {
 } & UserInfo;
 
 export type Teacher = {
+  id: string;
   firstname: string;      
   lastname: string | null; 
   email: string;        
@@ -79,6 +80,7 @@ export const TeacherDetailsObject = builder
   .objectRef<TeacherDetails>("TeacherDetails")
   .implement({
     fields: (t) => ({
+      id: t.exposeString("id"),
       firstname: t.exposeString("firstname"), 
       lastname: t.exposeString("lastname", { nullable: true }),
       email: t.exposeString("email"),       

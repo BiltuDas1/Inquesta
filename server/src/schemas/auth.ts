@@ -9,6 +9,7 @@ import {
   deleteTeacher,
   get_user_role,
   get_userinfo,
+  getAllTeachers,
   getTeacherInfo,
   googleLogin,
   loginUser,
@@ -619,7 +620,7 @@ builder.mutationField("addTeacher", (t) =>
           message: "no access_token cookie",
         };
       }
-      const teacherInfo: Teacher = {
+      const teacherInfo: Omit<Teacher, "id"> = {
         firstname: args.firstname,
         lastname: args.lastname,
         email: args.email,
@@ -743,6 +744,35 @@ builder.mutationField("deleteTeacher", (t) =>
       }
 
       return await deleteTeacher(cookieObj["access_token"], args.teacherId);
+    },
+  }),
+);
+
+const GetTeachersResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: TeacherDetails[] | null;
+  }>("GetTeachersResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [TeacherDetailsObject], // Notice the brackets [ ] because it's a list!
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getTeachers", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true, // Requires the admin to be logged in
+    },
+    type: GetTeachersResponse,
+    resolve: async () => {
+      return await getAllTeachers();
     },
   }),
 );
