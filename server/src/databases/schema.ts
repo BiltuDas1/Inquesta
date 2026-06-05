@@ -129,3 +129,10 @@ export const notification = mysqlTable("notification", {
   description: text().notNull(),
   addedAt: timestamp("added_at").defaultNow().notNull()
 });
+
+export const teachers_info = mysqlTable("teachers_info", {
+  users_id: varchar("users_id", { length: 36 })
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+    qualification: varchar({ length: 255 }),
+});
