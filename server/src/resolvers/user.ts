@@ -113,11 +113,14 @@ export async function loginUser(
     .where(and(eq(users.isActive, true), eq(users.email, email)))
     .limit(1);
 
+  console.log(userRecord)
   if (!userRecord) {
     return false;
   }
 
   const isCorrect = await verify(userRecord.password, password);
+  
+  console.log(isCorrect)
   if (!isCorrect) {
     return false;
   }
@@ -478,7 +481,7 @@ info: Omit<Teacher, "id">,
 
     const verificationLink =
       (isProduction ? "https://" : "http://") +
-      `${FRONTEND_FQDN}/teacher/details/${newTeacher?.id}`;
+      `${FRONTEND_FQDN}/onboard-teacher/details/${newTeacher?.id}`;
 
     return {
       success: true,
@@ -508,6 +511,9 @@ export async function addedTeacherDetails(
   info: TeacherUpdateInfo
 ) {
   try {
+    if (!info.password) {
+      throw new Error("Password is required to activate teacher account.");
+    }
     await db.insert(teachers_info).values({
       users_id: teacherId, 
       qualification: info.qualification,
@@ -515,7 +521,7 @@ export async function addedTeacherDetails(
 
     await db.update(users)
       .set({ isActive: true ,
-        password:await hash(generateUrlSafeToken())
+        password:await hash(info.password)
       })
       .where(eq(users.id, teacherId));
 
@@ -530,6 +536,7 @@ export async function addedTeacherDetails(
 
     if (error.cause?.message.includes("Duplicate entry")) {
       try {
+        
         await db
           .update(teachers_info)
           .set({

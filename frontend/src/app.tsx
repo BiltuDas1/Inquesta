@@ -120,7 +120,7 @@ function App() {
           <Route path="/onboard" element={<UserDataCollectionForm />} />
         </Route>
 
-      <Route path="teacher-onboard/details/:teacherId" element={<TeacherOnboarding />} />
+      <Route path="onboard-teacher/details/:teacherId" element={<TeacherOnboarding />} />
         {/* =========================================
              STUDENT DASHBOARD
              Base URL: /students

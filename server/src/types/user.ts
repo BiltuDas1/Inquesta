@@ -74,6 +74,7 @@ export type TeacherDetails = {
 
 export type TeacherUpdateInfo = {
   qualification: string | null;
+  password?: string;
 };
 
 export const TeacherDetailsObject = builder
