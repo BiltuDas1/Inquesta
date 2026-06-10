@@ -295,3 +295,88 @@ export async function getAssignmentSubmissions(access_token: string, assignmentI
     };
   }
 }
+
+export async function updateStudentSubmission(
+  access_token: string,
+  assignmentId: string,
+  studentId: string,
+  data: {
+    status?: string | undefined;
+    score?: number | undefined;
+  }
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return { success: false, message: "invalid access token" };
+  }
+
+  const userId = accessToken.getSub();
+
+  try {
+    // 1. Verify assignment exists and is owned by this teacher
+    const [assignment] = await db
+      .select({ courseId: assignments.courseId })
+      .from(assignments)
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
+      .where(and(eq(assignments.id, assignmentId), eq(courses.teacherId, userId)))
+      .limit(1);
+
+    if (!assignment) {
+      return { success: false, message: "Assignment not found or unauthorized." };
+    }
+
+    // 2. Verify student is enrolled in this course
+    const [enrollment] = await db
+      .select({ id: courseEnrollments.id })
+      .from(courseEnrollments)
+      .where(and(eq(courseEnrollments.course_id, assignment.courseId), eq(courseEnrollments.user_id, studentId)))
+      .limit(1);
+
+    if (!enrollment) {
+      return { success: false, message: "Student is not enrolled in this course." };
+    }
+
+    // 3. Map status value if provided
+    let dbStatus: "not_started" | "in_progress" | "completed" | undefined = undefined;
+    if (data.status !== undefined) {
+      if (data.status === "not started") {
+        dbStatus = "not_started";
+      } else if (data.status === "in progress") {
+        dbStatus = "in_progress";
+      } else if (data.status === "completed") {
+        dbStatus = "completed";
+      } else {
+        return { success: false, message: "Invalid status value. Allowed: 'not started', 'in progress', 'completed'" };
+      }
+    }
+
+    // 4. Check if submission record already exists
+    const [existingSubmission] = await db
+      .select({ id: submissions.id })
+      .from(submissions)
+      .where(and(eq(submissions.assignmentId, assignmentId), eq(submissions.userId, studentId)))
+      .limit(1);
+
+    if (existingSubmission) {
+      const updates: any = {};
+      if (dbStatus !== undefined) updates.status = dbStatus;
+      if (data.score !== undefined) updates.score = data.score;
+
+      if (Object.keys(updates).length > 0) {
+        await db.update(submissions).set(updates).where(eq(submissions.id, existingSubmission.id));
+      }
+    } else {
+      await db.insert(submissions).values({
+        assignmentId,
+        userId: studentId,
+        status: dbStatus ?? "not_started",
+        score: data.score ?? 0,
+      });
+    }
+
+    return { success: true, message: "Student progress/score updated successfully" };
+  } catch (error) {
+    console.error("updateStudentSubmission error:", error);
+    return { success: false, message: "Internal server error" };
+  }
+}
