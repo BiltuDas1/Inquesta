@@ -7,7 +7,7 @@ import {
   users,
   users_info,
 } from "../databases/schema.ts";
-import type { Course } from "../types/course.ts";
+import type { Course, TeacherAllocatedCourse } from "../types/course.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
 import type { UserDetails } from "../types/user.ts";
 import { extract_url_number, sentence_to_url } from "../utils/slug.ts";
@@ -309,4 +309,43 @@ export async function searchCourses(
   }
 
   return data;
+}
+
+export async function getTeacherAllocatedCourses() {
+  try {
+    const result = await db
+      .select({
+        courseId: courses.id,
+        courseTitle: courses.title,
+        teacherId: courses.teacherId,
+        teacherFirstname: users.firstname,
+        teacherLastname: users.lastname,
+        teacherEmail: users.email,
+      })
+      .from(courses)
+      .leftJoin(users, eq(courses.teacherId, users.id));
+
+    const data: TeacherAllocatedCourse[] = result.map((row) => ({
+      courseId: row.courseId,
+      courseTitle: row.courseTitle,
+      teacherId: row.teacherId,
+      teacherName: row.teacherId
+        ? (row.teacherLastname ? `${row.teacherFirstname} ${row.teacherLastname}` : row.teacherFirstname)
+        : null,
+      teacherEmail: row.teacherId ? row.teacherEmail : null,
+    }));
+
+    return {
+      success: true,
+      message: "Teacher allocated courses retrieved successfully",
+      data,
+    };
+  } catch (error) {
+    console.error("getTeacherAllocatedCourses error:", error);
+    return {
+      success: false,
+      message: "Internal server error while fetching allocated courses",
+      data: null,
+    };
+  }
 }

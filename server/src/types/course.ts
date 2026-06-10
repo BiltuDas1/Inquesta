@@ -86,3 +86,42 @@ export const SearchableCourseObject = builder
       relevance: t.exposeFloat("relevance"),
     }),
   });
+
+export type TeacherAllocatedCourse = {
+  courseId: string;
+  courseTitle: string;
+  teacherId: string | null;
+  teacherName: string | null;
+  teacherEmail: string | null;
+};
+
+export const TeacherAllocatedCourseObject = builder
+  .objectRef<TeacherAllocatedCourse>("TeacherAllocatedCourse")
+  .implement({
+    fields: (t) => ({
+      courseId: t.exposeString("courseId"),
+      courseTitle: t.exposeString("courseTitle"),
+      teacherId: t.exposeString("teacherId", { nullable: true }),
+      teacherName: t.exposeString("teacherName", { nullable: true }),
+      teacherEmail: t.exposeString("teacherEmail", { nullable: true }),
+    }),
+  });
+
+export type GetTeacherAllocatedCoursesResponse = {
+  success: boolean;
+  message: string;
+  data: TeacherAllocatedCourse[] | null;
+};
+
+export const GetTeacherAllocatedCoursesResponseObject = builder
+  .objectRef<GetTeacherAllocatedCoursesResponse>("GetTeacherAllocatedCoursesResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [TeacherAllocatedCourseObject],
+        nullable: true,
+      }),
+    }),
+  });
