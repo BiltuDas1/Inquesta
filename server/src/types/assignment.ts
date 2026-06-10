@@ -87,3 +87,44 @@ export const GetAssignmentSubmissionsResponseObject = builder
       }),
     }),
   });
+
+export type StudentAssignmentInfo = {
+  courseName: string;
+  assignmentTitle: string;
+  assignmentDescription: string;
+  creationDate: string;
+  dueDate: string | null;
+  status: string;
+};
+
+export const StudentAssignmentInfoObject = builder
+  .objectRef<StudentAssignmentInfo>("StudentAssignmentInfo")
+  .implement({
+    fields: (t) => ({
+      courseName: t.exposeString("courseName"),
+      assignmentTitle: t.exposeString("assignmentTitle"),
+      assignmentDescription: t.exposeString("assignmentDescription"),
+      creationDate: t.exposeString("creationDate"),
+      dueDate: t.exposeString("dueDate", { nullable: true }),
+      status: t.exposeString("status"),
+    }),
+  });
+
+export type GetStudentAssignmentsResponse = {
+  success: boolean;
+  message: string;
+  data: StudentAssignmentInfo[] | null;
+};
+
+export const GetStudentAssignmentsResponseObject = builder
+  .objectRef<GetStudentAssignmentsResponse>("GetStudentAssignmentsResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [StudentAssignmentInfoObject],
+        nullable: true,
+      }),
+    }),
+  });
