@@ -90,11 +90,10 @@ export default function AssignmentTable({
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`inline-flex items-center justify-center px-3 py-0.5 rounded-full text-[12px] font-bold ${
-                          row.isPublished
-                            ? "bg-[#00e5bc]/10 text-[#00e5bc] border border-[#00e5bc]/20"
-                            : "bg-[#84948e]/10 text-[#84948e] border border-[#84948e]/20"
-                        }`}
+                        className={`inline-flex items-center justify-center px-3 py-0.5 rounded-full text-[12px] font-bold ${row.isPublished
+                          ? "bg-[#00e5bc]/10 text-[#00e5bc] border border-[#00e5bc]/20"
+                          : "bg-[#84948e]/10 text-[#84948e] border border-[#84948e]/20"
+                          }`}
                       >
                         {row.isPublished ? "Published" : "Draft"}
                       </span>
@@ -105,7 +104,7 @@ export default function AssignmentTable({
                           onClick={() => onShowStats(row)}
                           className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[12px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#6fffd9] cursor-pointer hover:bg-[#6fffd9]/10 transition-colors"
                         >
-                          Statistic
+                          Reports
                         </button>
                         <button
                           onClick={() => onEdit(row)}
@@ -140,7 +139,7 @@ export default function AssignmentTable({
             </span>{" "}
             of <span className="font-semibold text-[#dfe2eb]">{totalItems}</span> results
           </p>
-          
+
           <div className="flex gap-2">
             <button
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
@@ -149,17 +148,16 @@ export default function AssignmentTable({
             >
               <span className="material-symbols-outlined text-[18px]">chevron_left</span>
             </button>
-            
+
             <div className="flex gap-1">
               {Array.from({ length: totalPages }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => onPageChange(index + 1)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-semibold transition-colors ${
-                    currentPage === index + 1
-                      ? "bg-[#6fffd9] text-[#00382c]"
-                      : "border border-[#3b4a44] text-[#b9cac3] hover:bg-[#262a31] hover:text-[#dfe2eb]"
-                  }`}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-semibold transition-colors ${currentPage === index + 1
+                    ? "bg-[#6fffd9] text-[#00382c]"
+                    : "border border-[#3b4a44] text-[#b9cac3] hover:bg-[#262a31] hover:text-[#dfe2eb]"
+                    }`}
                 >
                   {index + 1}
                 </button>
