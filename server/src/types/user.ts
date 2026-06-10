@@ -62,9 +62,9 @@ export type UserDetails = {
 
 export type Teacher = {
   id: string;
-  firstname: string;      
-  lastname: string | null; 
-  email: string;        
+  firstname: string;
+  lastname: string | null;
+  email: string;
 };
 
 export type TeacherDetails = {
@@ -82,9 +82,9 @@ export const TeacherDetailsObject = builder
   .implement({
     fields: (t) => ({
       id: t.exposeString("id"),
-      firstname: t.exposeString("firstname"), 
+      firstname: t.exposeString("firstname"),
       lastname: t.exposeString("lastname", { nullable: true }),
-      email: t.exposeString("email"),       
+      email: t.exposeString("email"),
       qualification: t.exposeString("qualification", { nullable: true }),
       is_active: t.exposeBoolean("is_active"),
     }),

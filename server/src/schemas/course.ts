@@ -34,6 +34,7 @@ builder.mutationField("courseAdd", (t) =>
       duration: t.arg.string({ required: true }),
       instructor_name: t.arg.string({ required: true }),
       icon_name: t.arg.string({ required: false }),
+      teacher_id: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -42,6 +43,7 @@ builder.mutationField("courseAdd", (t) =>
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
           iconName: args.icon_name,
+          teacherId: args.teacher_id,
         });
         return {
           success: true,
@@ -145,6 +147,7 @@ builder.mutationField("courseUpdate", (t) =>
       duration: t.arg.string({ required: true }),
       instructor_name: t.arg.string({ required: true }),
       icon_name: t.arg.string({ required: false }),
+      teacher_id: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -153,6 +156,7 @@ builder.mutationField("courseUpdate", (t) =>
           iconName: args.icon_name,
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
+          teacherId: args.teacher_id,
         });
         return {
           success: true,

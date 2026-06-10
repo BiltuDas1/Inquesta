@@ -432,7 +432,7 @@ builder.queryField("getUserInfo", (t) =>
     },
     type: getUserInfoResponse,
     args: {},
-    resolve: async (_parent, {}, context) => {
+    resolve: async (_parent, { }, context) => {
       if (context.req.headers.cookie === undefined) {
         return {
           success: false,
@@ -633,11 +633,11 @@ builder.mutationField("addTeacher", (t) =>
 
 builder.mutationField("addedTeacherDetails", (t) =>
   t.field({
-    type: GQLResponse, 
+    type: GQLResponse,
     args: {
       teacherId: t.arg.string({ required: true }),
       qualification: t.arg.string({ required: true }),
-      password:t.arg.string({ required: true })
+      password: t.arg.string({ required: true })
     },
     resolve: async (_parent, args, context) => {
       const teacherInfo = {
@@ -677,7 +677,7 @@ builder.queryField("getTeacherInfo", (t) =>
     resolve: async (_parent, args, context) => {
       // Call the database resolver using the ID passed from the frontend
       const result = await getTeacherInfo(args.teacherId);
-      
+
       return {
         success: result.success,
         message: result.message,
@@ -692,7 +692,7 @@ builder.mutationField("updateTeacherByAdmin", (t) =>
     authScopes: {
       isValidSession: true,
     },
-    type: GQLResponse, 
+    type: GQLResponse,
     args: {
       teacherId: t.arg.string({ required: true }),
       firstname: t.arg.string({ required: false }),
@@ -712,8 +712,8 @@ builder.mutationField("updateTeacherByAdmin", (t) =>
       }
 
       return await updateTeacherByAdmin(
-        cookieObj["access_token"], 
-        args.teacherId, 
+        cookieObj["access_token"],
+        args.teacherId,
         {
           firstname: args.firstname ?? undefined,
           lastname: args.lastname ?? undefined,
@@ -731,7 +731,7 @@ builder.mutationField("deleteTeacher", (t) =>
     authScopes: {
       isValidSession: true,
     },
-    type: GQLResponse, 
+    type: GQLResponse,
     args: {
       teacherId: t.arg.string({ required: true }),
     },
