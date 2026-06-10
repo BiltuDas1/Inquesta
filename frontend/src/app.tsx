@@ -43,6 +43,7 @@ import AttendancePage from "./features/parent/attendance/attendancepage";
 import MessagesPage from "./features/parent/message/messagesPage";
 import TeachersDashboardLayout from "./components/teacher/layout/teachersdashboardlayout";
 import TeacherDashboard from "./features/teacher/myclass/teacherdashboard";
+import TeacherAssignmentsPage from "./features/teacher/assignments/assignmentspage";
 import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
 import ReportsAnalyticsPage from "./features/teacher/reports/reportspage";
 import TimetablePage from "./features/teacher/timetable/timetablepage";
@@ -198,7 +199,7 @@ function App() {
             />
             <Route
               path="assignments"
-              element={<AssignmentsPage></AssignmentsPage>}
+              element={<TeacherAssignmentsPage></TeacherAssignmentsPage>}
             />
             <Route
               path="curriculum"
