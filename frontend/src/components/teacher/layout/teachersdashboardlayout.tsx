@@ -85,15 +85,13 @@ export default function ParentDashboardLayout() {
       >
         {/* Logo & Desktop Toggle Header */}
         <div
-          className={`h-16 flex items-center shrink-0 border-b border-[#3b4a44]/50 transition-all duration-300 justify-between px-6 ${
-            isDesktopCollapsed ? "lg:justify-center lg:px-4" : ""
-          }`}
+          className={`h-16 flex items-center shrink-0 border-b border-[#3b4a44]/50 transition-all duration-300 justify-between px-6 ${isDesktopCollapsed ? "lg:justify-center lg:px-4" : ""
+            }`}
         >
           {/* Logo container fades and shrinks when collapsed */}
           <div
-            className={`overflow-hidden transition-all duration-300 flex items-center max-w-[200px] opacity-100 ${
-              isDesktopCollapsed ? "lg:max-w-0 lg:opacity-0" : ""
-            }`}
+            className={`overflow-hidden transition-all duration-300 flex items-center max-w-[200px] opacity-100 ${isDesktopCollapsed ? "lg:max-w-0 lg:opacity-0" : ""
+              }`}
           >
             <Logo />
           </div>
@@ -123,20 +121,18 @@ export default function ParentDashboardLayout() {
                 to={item.path}
                 onClick={() => setIsMobileMenuOpen(false)}
                 title={isDesktopCollapsed ? item.name : undefined} // Tooltip when collapsed
-                className={`flex items-center py-3 px-4 rounded-[8px] font-headline font-semibold transition-all duration-200 group relative ${
-                  isActive
+                className={`flex items-center py-3 px-4 rounded-[8px] font-headline font-semibold transition-all duration-200 group relative ${isActive
                     ? "bg-[#262a31] text-[#6fffd9]"
                     : "text-[#b9cac3] hover:bg-[#262a31] hover:text-[#dfe2eb]"
-                } ${isDesktopCollapsed ? "lg:justify-center lg:px-0" : ""}`}
+                  } ${isDesktopCollapsed ? "lg:justify-center lg:px-0" : ""}`}
               >
                 <span className="material-symbols-outlined text-[1.3rem] shrink-0">
                   {item.icon}
                 </span>
 
                 <span
-                  className={`whitespace-nowrap overflow-hidden transition-all duration-300 ml-3 max-w-[200px] opacity-100 ${
-                    isDesktopCollapsed ? "lg:max-w-0 lg:ml-0 lg:opacity-0" : ""
-                  }`}
+                  className={`whitespace-nowrap overflow-hidden transition-all duration-300 ml-3 max-w-[200px] opacity-100 ${isDesktopCollapsed ? "lg:max-w-0 lg:ml-0 lg:opacity-0" : ""
+                    }`}
                 >
                   {item.name}
                 </span>
@@ -150,15 +146,13 @@ export default function ParentDashboardLayout() {
           <button
             onClick={handleLogout}
             title={isDesktopCollapsed ? "Logout" : undefined}
-            className={`flex items-center w-full py-3 px-4 rounded-[8px] text-[#ffb4ab] font-headline font-semibold hover:bg-[#2a0d10] transition-colors group ${
-              isDesktopCollapsed ? "lg:justify-center lg:px-0" : ""
-            }`}
+            className={`flex items-center w-full py-3 px-4 rounded-[8px] text-[#ffb4ab] font-headline font-semibold hover:bg-[#2a0d10] transition-colors group ${isDesktopCollapsed ? "lg:justify-center lg:px-0" : ""
+              }`}
           >
             <span className="material-symbols-outlined shrink-0">logout</span>
             <span
-              className={`whitespace-nowrap overflow-hidden transition-all duration-300 ml-3 max-w-[200px] opacity-100 ${
-                isDesktopCollapsed ? "lg:max-w-0 lg:ml-0 lg:opacity-0" : ""
-              }`}
+              className={`whitespace-nowrap overflow-hidden transition-all duration-300 ml-3 max-w-[200px] opacity-100 ${isDesktopCollapsed ? "lg:max-w-0 lg:ml-0 lg:opacity-0" : ""
+                }`}
             >
               Logout
             </span>
@@ -181,7 +175,7 @@ export default function ParentDashboardLayout() {
             <h2 className="font-headline font-bold text-[#dfe2eb] text-lg hidden sm:block capitalize">
               {/* {getGreeting()} {", "}
               {user?.firstname} 👋🏼 */}
-              Parent Dashboard
+              Teacher Dashboard
             </h2>
           </div>
 
