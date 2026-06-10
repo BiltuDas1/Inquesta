@@ -3,6 +3,11 @@ import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useAuth } from "../../auth/context/authcontext";
+import AddAssignmentModal from "../../../components/teacher/assignments/addassignmentmodal";
+import AssignmentTable from "../../../components/teacher/assignments/assignmenttable";
+import DeleteConfirmationModal from "../../../components/ui/dialog";
+
+import { NumberedCursorPagination } from "../../../shared/components/cursorpagination";
 
 // --- GraphQL Queries and Mutations ---
 
@@ -118,15 +123,11 @@ export default function TeacherAssignmentsPage() {
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [statsModalOpen, setStatsModalOpen] = useState(false);
   const [statsAssignment, setStatsAssignment] = useState<Assignment | null>(null);
-
-  // Form State
-  const [formData, setFormData] = useState({
-    courseId: "",
-    title: "",
-    description: "",
-    dueDate: "",
-    isPublished: false,
-  });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Queries
   const {
@@ -158,26 +159,40 @@ export default function TeacherAssignmentsPage() {
     return true;
   });
 
+  // Filter by search query
+  const searchedAssignments = filteredAssignments.filter((a) => {
+    const matchSearch =
+      a.assignmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.courseName.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchSearch;
+  });
+
+  const totalItems = searchedAssignments.length;
+  const hasNextPage = currentPage * itemsPerPage < totalItems;
+  const hasPreviousPage = currentPage > 1;
+
+  const paginatedAssignments = searchedAssignments.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    setCurrentPage(1);
+  };
+
   const handleOpenCreate = () => {
-    setFormData({
-      courseId: myCourses[0]?.courseId || "",
-      title: "",
-      description: "",
-      dueDate: "",
-      isPublished: false,
-    });
+    setSelectedAssignment(null);
     setModalOpen("create");
   };
 
   const handleOpenEdit = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
-    setFormData({
-      courseId: "", // Update mutation doesn't change courseId
-      title: assignment.assignmentName,
-      description: assignment.assignmentDescription,
-      dueDate: assignment.dueDate ? new Date(assignment.dueDate).toISOString().split("T")[0] : "",
-      isPublished: assignment.isPublished,
-    });
     setModalOpen("edit");
   };
 
@@ -186,24 +201,33 @@ export default function TeacherAssignmentsPage() {
     setStatsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this assignment?")) {
-      try {
-        const { data } = await deleteAssignment({ variables: { id } });
-        if (data?.deleteAssignment?.success) {
-          toast.success("Assignment deleted successfully");
-          refetchAssignments();
-        } else {
-          toast.error(data?.deleteAssignment?.message || "Failed to delete assignment");
-        }
-      } catch (err: any) {
-        toast.error(err.message || "An error occurred");
-      }
+  const handleDeleteClick = (id: string) => {
+    const ass = assignmentsList.find((a) => a.id === id);
+    if (ass) {
+      setDeleteTarget({ id: ass.id, name: ass.assignmentName });
+      setDeleteModalOpen(true);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      const { data } = await deleteAssignment({ variables: { id: deleteTarget.id } });
+      if (data?.deleteAssignment?.success) {
+        toast.success("Assignment deleted successfully");
+        refetchAssignments();
+      } else {
+        toast.error(data?.deleteAssignment?.message || "Failed to delete assignment");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred");
+    } finally {
+      setDeleteModalOpen(false);
+      setDeleteTarget(null);
+    }
+  };
+
+  const handleSave = async (formData: any) => {
     try {
       if (modalOpen === "create") {
         const { data } = await addAssignment({
@@ -245,21 +269,6 @@ export default function TeacherAssignmentsPage() {
     }
   };
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "No due date";
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const inputClass =
-    "w-full bg-[#262a31] border border-[#3b4a44] rounded-[10px] px-[0.85rem] py-[0.6rem] text-[#dfe2eb] text-[0.875rem] font-body outline-none focus:border-[#6fffd9] placeholder:text-[#84948e] disabled:opacity-50";
-  const labelClass =
-    "block text-[0.8rem] text-[#b9cac3] mb-[5px] font-headline font-medium";
-
   return (
     <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
       {/* ── Header ── */}
@@ -280,213 +289,56 @@ export default function TeacherAssignmentsPage() {
         </button>
       </div>
 
-      {/* ── Filter Tabs ── */}
-      <div className="flex flex-wrap items-center gap-3">
-        {["All", "Published", "Draft"].map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-              activeFilter === filter
-                ? "bg-[#262a31] text-[#6fffd9] border border-[#6fffd9]/30"
-                : "bg-[#1c2026] text-[#b9cac3] border border-[#3b4a44] hover:bg-[#262a31] hover:text-[#dfe2eb]"
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
+      {/* ── Filter & Search Bar ── */}
+      <div className="flex flex-wrap gap-4 items-center justify-between mt-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {["All", "Published", "Draft"].map((filter) => (
+            <button
+              key={filter}
+              onClick={() => handleFilterChange(filter)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                activeFilter === filter
+                  ? "bg-[#262a31] text-[#6fffd9] border border-[#6fffd9]/30"
+                  : "bg-[#1c2026] text-[#b9cac3] border border-[#3b4a44] hover:bg-[#262a31] hover:text-[#dfe2eb]"
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative w-full sm:w-[300px]">
+          <input
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search assignments or courses..."
+            className="w-full bg-[#1c2026] border border-[#3b4a44] rounded-[10px] px-[1rem] py-[0.55rem] text-[#dfe2eb] text-[0.85rem] font-body outline-none focus:border-[#6fffd9] placeholder:text-[#84948e]"
+          />
+        </div>
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl overflow-hidden shadow-sm mt-4">
-        <div className="overflow-x-auto custom-scrollbar">
-          {assignmentsLoading ? (
-            <div className="text-center py-12 text-[#6fffd9] font-medium">
-              Loading assignments...
-            </div>
-          ) : (
-            <table className="w-full text-left border-collapse text-sm min-w-[900px]">
-              <thead>
-                <tr className="bg-[#181c22] text-[#b9cac3] border-b border-[#3b4a44] uppercase tracking-wider text-[0.75rem] font-bold">
-                  <th className="py-4 px-6">Course Name</th>
-                  <th className="py-4 px-6">Assignment Title</th>
-                  <th className="py-4 px-6">Created Date</th>
-                  <th className="py-4 px-6">Due Date</th>
-                  <th className="py-4 px-6">Status</th>
-                  <th className="py-4 px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#3b4a44]/50">
-                {filteredAssignments.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center p-12 text-[#b9cac3]">
-                      No assignments found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredAssignments.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="hover:bg-[#262a31]/50 transition-colors group"
-                    >
-                      <td className="py-4 px-6 font-semibold text-[#dfe2eb]">
-                        {row.courseName}
-                      </td>
-                      <td className="py-4 px-6 text-[#dfe2eb] font-medium">
-                        {row.assignmentName}
-                      </td>
-                      <td className="py-4 px-6 text-[#b9cac3]">
-                        {formatDate(row.creationDate)}
-                      </td>
-                      <td className="py-4 px-6 text-[#b9cac3]">
-                        {formatDate(row.dueDate)}
-                      </td>
-                      <td className="py-4 px-6">
-                        <span
-                          className={`inline-flex items-center justify-center px-3 py-0.5 rounded-full text-[12px] font-bold ${
-                            row.isPublished
-                              ? "bg-[#00e5bc]/10 text-[#00e5bc] border border-[#00e5bc]/20"
-                              : "bg-[#84948e]/10 text-[#84948e] border border-[#84948e]/20"
-                          }`}
-                        >
-                          {row.isPublished ? "Published" : "Draft"}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => handleOpenStats(row)}
-                            className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[12px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#6fffd9] cursor-pointer hover:bg-[#6fffd9]/10 transition-colors"
-                          >
-                            Statistic
-                          </button>
-                          <button
-                            onClick={() => handleOpenEdit(row)}
-                            disabled={row.isPublished}
-                            className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[12px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#3b4a44]/50 transition-colors disabled:opacity-40"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(row.id)}
-                            className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[12px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#ffb4ab] cursor-pointer hover:bg-[#ffb4ab]/10 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
+      <AssignmentTable
+        assignments={paginatedAssignments}
+        loading={assignmentsLoading}
+        onEdit={handleOpenEdit}
+        onDelete={handleDeleteClick}
+        onShowStats={handleOpenStats}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        totalItems={totalItems}
+        onPageChange={setCurrentPage}
+      />
 
       {/* ── CREATE / EDIT MODAL ── */}
       {modalOpen !== null && (
-        <div
-          className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
-          onClick={() => setModalOpen(null)}
-        >
-          <div
-            className="bg-[#1c2026] border border-[#3b4a44] rounded-[20px] p-8 w-full max-w-[600px] max-h-[90vh] overflow-y-auto lg:max-h-none lg:overflow-y-visible font-body shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-headline text-[1.2rem] font-bold text-[#dfe2eb] mb-6">
-              {modalOpen === "create" ? "Create Assignment" : "Edit Assignment"}
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {modalOpen === "create" && (
-                <div>
-                  <label className={labelClass}>Course *</label>
-                  <select
-                    className={inputClass}
-                    value={formData.courseId}
-                    onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
-                    required
-                  >
-                    {myCourses.map((c) => (
-                      <option key={c.courseId} value={c.courseId} className="bg-[#1c2026]">
-                        {c.courseTitle}
-                      </option>
-                    ))}
-                    {myCourses.length === 0 && (
-                      <option value="" className="bg-[#1c2026]">
-                        No courses allocated to you
-                      </option>
-                    )}
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label className={labelClass}>Assignment Title *</label>
-                <input
-                  type="text"
-                  className={inputClass}
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Geometry Homework - Circles"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Description *</label>
-                <textarea
-                  className={`${inputClass} min-h-[100px] resize-none`}
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Describe the tasks and requirements..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Due Date</label>
-                <input
-                  type="date"
-                  className={inputClass}
-                  value={formData.dueDate}
-                  onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="isPublished"
-                  className="w-4 h-4 rounded border-[#3b4a44] bg-[#262a31] text-[#6fffd9] focus:ring-0 cursor-pointer"
-                  checked={formData.isPublished}
-                  onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                />
-                <label htmlFor="isPublished" className="text-[#dfe2eb] text-sm cursor-pointer select-none">
-                  Publish assignment immediately (Draft if unchecked)
-                </label>
-              </div>
-
-              <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-[#3b4a44]">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(null)}
-                  className="bg-transparent border border-[#3b4a44] rounded-full px-5 py-[0.55rem] text-[#b9cac3] font-headline font-semibold text-[0.875rem] cursor-pointer hover:bg-[#3b4a44]/30 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={addLoading || updateLoading || (modalOpen === "create" && myCourses.length === 0)}
-                  className="bg-[#6fffd9] border-none rounded-full px-6 py-[0.55rem] text-[#00382c] font-headline font-semibold text-[0.875rem] cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
-                  {addLoading || updateLoading ? "Saving..." : modalOpen === "create" ? "Create" : "Save Changes"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddAssignmentModal
+          editing={selectedAssignment}
+          onClose={() => setModalOpen(null)}
+          onSave={handleSave}
+          isSubmitting={addLoading || updateLoading}
+          courses={myCourses}
+        />
       )}
 
       {/* ── STATS MODAL ── */}
@@ -533,6 +385,18 @@ export default function TeacherAssignmentsPage() {
           </div>
         </div>
       )}
+
+      {/* ── DELETE CONFIRMATION MODAL ── */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setDeleteTarget(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete Assignment?"
+        itemName={deleteTarget?.name}
+      />
     </div>
   );
 }

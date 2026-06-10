@@ -3,6 +3,9 @@ interface DeleteConfirmationModalProps {
   onClose: () => void;
   onConfirm: () => void;
   teacherName?: string;
+  title?: string;
+  description?: string;
+  itemName?: string;
 }
 
 export default function DeleteConfirmationModal({
@@ -10,8 +13,23 @@ export default function DeleteConfirmationModal({
   onClose,
   onConfirm,
   teacherName,
+  title = "Delete Record?",
+  description,
+  itemName,
 }: DeleteConfirmationModalProps) {
   if (!isOpen) return null;
+
+  const displayTitle = teacherName ? "Delete Teacher?" : title;
+  const displayName = itemName || teacherName;
+  const displayDescription = description || (
+    <>
+      Are you sure you want to remove{" "}
+      <span className="font-bold text-[#dfe2eb]">
+        {displayName || "this item"}
+      </span>
+      ? This action cannot be undone and will permanently remove it from the system.
+    </>
+  );
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -35,14 +53,10 @@ export default function DeleteConfirmationModal({
           {/* Text Content */}
           <div className="space-y-2">
             <h2 className="text-xl font-headline font-bold text-[#dfe2eb]">
-              Delete Teacher?
+              {displayTitle}
             </h2>
             <p className="text-sm font-body text-[#84948e]">
-              Are you sure you want to remove{" "}
-              <span className="font-bold text-[#dfe2eb]">
-                {teacherName || "this teacher"}
-              </span>
-              ? This action cannot be undone and will permanently remove them from the system.
+              {displayDescription}
             </p>
           </div>
         </div>
