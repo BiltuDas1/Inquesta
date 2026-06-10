@@ -163,4 +163,6 @@ export const submissions = mysqlTable("submissions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+  status: mysqlEnum("status", ["not_started", "in_progress", "completed"]).notNull().default("not_started"),
+  score: int().notNull().default(0),
 });

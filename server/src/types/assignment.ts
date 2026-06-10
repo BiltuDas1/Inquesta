@@ -44,3 +44,46 @@ export const GetTeacherAssignmentsResponseObject = builder
       }),
     }),
   });
+
+export type AssignmentStudentDetail = {
+  studentId: string;
+  studentName: string;
+  studentEmail: string;
+  studentPhone: string | null;
+  studentPhoneCountryCode: number | null;
+  status: string;
+  score: number;
+};
+
+export const AssignmentStudentDetailObject = builder
+  .objectRef<AssignmentStudentDetail>("AssignmentStudentDetail")
+  .implement({
+    fields: (t) => ({
+      studentId: t.exposeString("studentId"),
+      studentName: t.exposeString("studentName"),
+      studentEmail: t.exposeString("studentEmail"),
+      studentPhone: t.exposeString("studentPhone", { nullable: true }),
+      studentPhoneCountryCode: t.exposeInt("studentPhoneCountryCode", { nullable: true }),
+      status: t.exposeString("status"),
+      score: t.exposeInt("score"),
+    }),
+  });
+
+export type GetAssignmentSubmissionsResponse = {
+  success: boolean;
+  message: string;
+  data: AssignmentStudentDetail[] | null;
+};
+
+export const GetAssignmentSubmissionsResponseObject = builder
+  .objectRef<GetAssignmentSubmissionsResponse>("GetAssignmentSubmissionsResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [AssignmentStudentDetailObject],
+        nullable: true,
+      }),
+    }),
+  });

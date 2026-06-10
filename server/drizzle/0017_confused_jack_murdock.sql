@@ -1,0 +1,2 @@
+ALTER TABLE `submissions` ADD `status` enum('not_started','in_progress','completed') DEFAULT 'not_started' NOT NULL;--> statement-breakpoint
+ALTER TABLE `submissions` ADD `score` int DEFAULT 0 NOT NULL;

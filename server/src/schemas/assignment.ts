@@ -4,8 +4,9 @@ import {
   addAssignment,
   updateAssignment,
   deleteAssignment,
+  getAssignmentSubmissions,
 } from "../resolvers/assignment.ts";
-import { GetTeacherAssignmentsResponseObject } from "../types/assignment.ts";
+import { GetTeacherAssignmentsResponseObject, GetAssignmentSubmissionsResponseObject } from "../types/assignment.ts";
 import * as cookie from "cookie";
 
 builder.queryField("getTeacherAssignments", (t) =>
@@ -124,6 +125,38 @@ builder.mutationField("deleteAssignment", (t) =>
       }
 
       return await deleteAssignment(cookieObj["access_token"], args.id);
+    },
+  }),
+);
+
+builder.queryField("getAssignmentSubmissions", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GetAssignmentSubmissionsResponseObject,
+    args: {
+      assignmentId: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+          data: null,
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+          data: null,
+        };
+      }
+
+      return await getAssignmentSubmissions(cookieObj["access_token"], args.assignmentId);
     },
   }),
 );
