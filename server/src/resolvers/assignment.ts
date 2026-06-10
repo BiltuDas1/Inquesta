@@ -2,7 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { db } from "../config.ts";
 import { assignments, courses, submissions, users, courseEnrollments, users_info } from "../databases/schema.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
-import type { TeacherAssignmentInfo, AssignmentStudentDetail } from "../types/assignment.ts";
+import type { TeacherAssignmentInfo, AssignmentStudentDetail, StudentAssignmentInfo } from "../types/assignment.ts";
 
 export async function getTeacherAssignments(access_token: string) {
   const accessToken = await JWT.toAccessToken(access_token);
@@ -377,6 +377,164 @@ export async function updateStudentSubmission(
     return { success: true, message: "Student progress/score updated successfully" };
   } catch (error) {
     console.error("updateStudentSubmission error:", error);
+    return { success: false, message: "Internal server error" };
+  }
+}
+
+export async function getStudentAssignments(access_token: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+      data: null,
+    };
+  }
+
+  const userId = accessToken.getSub();
+
+  try {
+    // Verify user exists
+    const [userRecord] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!userRecord) {
+      return {
+        success: false,
+        message: "User not found.",
+        data: null,
+      };
+    }
+
+    // Query all courses student is enrolled in, and get all assignments for those courses,
+    // and left-join submissions for the logged-in student.
+    const result = await db
+      .select({
+        assignmentId: assignments.id,
+        courseName: courses.title,
+        assignmentTitle: assignments.title,
+        assignmentDescription: assignments.description,
+        creationDate: assignments.createdAt,
+        dueDate: assignments.dueDate,
+        submissionStatus: submissions.status,
+      })
+      .from(courseEnrollments)
+      .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))
+      .innerJoin(assignments, eq(assignments.courseId, courses.id))
+      .leftJoin(submissions, and(
+        eq(submissions.assignmentId, assignments.id),
+        eq(submissions.userId, userId)
+      ))
+      .where(eq(courseEnrollments.user_id, userId));
+
+    const data: StudentAssignmentInfo[] = result.map((row) => {
+      let displayStatus = "not started";
+      if (row.submissionStatus === "in_progress") {
+        displayStatus = "in progress";
+      } else if (row.submissionStatus === "completed") {
+        displayStatus = "completed";
+      }
+
+      return {
+        id: row.assignmentId,
+        courseName: row.courseName,
+        assignmentTitle: row.assignmentTitle,
+        assignmentDescription: row.assignmentDescription,
+        creationDate: row.creationDate.toISOString(),
+        dueDate: row.dueDate ? row.dueDate.toISOString() : null,
+        status: displayStatus,
+      };
+    });
+
+    return {
+      success: true,
+      message: "Student assignments retrieved successfully",
+      data,
+    };
+  } catch (error) {
+    console.error("getStudentAssignments error:", error);
+    return {
+      success: false,
+      message: "Internal server error while fetching student assignments",
+      data: null,
+    };
+  }
+}
+
+export async function updateStudentAssignmentStatus(
+  access_token: string,
+  assignmentId: string,
+  status: string
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return { success: false, message: "invalid access token" };
+  }
+
+  const userId = accessToken.getSub();
+
+  try {
+    // 1. Verify assignment exists
+    const [assignment] = await db
+      .select({ courseId: assignments.courseId })
+      .from(assignments)
+      .where(eq(assignments.id, assignmentId))
+      .limit(1);
+
+    if (!assignment) {
+      return { success: false, message: "Assignment not found." };
+    }
+
+    // 2. Verify student is enrolled in this course
+    const [enrollment] = await db
+      .select({ id: courseEnrollments.id })
+      .from(courseEnrollments)
+      .where(and(eq(courseEnrollments.course_id, assignment.courseId), eq(courseEnrollments.user_id, userId)))
+      .limit(1);
+
+    if (!enrollment) {
+      return { success: false, message: "Student is not enrolled in this course." };
+    }
+
+    // 3. Map status value
+    let dbStatus: "not_started" | "in_progress" | "completed";
+    if (status === "not started") {
+      dbStatus = "not_started";
+    } else if (status === "in progress") {
+      dbStatus = "in_progress";
+    } else if (status === "completed") {
+      dbStatus = "completed";
+    } else {
+      return { success: false, message: "Invalid status value. Allowed: 'not started', 'in progress', 'completed'" };
+    }
+
+    // 4. Check if submission record already exists
+    const [existingSubmission] = await db
+      .select({ id: submissions.id })
+      .from(submissions)
+      .where(and(eq(submissions.assignmentId, assignmentId), eq(submissions.userId, userId)))
+      .limit(1);
+
+    if (existingSubmission) {
+      await db
+        .update(submissions)
+        .set({ status: dbStatus })
+        .where(eq(submissions.id, existingSubmission.id));
+    } else {
+      await db.insert(submissions).values({
+        assignmentId,
+        userId: userId,
+        status: dbStatus,
+        score: 0,
+      });
+    }
+
+    return { success: true, message: "Assignment status updated successfully" };
+  } catch (error) {
+    console.error("updateStudentAssignmentStatus error:", error);
     return { success: false, message: "Internal server error" };
   }
 }

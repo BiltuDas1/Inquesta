@@ -1,83 +1,113 @@
 import { useState, useMemo } from "react";
-import type { Assignment } from "../components/assignmenttable";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { gql } from "@apollo/client";
+import toast from "react-hot-toast";
+import type { Assignment, AssignmentStatus } from "../components/assignmenttable";
 import AssignmentTable from "../components/assignmenttable";
 
-type FilterOption = "All" | "Pending" | "Submitted" | "Graded";
+type FilterOption = "All" | AssignmentStatus;
+
+// --- GraphQL Queries and Mutations ---
+
+const GET_STUDENT_ASSIGNMENTS = gql`
+  query GetStudentAssignments {
+    getStudentAssignments {
+      success
+      message
+      data {
+        id
+        courseName
+        assignmentTitle
+        assignmentDescription
+        creationDate
+        dueDate
+        status
+      }
+    }
+  }
+`;
+
+const UPDATE_STUDENT_ASSIGNMENT_STATUS = gql`
+  mutation UpdateStudentAssignmentStatus($assignmentId: String!, $status: String!) {
+    updateStudentAssignmentStatus(assignmentId: $assignmentId, status: $status) {
+      success
+      message
+    }
+  }
+`;
 
 export default function AssignmentsPage() {
   const [activeFilter, setActiveFilter] = useState<FilterOption>("All");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
-  // --- Mock Data ---
-  const assignmentsData: Assignment[] = useMemo(
-    () => [
-      {
-        id: "1",
-        subject: "Mathematics",
-        title: "Problem set 4 — Quadratic equations",
-        dueDate: "8 May",
-        status: "Pending",
-        score: "—",
-      },
-      {
-        id: "2",
-        subject: "History",
-        title: "Essay: Causes of WWI (500 words)",
-        dueDate: "10 May",
-        status: "Draft saved",
-        score: "—",
-      },
-      {
-        id: "3",
-        subject: "Science",
-        title: "Lab report: Photosynthesis experiment",
-        dueDate: "12 May",
-        status: "Not started",
-        score: "—",
-      },
-      {
-        id: "4",
-        subject: "English",
-        title: "Chapter 5 comprehension questions",
-        dueDate: "6 May",
-        status: "Submitted",
-        score: "—",
-      },
-      {
-        id: "5",
-        subject: "Mathematics",
-        title: "Problem set 3 — Linear equations",
-        dueDate: "2 May",
-        status: "Graded",
-        score: "88/100",
-      },
-      {
-        id: "6",
-        subject: "Science",
-        title: "Quiz: Periodic table",
-        dueDate: "30 Apr",
-        status: "Graded",
-        score: "76/100",
-      },
-    ],
-    [],
-  );
+  // Fetch student assignments
+  const { data, loading, refetch } = useQuery(GET_STUDENT_ASSIGNMENTS, {
+    fetchPolicy: "cache-and-network",
+  });
 
-  const filters: FilterOption[] = ["All", "Pending", "Submitted", "Graded"];
+  // Mutation to update assignment status
+  const [updateStatus] = useMutation(UPDATE_STUDENT_ASSIGNMENT_STATUS);
+
+  const assignmentsData: Assignment[] = useMemo(() => {
+    const rawData = data?.getStudentAssignments?.data || [];
+    return rawData.map((item: any) => ({
+      id: item.id,
+      subject: item.courseName,
+      title: item.assignmentTitle,
+      description: item.assignmentDescription,
+      creationDate: item.creationDate,
+      dueDate: item.dueDate,
+      status: item.status as AssignmentStatus,
+    }));
+  }, [data]);
+
+  const filters: { value: FilterOption; label: string }[] = [
+    { value: "All", label: "All" },
+    { value: "not started", label: "Not Started" },
+    { value: "in progress", label: "In Progress" },
+    { value: "completed", label: "Completed" },
+  ];
 
   // --- Filtering Logic ---
   const filteredAssignments = useMemo(() => {
     if (activeFilter === "All") return assignmentsData;
+    return assignmentsData.filter((assignment) => assignment.status === activeFilter);
+  }, [activeFilter, assignmentsData]);
 
-    return assignmentsData.filter((assignment) => {
-      // Grouping unsubmitted states under the "Pending" filter tab
-      if (activeFilter === "Pending") {
-        return ["Pending", "Draft saved", "Not started"].includes(
-          assignment.status,
+  // Paginated Assignments
+  const paginatedAssignments = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAssignments.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAssignments, currentPage, itemsPerPage]);
+
+  const handleFilterChange = (filter: FilterOption) => {
+    setActiveFilter(filter);
+    setCurrentPage(1); // reset page on filter change
+  };
+
+  // Handle status update
+  const handleStatusChange = async (assignmentId: string, newStatus: AssignmentStatus) => {
+    try {
+      const response = await updateStatus({
+        variables: {
+          assignmentId,
+          status: newStatus,
+        },
+      });
+
+      if (response.data?.updateStudentAssignmentStatus?.success) {
+        toast.success("Assignment status updated successfully!");
+        refetch();
+      } else {
+        toast.error(
+          response.data?.updateStudentAssignmentStatus?.message || "Failed to update assignment status."
         );
       }
-      return assignment.status === activeFilter;
-    });
-  }, [activeFilter, assignmentsData]);
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred while updating status.");
+    }
+  };
 
   return (
     <div className="absolute inset-0 p-4 sm:p-6 lg:p-8 flex flex-col bg-[#10141a] font-body text-[#dfe2eb]">
@@ -87,7 +117,7 @@ export default function AssignmentsPage() {
           Assignments
         </h1>
         <p className="text-[#84948e] mt-1">
-          All assignments — track submissions and grades
+          All assignments — track your learning progress and updates
         </p>
       </div>
 
@@ -95,21 +125,34 @@ export default function AssignmentsPage() {
       <div className="flex flex-wrap gap-3 mb-6 shrink-0">
         {filters.map((filter) => (
           <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
+            key={filter.value}
+            onClick={() => handleFilterChange(filter.value)}
             className={`px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border ${
-              activeFilter === filter
+              activeFilter === filter.value
                 ? "bg-[#262a31] border-[#6fffd9] text-[#6fffd9] shadow-[0_0_10px_rgba(111,255,217,0.1)]"
                 : "bg-transparent border-[#3b4a44] text-[#b9cac3] hover:bg-[#1c2026] hover:text-[#dfe2eb] hover:border-[#84948e]"
             }`}
           >
-            {filter}
+            {filter.label}
           </button>
         ))}
       </div>
 
-      {/* --- Extracted Table Component --- */}
-      <AssignmentTable assignments={filteredAssignments} />
+      {/* --- Assignment Table / Loading / Empty states --- */}
+      {loading && assignmentsData.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center text-[#84948e]">
+          Loading assignments...
+        </div>
+      ) : (
+        <AssignmentTable
+          assignments={paginatedAssignments}
+          onStatusChange={handleStatusChange}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredAssignments.length}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 }
