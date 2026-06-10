@@ -7,6 +7,32 @@ import AssignmentTable from "../components/assignmenttable";
 
 type FilterOption = "All" | AssignmentStatus;
 
+// --- GraphQL Response Interfaces ---
+interface StudentAssignmentGQL {
+  id: string;
+  courseName: string;
+  assignmentTitle: string;
+  assignmentDescription: string;
+  creationDate: string;
+  dueDate: string | null;
+  status: string;
+}
+
+interface GetStudentAssignmentsResponseData {
+  getStudentAssignments: {
+    success: boolean;
+    message: string;
+    data: StudentAssignmentGQL[] | null;
+  };
+}
+
+interface UpdateStudentAssignmentStatusResponseData {
+  updateStudentAssignmentStatus: {
+    success: boolean;
+    message: string;
+  };
+}
+
 // --- GraphQL Queries and Mutations ---
 
 const GET_STUDENT_ASSIGNMENTS = gql`
@@ -41,17 +67,17 @@ export default function AssignmentsPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
 
-  // Fetch student assignments
-  const { data, loading, refetch } = useQuery(GET_STUDENT_ASSIGNMENTS, {
+  // Fetch student assignments with type safety
+  const { data, loading, refetch } = useQuery<GetStudentAssignmentsResponseData>(GET_STUDENT_ASSIGNMENTS, {
     fetchPolicy: "cache-and-network",
   });
 
-  // Mutation to update assignment status
-  const [updateStatus] = useMutation(UPDATE_STUDENT_ASSIGNMENT_STATUS);
+  // Mutation to update assignment status with type safety
+  const [updateStatus] = useMutation<UpdateStudentAssignmentStatusResponseData>(UPDATE_STUDENT_ASSIGNMENT_STATUS);
 
   const assignmentsData: Assignment[] = useMemo(() => {
     const rawData = data?.getStudentAssignments?.data || [];
-    return rawData.map((item: any) => ({
+    return rawData.map((item: StudentAssignmentGQL) => ({
       id: item.id,
       subject: item.courseName,
       title: item.assignmentTitle,
