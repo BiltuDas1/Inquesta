@@ -137,3 +137,30 @@ export const teachers_info = mysqlTable("teachers_info", {
     .references(() => users.id, { onDelete: "cascade" }),
   qualification: varchar({ length: 255 }),
 });
+
+export const assignments = mysqlTable("assignments", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  courseId: varchar("course_id", { length: 36 })
+    .notNull()
+    .references(() => courses.id, { onDelete: "cascade" }),
+  title: varchar({ length: 255 }).notNull(),
+  description: text().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  dueDate: timestamp("due_date"),
+  isPublished: boolean("is_published").notNull().default(false),
+});
+
+export const submissions = mysqlTable("submissions", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  assignmentId: varchar("assignment_id", { length: 36 })
+    .notNull()
+    .references(() => assignments.id, { onDelete: "cascade" }),
+  userId: varchar("user_id", { length: 36 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+});
