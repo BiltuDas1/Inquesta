@@ -171,17 +171,6 @@ export default function AssignmentSubmissions({
     return cc ? `+${cc} ${phone}` : phone;
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "Submitted";
-      case "in_progress":
-        return "In Progress";
-      case "not_started":
-      default:
-        return "Not Started";
-    }
-  };
 
   return (
     <div className="space-y-6">

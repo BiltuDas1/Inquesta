@@ -8,7 +8,7 @@ import AssignmentTable from "../../../components/teacher/assignments/assignmentt
 import DeleteConfirmationModal from "../../../components/ui/dialog";
 import AssignmentSubmissions from "../../../components/teacher/assignments/assignmentsubmissions";
 
-import { NumberedCursorPagination } from "../../../shared/components/cursorpagination";
+
 
 // --- GraphQL Queries and Mutations ---
 
@@ -168,8 +168,7 @@ export default function TeacherAssignmentsPage() {
   });
 
   const totalItems = searchedAssignments.length;
-  const hasNextPage = currentPage * itemsPerPage < totalItems;
-  const hasPreviousPage = currentPage > 1;
+
 
   const paginatedAssignments = searchedAssignments.slice(
     (currentPage - 1) * itemsPerPage,
@@ -311,11 +310,10 @@ export default function TeacherAssignmentsPage() {
             <button
               key={filter}
               onClick={() => handleFilterChange(filter)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                activeFilter === filter
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${activeFilter === filter
                   ? "bg-[#262a31] text-[#6fffd9] border border-[#6fffd9]/30"
                   : "bg-[#1c2026] text-[#b9cac3] border border-[#3b4a44] hover:bg-[#262a31] hover:text-[#dfe2eb]"
-              }`}
+                }`}
             >
               {filter}
             </button>
