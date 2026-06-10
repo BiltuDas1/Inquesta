@@ -10,4 +10,5 @@ export interface Course {
   price: number;
   icon: string;
   slug: string;
+  teacherId?: string | null;
 }

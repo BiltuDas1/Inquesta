@@ -13,6 +13,7 @@ export type Course = {
   instructorName: string;
   iconName?: string | null | undefined;
   slug?: string;
+  teacherId?: string | null | undefined;
 };
 
 export const CourseObject = builder
@@ -28,6 +29,7 @@ export const CourseObject = builder
       duration: t.exposeString("duration"),
       instructorName: t.exposeString("instructorName"),
       slug: t.exposeString("slug"),
+      teacherId: t.exposeString("teacherId", { nullable: true }),
     }),
   });
 

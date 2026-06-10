@@ -60,7 +60,7 @@ export async function registerUser(
     const emailError = await sendEmail(
       data.email,
       (isProduction ? "https://" : "http://") +
-        `${FRONTEND_FQDN}/email/verify?token=${token}`,
+      `${FRONTEND_FQDN}/email/verify?token=${token}`,
     );
 
     if (emailError !== null) {
@@ -119,7 +119,7 @@ export async function loginUser(
   }
 
   const isCorrect = await verify(userRecord.password, password);
-  
+
   console.log(isCorrect)
   if (!isCorrect) {
     return false;
@@ -340,7 +340,7 @@ export async function update_userinfo(access_token: string, info: UserInfo) {
           success: true,
           message: "data updated successfully",
         };
-      } catch (error) {}
+      } catch (error) { }
     }
 
     return {
@@ -439,7 +439,7 @@ export async function get_user_role(access_token: string) {
 
 export async function addTeacher(
   access_token: string,
-info: Omit<Teacher, "id">,
+  info: Omit<Teacher, "id">,
   context: FastifyContext,
 ) {
   const accessToken = await JWT.toAccessToken(access_token);
@@ -507,7 +507,7 @@ info: Omit<Teacher, "id">,
 }
 
 export async function addedTeacherDetails(
-  teacherId: string, 
+  teacherId: string,
   info: TeacherUpdateInfo
 ) {
   try {
@@ -515,13 +515,14 @@ export async function addedTeacherDetails(
       throw new Error("Password is required to activate teacher account.");
     }
     await db.insert(teachers_info).values({
-      users_id: teacherId, 
+      users_id: teacherId,
       qualification: info.qualification,
     });
 
     await db.update(users)
-      .set({ isActive: true ,
-        password:await hash(info.password)
+      .set({
+        isActive: true,
+        password: await hash(info.password)
       })
       .where(eq(users.id, teacherId));
 
@@ -536,16 +537,16 @@ export async function addedTeacherDetails(
 
     if (error.cause?.message.includes("Duplicate entry")) {
       try {
-        
+
         await db
           .update(teachers_info)
           .set({
             qualification: info.qualification,
           })
-          .where(eq(teachers_info.users_id, teacherId)); 
+          .where(eq(teachers_info.users_id, teacherId));
 
-          await db.update(users)
-          .set({ isActive: true,password:await hash(generateUrlSafeToken()) })
+        await db.update(users)
+          .set({ isActive: true, password: await hash(generateUrlSafeToken()) })
           .where(eq(users.id, teacherId));
 
         return {
@@ -573,14 +574,14 @@ export async function getTeacherInfo(teacherId: string) {
         lastname: users.lastname,
         email: users.email,
         qualification: teachers_info.qualification,
-       isActive: users.isActive,
+        isActive: users.isActive,
       })
       .from(users)
       .leftJoin(teachers_info, eq(users.id, teachers_info.users_id))
       .where(
         and(
           eq(users.id, teacherId),
-          eq(users.role, "teacher") 
+          eq(users.role, "teacher")
         )
       )
       .limit(1);
@@ -595,16 +596,16 @@ export async function getTeacherInfo(teacherId: string) {
       };
     }
 
-   return {
+    return {
       success: true,
       message: "Teacher info retrieved successfully",
       data: {
         id: teacher.id,
         firstname: teacher.firstname,
-        lastname: teacher.lastname,   
+        lastname: teacher.lastname,
         email: teacher.email,
         qualification: teacher.qualification,
-        is_active:teacher.isActive
+        is_active: teacher.isActive
       },
     };
   } catch (error) {
@@ -628,7 +629,7 @@ export async function updateTeacherByAdmin(
     return { success: false, message: "invalid access token" };
   }
 
-  try {  
+  try {
     const [adminUser] = await db
       .selectDistinct({ role: users.role })
       .from(users)
@@ -709,7 +710,7 @@ export async function deleteTeacher(
       .where(
         and(
           eq(users.id, teacherId),
-          eq(users.role, "teacher") 
+          eq(users.role, "teacher")
         )
       )
       .limit(1);
@@ -743,7 +744,7 @@ export async function getAllTeachers() {
       })
       .from(users)
       .leftJoin(teachers_info, eq(users.id, teachers_info.users_id))
-      .where(eq(users.role, "teacher")); 
+      .where(eq(users.role, "teacher"));
 
     return {
       success: true,

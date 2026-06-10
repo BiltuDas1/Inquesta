@@ -247,7 +247,7 @@ export default function CourseModal({
     duration: editing?.duration ? String(editing.duration) : "",
     price: editing?.price ?? "",
     instructorName: editing?.instructorName ?? "",
-    assignedTeacher: editing?.assignedTeacher ?? "", 
+    assignedTeacher: editing?.teacherId ?? editing?.assignedTeacher ?? "", 
     description: editing?.description ?? "",
     icon: editing?.icon ?? "",
   });

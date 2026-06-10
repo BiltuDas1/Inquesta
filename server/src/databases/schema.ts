@@ -24,7 +24,7 @@ export const users = mysqlTable(
     email: varchar({ length: 320 }).notNull().unique(),
     password: varchar({ length: 255 }).notNull(),
     isActive: boolean("is_active").notNull().default(false),
-    role: varchar({ length: 255 }).notNull().default("user"),
+    role: varchar({ length: 255 }).notNull().default("student"),
   },
   (table) => [index("active_status_idx").on(table.isActive)],
 );
@@ -41,6 +41,7 @@ export const courses = mysqlTable("courses", {
   instructorName: varchar("instructor_name", { length: 255 }).notNull(),
   iconName: varchar("icon_name", { length: 255 }),
   slug: varchar({ length: 255 }).notNull().unique(),
+  teacherId: varchar("teacher_id", { length: 36 }).references(() => users.id),
 });
 
 export const users_info = mysqlTable("users_info", {
@@ -134,5 +135,5 @@ export const teachers_info = mysqlTable("teachers_info", {
   users_id: varchar("users_id", { length: 36 })
     .primaryKey()
     .references(() => users.id, { onDelete: "cascade" }),
-    qualification: varchar({ length: 255 }),
+  qualification: varchar({ length: 255 }),
 });

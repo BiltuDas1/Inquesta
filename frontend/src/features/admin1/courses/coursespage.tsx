@@ -467,7 +467,7 @@ export default function CoursesPage() {
       const courseVars = {
         ...formData,
         instructor_name: formData.instructorName,
-        assigned_teacher: formData.assignedTeacher, // This will now hold the Teacher's ID
+        teacher_id: formData.assignedTeacher || null,
         price: Number(formData.price) || 0,
         icon_name: finalIcon,
       };
@@ -571,6 +571,7 @@ export default function CoursesPage() {
             {/* Table */}
             <CourseTable
               courses={displayCourses}
+              teachers={teachersList}
               onEdit={(id) => setModal(id)}
               onDelete={handleDelete}
             />

@@ -14,6 +14,7 @@ export const GET_COURSES = gql`
         level
         price
         icon
+        teacherId
       }
     }
   }
@@ -41,6 +42,7 @@ export const ADD_COURSE = gql`
     $price: Int!
     $title: String!
     $icon_name: String
+    $teacher_id: String
   ) {
     courseAdd(
       description: $description
@@ -50,6 +52,7 @@ export const ADD_COURSE = gql`
       price: $price
       title: $title
       icon_name: $icon_name
+      teacher_id: $teacher_id
     ) {
       message
       success
@@ -93,6 +96,7 @@ export const UPDATE_COURSE = gql`
     $level: String!
     $price: Int!
     $title: String!
+    $teacher_id: String
   ) {
     courseUpdate(
       id: $id
@@ -103,6 +107,7 @@ export const UPDATE_COURSE = gql`
       level: $level
       price: $price
       title: $title
+      teacher_id: $teacher_id
     ) {
       message
       success
