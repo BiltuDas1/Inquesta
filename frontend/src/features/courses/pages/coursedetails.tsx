@@ -550,12 +550,68 @@
 // }
 
 import { useState, useRef } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useNavigate } from "react-router";
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useLazyQuery, useMutation } from "@apollo/client/react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
+import toast from "react-hot-toast";
 import type { Course } from "../types/courses";
+import { useAuth } from "../../auth/context/authcontext";
+import { EnrollmentSuccess } from "../components/enrollmentsuccessmodal";
+
+const ENROLL_COURSE_MUTATION = gql`
+  mutation enrollCourse($courseID: String!, $transactionID: String!) {
+    enrollCourse(courseID: $courseID, transactionID: $transactionID) {
+      message
+      success
+    }
+  }
+`;
+
+interface EnrollCourseResponse {
+  enrollCourse: {
+    success: boolean;
+    message: string;
+  };
+}
+
+interface EnrollCourseVariables {
+  courseID: string;
+  transactionID: string;
+}
+
+const GET_ENROLLED_COURSES = gql`
+  query enrolledCourses {
+    enrolledCourses {
+      data {
+        id
+      }
+    }
+  }
+`;
+
+interface EnrolledCoursesResponse {
+  enrolledCourses: {
+    data: Array<{
+      id: string;
+    }>;
+  };
+}
+
+const GET_USER_INFO = gql`
+  query getUserInfo {
+    getUserInfo {
+      success
+    }
+  }
+`;
+
+interface UserInfoData {
+  getUserInfo: {
+    success: boolean;
+  };
+}
 
 // --- GraphQL Query ---
 const GET_COURSE_DETAILS = gql`
@@ -658,8 +714,16 @@ const fallbackData = {
 
 export default function CourseDetails() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // States for enrollment flow
+  const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [transactionId, setTransactionId] = useState("");
 
   const pdfContainerRef = useRef<HTMLDivElement>(null);
 
@@ -669,6 +733,90 @@ export default function CourseDetails() {
   );
 
   const course = data?.getCourseInfo?.data;
+
+  // Query to check if the user is already enrolled
+  const { data: enrollmentData, loading: checkingEnrollment } =
+    useQuery<EnrolledCoursesResponse>(GET_ENROLLED_COURSES, {
+      skip: !user,
+    });
+
+  // Query to check onboarding status
+  const [fetchUserInfo] = useLazyQuery<UserInfoData>(GET_USER_INFO, {
+    fetchPolicy: "network-only",
+  });
+
+  // Mutation to enroll
+  const [enrollCourse, { loading: isSubmitting }] = useMutation<
+    EnrollCourseResponse,
+    EnrollCourseVariables
+  >(ENROLL_COURSE_MUTATION);
+
+  const isAlreadyEnrolled = enrollmentData?.enrolledCourses?.data?.some(
+    (item: any) => String(item.id) === String(course?.id),
+  );
+
+  const handleEnroll = async () => {
+    if (!user) {
+      toast.error("Please log in to enroll in this course.");
+      navigate("/login");
+      return;
+    }
+
+    if (user.role === "admin") {
+      setIsEnrollModalOpen(true);
+      return;
+    }
+
+    try {
+      const { data: userInfoData, error: userInfoError } = await fetchUserInfo();
+
+      if (userInfoError || !userInfoData?.getUserInfo?.success) {
+        toast.error("Please complete your profile details before enrolling.");
+        navigate("/onboard");
+        return;
+      }
+
+      setIsEnrollModalOpen(true);
+    } catch (err) {
+      console.error("Error verifying user onboarding status:", err);
+      toast.error("Failed to verify profile status. Please try again.");
+    }
+  };
+
+  const handleSubmitPayment = async () => {
+    if (!transactionId.trim()) {
+      toast.error("Please enter a valid Transaction / UTR ID.");
+      return;
+    }
+
+    if (!course) return;
+
+    try {
+      const response = await enrollCourse({
+        variables: {
+          courseID: String(course.id),
+          transactionID: transactionId.trim(),
+        },
+        refetchQueries: [{ query: GET_ENROLLED_COURSES }],
+      });
+
+      if (response.data) {
+        const { success, message } = response.data.enrollCourse;
+
+        if (success) {
+          setShowSuccess(true);
+          setTransactionId("");
+        } else {
+          toast.error(message || "Failed to submit payment details.");
+        }
+      }
+    } catch (err: any) {
+      console.error("Enrollment error:", err);
+      toast.error(
+        err.message || "An unexpected error occurred. Please try again.",
+      );
+    }
+  };
 
   const toggleModule = (index: number) => {
     setOpenModuleIndex(openModuleIndex === index ? null : index);
@@ -1091,10 +1239,28 @@ export default function CourseDetails() {
                     </div>
                   ))}
                 </div>
+                {isAlreadyEnrolled ? (
+                  <button
+                    onClick={() => navigate(`/courses`)}
+                    className="w-full flex items-center justify-center gap-2 bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(111,255,217,0.15)] hover:shadow-[0_0_25px_rgba(111,255,217,0.3)] cursor-pointer"
+                  >
+                    Go to Dashboard
+                    <span className="material-symbols-outlined text-sm">arrow_outward</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleEnroll}
+                    disabled={checkingEnrollment}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg cursor-pointer disabled:opacity-50"
+                  >
+                    {checkingEnrollment ? "Checking..." : "Enroll Now"}
+                    <span className="material-symbols-outlined text-sm">arrow_outward</span>
+                  </button>
+                )}
                 <button
                   onClick={handleDownloadBrochure}
                   disabled={isGeneratingPDF}
-                  className="w-full mt-4 flex items-center justify-center gap-2 bg-[#6fffd9] hover:bg-[#00e5bc] text-[#00382c] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer"
+                  className="w-full mt-4 flex items-center justify-center gap-2 bg-[#262a31] hover:bg-[#31353c] text-[#bdc2ff] border border-[#3b4a44] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-sm">
                     {isGeneratingPDF ? "hourglass_empty" : "download"}
@@ -1283,6 +1449,81 @@ export default function CourseDetails() {
           <PdfFooter />
         </div>
       </div>
+
+      {/* --- PAYMENT MODAL --- */}
+      {isEnrollModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-body">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+            onClick={() => !showSuccess && setIsEnrollModalOpen(false)}
+          />
+
+          <div className="relative bg-[#1c2026] border border-[#3b4a44] rounded-2xl shadow-2xl w-full max-w-sm p-6 sm:p-8 z-10 animate-in fade-in zoom-in duration-200">
+            {!showSuccess ? (
+              <>
+                <button
+                  onClick={() => setIsEnrollModalOpen(false)}
+                  className="absolute top-4 right-4 text-[#84948e] hover:text-[#ffb4ab] transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+
+                <h3 className="text-2xl font-bold text-[#dfe2eb] mb-1 font-headline">
+                  Complete Payment
+                </h3>
+                <p className="text-[#b9cac3] text-sm mb-6 font-medium">
+                  Scan the QR code to pay{" "}
+                  <span className="text-[#6fffd9] font-bold">
+                    {course.price}
+                  </span>
+                </p>
+
+                <div className="flex items-center justify-center mx-auto mb-6 w-82 h-82 relative overflow-hidden">
+                  <img
+                    src={`https://duqixbhmkyazlglmfopk.supabase.co/storage/v1/object/public/Inquesta/uploads/inquesta_QR.jpg`}
+                    alt="Payment QR Code"
+                    className="w-full h-full object-contain select-none"
+                    style={{
+                      imageRendering: "pixelated",
+                    }}
+                    draggable={false}
+                    crossOrigin="anonymous"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label className="block text-xs font-bold text-[#84948e] uppercase tracking-wider mb-2">
+                    Transaction ID / UTR
+                  </label>
+                  <input
+                    type="text"
+                    disabled={isSubmitting}
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
+                    placeholder="e.g. 312345678901"
+                    className="w-full bg-[#10141a] border border-[#3b4a44] rounded-xl px-4 py-3 text-[#dfe2eb] text-sm focus:outline-none focus:border-[#6fffd9] transition-colors placeholder:text-[#3b4a44]"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSubmitPayment}
+                  disabled={isSubmitting}
+                  className="w-full flex justify-center items-center gap-2 bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(111,255,217,0.2)] text-base font-headline active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait cursor-pointer"
+                >
+                  {isSubmitting ? "Submitting..." : "Submit for Verification"}
+                </button>
+              </>
+            ) : (
+              <EnrollmentSuccess
+                courseTitle={course.title}
+                onClose={() => {
+                  setIsEnrollModalOpen(false);
+                  setShowSuccess(false);
+                }}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

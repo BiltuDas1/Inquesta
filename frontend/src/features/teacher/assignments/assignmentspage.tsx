@@ -6,6 +6,7 @@ import { useAuth } from "../../auth/context/authcontext";
 import AddAssignmentModal from "../../../components/teacher/assignments/addassignmentmodal";
 import AssignmentTable from "../../../components/teacher/assignments/assignmenttable";
 import DeleteConfirmationModal from "../../../components/ui/dialog";
+import AssignmentSubmissions from "../../../components/teacher/assignments/assignmentsubmissions";
 
 import { NumberedCursorPagination } from "../../../shared/components/cursorpagination";
 
@@ -121,8 +122,7 @@ export default function TeacherAssignmentsPage() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [modalOpen, setModalOpen] = useState<"create" | "edit" | null>(null);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
-  const [statsModalOpen, setStatsModalOpen] = useState(false);
-  const [statsAssignment, setStatsAssignment] = useState<Assignment | null>(null);
+  const [activeView, setActiveView] = useState<"list" | "submissions">("list");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -197,8 +197,8 @@ export default function TeacherAssignmentsPage() {
   };
 
   const handleOpenStats = (assignment: Assignment) => {
-    setStatsAssignment(assignment);
-    setStatsModalOpen(true);
+    setSelectedAssignment(assignment);
+    setActiveView("submissions");
   };
 
   const handleDeleteClick = (id: string) => {
@@ -268,6 +268,21 @@ export default function TeacherAssignmentsPage() {
       toast.error(err.message || "An error occurred");
     }
   };
+
+  if (activeView === "submissions" && selectedAssignment) {
+    return (
+      <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
+        <AssignmentSubmissions
+          assignment={selectedAssignment}
+          onBack={() => {
+            setActiveView("list");
+            setSelectedAssignment(null);
+            refetchAssignments();
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
@@ -339,51 +354,6 @@ export default function TeacherAssignmentsPage() {
           isSubmitting={addLoading || updateLoading}
           courses={myCourses}
         />
-      )}
-
-      {/* ── STATS MODAL ── */}
-      {statsModalOpen && statsAssignment && (
-        <div
-          className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 backdrop-blur-sm"
-          onClick={() => setStatsModalOpen(false)}
-        >
-          <div
-            className="bg-[#1c2026] border border-[#3b4a44] rounded-[20px] p-8 w-full max-w-[450px] max-h-[90vh] overflow-y-auto lg:max-h-none lg:overflow-y-visible font-body shadow-2xl space-y-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div>
-              <h2 className="font-headline text-[1.2rem] font-bold text-[#dfe2eb]">
-                Assignment Statistics
-              </h2>
-              <p className="text-[#b9cac3] text-sm mt-1">
-                {statsAssignment.assignmentName}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              <div className="bg-[#262a31] border border-[#3b4a44] p-5 rounded-xl flex flex-col justify-between">
-                <span className="text-[#b9cac3] text-xs font-semibold uppercase tracking-wider">
-                  Total Submissions
-                </span>
-                <span className="text-4xl font-bold text-[#6fffd9] my-2">
-                  {statsAssignment.totalSubmission}
-                </span>
-                <span className="text-[#84948e] text-xs">
-                  Submitted by students of {statsAssignment.courseName}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-4">
-              <button
-                onClick={() => setStatsModalOpen(false)}
-                className="bg-[#6fffd9] border-none rounded-full px-6 py-[0.55rem] text-[#00382c] font-headline font-semibold text-[0.875rem] cursor-pointer hover:opacity-90 transition-opacity"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
       )}
 
       {/* ── DELETE CONFIRMATION MODAL ── */}

@@ -1,8 +1,8 @@
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../config.ts";
-import { assignments, courses, submissions, users } from "../databases/schema.ts";
+import { assignments, courses, submissions, users, courseEnrollments, users_info } from "../databases/schema.ts";
 import { JWT } from "../utils/jwt/jwt.ts";
-import type { TeacherAssignmentInfo } from "../types/assignment.ts";
+import type { TeacherAssignmentInfo, AssignmentStudentDetail } from "../types/assignment.ts";
 
 export async function getTeacherAssignments(access_token: string) {
   const accessToken = await JWT.toAccessToken(access_token);
@@ -208,6 +208,175 @@ export async function deleteAssignment(access_token: string, id: string) {
     return { success: true, message: "Assignment deleted successfully" };
   } catch (error) {
     console.error("deleteAssignment error:", error);
+    return { success: false, message: "Internal server error" };
+  }
+}
+
+export async function getAssignmentSubmissions(access_token: string, assignmentId: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+      data: null,
+    };
+  }
+
+  const userId = accessToken.getSub();
+
+  try {
+    // 1. Verify assignment exists and is owned by this teacher
+    const [assignment] = await db
+      .select({ courseId: assignments.courseId })
+      .from(assignments)
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
+      .where(and(eq(assignments.id, assignmentId), eq(courses.teacherId, userId)))
+      .limit(1);
+
+    if (!assignment) {
+      return {
+        success: false,
+        message: "Assignment not found or unauthorized.",
+        data: null,
+      };
+    }
+
+    // 2. Fetch enrolled students and their submissions
+    const enrolledStudents = await db
+      .select({
+        studentId: users.id,
+        firstname: users.firstname,
+        lastname: users.lastname,
+        email: users.email,
+        phone: users_info.phone_number,
+        phoneCc: users_info.phone_number_cc,
+        submissionStatus: submissions.status,
+        submissionScore: submissions.score,
+      })
+      .from(courseEnrollments)
+      .innerJoin(users, eq(courseEnrollments.user_id, users.id))
+      .leftJoin(users_info, eq(users.id, users_info.users_id))
+      .leftJoin(submissions, and(
+        eq(submissions.userId, users.id),
+        eq(submissions.assignmentId, assignmentId)
+      ))
+      .where(eq(courseEnrollments.course_id, assignment.courseId));
+
+    const data: AssignmentStudentDetail[] = enrolledStudents.map((row) => {
+      let displayStatus = "not started";
+      if (row.submissionStatus === "in_progress") {
+        displayStatus = "in progress";
+      } else if (row.submissionStatus === "completed") {
+        displayStatus = "completed";
+      }
+
+      return {
+        studentId: row.studentId,
+        studentName: row.lastname ? `${row.firstname} ${row.lastname}` : row.firstname,
+        studentEmail: row.email,
+        studentPhone: row.phone,
+        studentPhoneCountryCode: row.phoneCc,
+        status: displayStatus,
+        score: row.submissionScore ?? 0,
+      };
+    });
+
+    return {
+      success: true,
+      message: "Assignment student details retrieved successfully",
+      data,
+    };
+  } catch (error) {
+    console.error("getAssignmentSubmissions error:", error);
+    return {
+      success: false,
+      message: "Internal server error while fetching student submissions",
+      data: null,
+    };
+  }
+}
+
+export async function updateStudentSubmission(
+  access_token: string,
+  assignmentId: string,
+  studentId: string,
+  data: {
+    status?: string | undefined;
+    score?: number | undefined;
+  }
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return { success: false, message: "invalid access token" };
+  }
+
+  const userId = accessToken.getSub();
+
+  try {
+    // 1. Verify assignment exists and is owned by this teacher
+    const [assignment] = await db
+      .select({ courseId: assignments.courseId })
+      .from(assignments)
+      .innerJoin(courses, eq(assignments.courseId, courses.id))
+      .where(and(eq(assignments.id, assignmentId), eq(courses.teacherId, userId)))
+      .limit(1);
+
+    if (!assignment) {
+      return { success: false, message: "Assignment not found or unauthorized." };
+    }
+
+    // 2. Verify student is enrolled in this course
+    const [enrollment] = await db
+      .select({ id: courseEnrollments.id })
+      .from(courseEnrollments)
+      .where(and(eq(courseEnrollments.course_id, assignment.courseId), eq(courseEnrollments.user_id, studentId)))
+      .limit(1);
+
+    if (!enrollment) {
+      return { success: false, message: "Student is not enrolled in this course." };
+    }
+
+    // 3. Map status value if provided
+    let dbStatus: "not_started" | "in_progress" | "completed" | undefined = undefined;
+    if (data.status !== undefined) {
+      if (data.status === "not started") {
+        dbStatus = "not_started";
+      } else if (data.status === "in progress") {
+        dbStatus = "in_progress";
+      } else if (data.status === "completed") {
+        dbStatus = "completed";
+      } else {
+        return { success: false, message: "Invalid status value. Allowed: 'not started', 'in progress', 'completed'" };
+      }
+    }
+
+    // 4. Check if submission record already exists
+    const [existingSubmission] = await db
+      .select({ id: submissions.id })
+      .from(submissions)
+      .where(and(eq(submissions.assignmentId, assignmentId), eq(submissions.userId, studentId)))
+      .limit(1);
+
+    if (existingSubmission) {
+      const updates: any = {};
+      if (dbStatus !== undefined) updates.status = dbStatus;
+      if (data.score !== undefined) updates.score = data.score;
+
+      if (Object.keys(updates).length > 0) {
+        await db.update(submissions).set(updates).where(eq(submissions.id, existingSubmission.id));
+      }
+    } else {
+      await db.insert(submissions).values({
+        assignmentId,
+        userId: studentId,
+        status: dbStatus ?? "not_started",
+        score: data.score ?? 0,
+      });
+    }
+
+    return { success: true, message: "Student progress/score updated successfully" };
+  } catch (error) {
+    console.error("updateStudentSubmission error:", error);
     return { success: false, message: "Internal server error" };
   }
 }
