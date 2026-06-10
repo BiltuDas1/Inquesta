@@ -115,7 +115,7 @@ export default function AssignmentSubmissions({
       };
       // Find initial values if state not yet customized
       const student = studentsList.find((s) => s.studentId === studentId);
-      const baseStatus = student ? student.status : "not_started";
+      const baseStatus = student ? student.status : "not started";
       const baseScore = student ? String(student.score) : "0";
 
       return {
@@ -241,10 +241,10 @@ export default function AssignmentSubmissions({
                             value={rowState.status}
                             onChange={(e) => handleRowChange(row.studentId, "status", e.target.value)}
                           >
-                            <option value="not_started" className="bg-[#1c2026]">
+                            <option value="not started" className="bg-[#1c2026]">
                               Not Started
                             </option>
-                            <option value="in_progress" className="bg-[#1c2026]">
+                            <option value="in progress" className="bg-[#1c2026]">
                               In Progress
                             </option>
                             <option value="completed" className="bg-[#1c2026]">
