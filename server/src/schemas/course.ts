@@ -9,11 +9,13 @@ import {
   getCourses,
   searchCourses,
   updateCourse,
+  getTeacherAllocatedCourses,
 } from "../resolvers/course.ts";
 import {
   CourseEnrolledObject,
   CourseObject,
   SearchableCourseObject,
+  GetTeacherAllocatedCoursesResponseObject,
   type Course,
   type CourseLevel,
 } from "../types/course.ts";
@@ -370,6 +372,18 @@ builder.queryField("searchCourses", (t) =>
         message: "Course fetched successfully",
         data: result,
       };
+    },
+  }),
+);
+
+builder.queryField("getTeacherAllocatedCourses", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GetTeacherAllocatedCoursesResponseObject,
+    resolve: async () => {
+      return await getTeacherAllocatedCourses();
     },
   }),
 );
