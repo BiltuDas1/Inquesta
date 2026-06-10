@@ -1,0 +1,1 @@
+ALTER TABLE `assignments` ADD `is_published` boolean DEFAULT false NOT NULL;
