@@ -1,14 +1,22 @@
 import LevelBadge from "../../../features/courses/components/levelbadge";
 import type { Course, Level } from "../../../features/courses/types/courses";
 
+interface Teacher {
+  id: string;
+  firstname: string;
+  lastname: string | null;
+}
+
 interface CourseTableProps {
   courses: Course[];
+  teachers: Teacher[];
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
 export default function CourseTable({
   courses,
+  teachers,
   onEdit,
   onDelete,
 }: CourseTableProps) {
@@ -36,50 +44,57 @@ export default function CourseTable({
                 </td>
               </tr>
             ) : (
-              courses.map((c) => (
-                <tr
-                  key={c.id}
-                  className="group hover:bg-[#262a31] transition-colors"
-                >
-                  <td className="p-4 align-middle">
-                    <div className="min-w-0">
-                      <div className="font-headline font-semibold text-[0.9rem] text-[#dfe2eb] truncate">
-                        {c.title}
+              courses.map((c) => {
+                const teacher = teachers.find((t) => t.id === c.teacherId);
+                const teacherName = teacher
+                  ? `${teacher.firstname} ${teacher.lastname || ""}`.trim()
+                  : "Not Assigned";
+
+                return (
+                  <tr
+                    key={c.id}
+                    className="group hover:bg-[#262a31] transition-colors"
+                  >
+                    <td className="p-4 align-middle">
+                      <div className="min-w-0">
+                        <div className="font-headline font-semibold text-[0.9rem] text-[#dfe2eb] truncate">
+                          {c.title}
+                        </div>
+                        <div className="text-[0.75rem] text-[#b9cac3] mt-[2px] truncate">
+                          Teacher: {teacherName}
+                        </div>
                       </div>
-                      <div className="text-[0.75rem] text-[#b9cac3] mt-[2px] truncate">
-                        Instructor: {c.instructorName}
+                    </td>
+                    <td className="p-4 align-middle">
+                      <LevelBadge level={c.level as Level} />
+                    </td>
+                    <td className="p-4 align-middle text-[#b9cac3] text-[0.875rem]">
+                      {c.duration}
+                    </td>
+                    <td className="p-4 align-middle">
+                      <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
+                        ₹ {c.price}
+                      </span>
+                    </td>
+                    <td className="p-4 align-middle text-right">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => onEdit(c.id)}
+                          className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c]"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => onDelete(c.id)}
+                          className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#ffb4ab] cursor-pointer hover:bg-[#2a0d10]"
+                        >
+                          Delete
+                        </button>
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-4 align-middle">
-                    <LevelBadge level={c.level as Level} />
-                  </td>
-                  <td className="p-4 align-middle text-[#b9cac3] text-[0.875rem]">
-                    {c.duration}
-                  </td>
-                  <td className="p-4 align-middle">
-                    <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
-                      ₹ {c.price}
-                    </span>
-                  </td>
-                  <td className="p-4 align-middle text-right">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => onEdit(c.id)}
-                        className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#b9cac3] cursor-pointer hover:bg-[#0d182c]"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => onDelete(c.id)}
-                        className="bg-transparent border border-[#3b4a44] rounded-[8px] px-[14px] py-[5px] text-[0.78rem] font-headline font-semibold text-[#ffb4ab] cursor-pointer hover:bg-[#2a0d10]"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
