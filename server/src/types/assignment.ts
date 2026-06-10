@@ -89,6 +89,7 @@ export const GetAssignmentSubmissionsResponseObject = builder
   });
 
 export type StudentAssignmentInfo = {
+  id: string;
   courseName: string;
   assignmentTitle: string;
   assignmentDescription: string;
@@ -101,6 +102,7 @@ export const StudentAssignmentInfoObject = builder
   .objectRef<StudentAssignmentInfo>("StudentAssignmentInfo")
   .implement({
     fields: (t) => ({
+      id: t.exposeString("id"),
       courseName: t.exposeString("courseName"),
       assignmentTitle: t.exposeString("assignmentTitle"),
       assignmentDescription: t.exposeString("assignmentDescription"),

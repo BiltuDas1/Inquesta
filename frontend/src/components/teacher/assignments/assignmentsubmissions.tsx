@@ -92,6 +92,16 @@ export default function AssignmentSubmissions({
 
   const studentsList = data?.getAssignmentSubmissions?.data || [];
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const totalItems = studentsList.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedStudents = studentsList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   // Track edits per student row
   const [rowStates, setRowStates] = useState<{ [key: string]: StudentRowState }>({});
 
@@ -115,7 +125,7 @@ export default function AssignmentSubmissions({
       };
       // Find initial values if state not yet customized
       const student = studentsList.find((s) => s.studentId === studentId);
-      const baseStatus = student ? student.status : "not_started";
+      const baseStatus = student ? student.status : "not started";
       const baseScore = student ? String(student.score) : "0";
 
       return {
@@ -220,7 +230,7 @@ export default function AssignmentSubmissions({
                     </td>
                   </tr>
                 ) : (
-                  studentsList.map((row) => {
+                  paginatedStudents.map((row) => {
                     const rowState = getRowState(row);
 
                     return (
@@ -241,10 +251,10 @@ export default function AssignmentSubmissions({
                             value={rowState.status}
                             onChange={(e) => handleRowChange(row.studentId, "status", e.target.value)}
                           >
-                            <option value="not_started" className="bg-[#1c2026]">
+                            <option value="not started" className="bg-[#1c2026]">
                               Not Started
                             </option>
-                            <option value="in_progress" className="bg-[#1c2026]">
+                            <option value="in progress" className="bg-[#1c2026]">
                               In Progress
                             </option>
                             <option value="completed" className="bg-[#1c2026]">
@@ -278,6 +288,53 @@ export default function AssignmentSubmissions({
             </table>
           )}
         </div>
+
+        {/* ── Pagination ── */}
+        {totalPages > 0 && (
+          <div className="px-6 py-4 border-t border-[#3b4a44]/50 flex items-center justify-between bg-[#1c2026]">
+            <p className="text-sm text-[#84948e]">
+              Showing <span className="font-semibold text-[#dfe2eb]">{((currentPage - 1) * itemsPerPage) + 1}</span> to{" "}
+              <span className="font-semibold text-[#dfe2eb]">
+                {Math.min(currentPage * itemsPerPage, totalItems)}
+              </span>{" "}
+              of <span className="font-semibold text-[#dfe2eb]">{totalItems}</span> results
+            </p>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="w-8 h-8 flex items-center justify-center rounded-md border border-[#3b4a44] text-[#b9cac3] hover:bg-[#262a31] hover:text-[#dfe2eb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+              
+              <div className="flex gap-1">
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-semibold transition-colors cursor-pointer ${
+                      currentPage === index + 1
+                        ? "bg-[#6fffd9] text-[#00382c]"
+                        : "border border-[#3b4a44] text-[#b9cac3] hover:bg-[#262a31] hover:text-[#dfe2eb]"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 flex items-center justify-center rounded-md border border-[#3b4a44] text-[#b9cac3] hover:bg-[#262a31] hover:text-[#dfe2eb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

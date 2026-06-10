@@ -413,6 +413,7 @@ export async function getStudentAssignments(access_token: string) {
     // and left-join submissions for the logged-in student.
     const result = await db
       .select({
+        assignmentId: assignments.id,
         courseName: courses.title,
         assignmentTitle: assignments.title,
         assignmentDescription: assignments.description,
@@ -438,6 +439,7 @@ export async function getStudentAssignments(access_token: string) {
       }
 
       return {
+        id: row.assignmentId,
         courseName: row.courseName,
         assignmentTitle: row.assignmentTitle,
         assignmentDescription: row.assignmentDescription,
