@@ -166,3 +166,20 @@ export const submissions = mysqlTable("submissions", {
   status: mysqlEnum("status", ["not_started", "in_progress", "completed"]).notNull().default("not_started"),
   score: int().notNull().default(0),
 });
+
+export const timetable_entries = mysqlTable("timetable_entries", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  userId: varchar("user_id", { length: 36 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  day: varchar("day", { length: 50 }).notNull(),
+  startHour: int("start_hour").notNull(),
+  durationHours: int("duration_hours").notNull().default(1),
+  room: varchar("room", { length: 255 }),
+  colorClass: varchar("color_class", { length: 255 }),
+  eventType: varchar("event_type", { length: 50 }),
+});
+
