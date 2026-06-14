@@ -52,6 +52,7 @@ import ApprovalsPage from "./features/admin1/approvals/approvalspage";
 import OrganisationReportsPage from "./features/admin1/reports/reportspage";
 import TeacherRegistration from "./features/admin1/teacher-registration/teacherregistration";
 import TeacherOnboarding from "./components/teacher/onboarding/teacheronboarding";
+import { seoRoutes } from "./shared/svg/utils/helper";
 
 
 const GlobalSessionHandler = () => {
@@ -255,6 +256,7 @@ function App() {
         </Route>
 
         {/* 5. CATCH-ALL */}
+        {seoRoutes}
         <Route path="*" element={<NotFoundPage />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>

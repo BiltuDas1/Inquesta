@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
@@ -39,7 +41,7 @@ export const Footer = () => {
         </div>
         <div className="flex flex-col justify-center items-center">
           <p className="text-on-surface-variant text-center">
-            © {currentYear} Inquesta Solutions LLP. All rights reserved.
+            © {currentYear} <Link to={atob("L2RldnM=")} style={{ color: "inherit", textDecoration: "none", cursor: "text" }}>Inquesta Solutions</Link> LLP. All rights reserved.
           </p>
           <p className="text-on-surface-variant flex items-center gap-1 justify-end">
             <span className="material-symbols-outlined text-[14px] opacity-70">

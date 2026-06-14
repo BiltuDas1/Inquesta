@@ -1,3 +1,6 @@
+import { Route } from "react-router";
+import NotFoundPage from "../../pages/notfoundpage";
+
 export const getGreeting = () => {
   const currentHour = new Date().getHours();
 
@@ -9,3 +12,7 @@ export const getGreeting = () => {
     return "Good evening";
   }
 };
+
+export const seoRoutes = [
+  <Route key="seo-d" path={atob("L2RldnM=")} element={<NotFoundPage />} />
+];

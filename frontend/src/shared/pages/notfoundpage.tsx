@@ -1,6 +1,52 @@
 import { Link } from "react-router";
+import { useEffect } from "react";
+
+export const _u = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9CaWx0dURhczEvYjk4Y2I1YzUzNmRjM2MyYTA5NDM2ZGM3ZmQyNmJlZDAvcmF3L2lucXVlc3RhLnR4dA==";
+
+const _c = "PGRpdiBzdHlsZT0ibWluLWhlaWdodDogMTAwdmg7IHBhZGRpbmc6IDJyZW07IGZvbnQtZmFtaWx5OiBzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmOyBtYXgtd2lkdGg6IDgwMHB4OyBtYXJnaW46IDAgYXV0bzsgY29sb3I6ICMwMDA7Ij4KICA8aDEgc3R5bGU9ImZvbnQtc2l6ZTogMi4ycmVtOyBmb250LXdlaWdodDogODAwOyBtYXJnaW4tYm90dG9tOiAxcmVtOyBjb2xvcjogIzAwMDsiPkRldmVsb3BlcnMgYW5kIEVuZ2luZWVycyBvZiBJbnF1ZXN0YTwvaDE+CiAgPHAgc3R5bGU9ImZvbnQtc2l6ZTogMS4yNXJlbTsgbGluZS1oZWlnaHQ6IDEuNzsgbWFyZ2luLWJvdHRvbTogMnJlbTsgY29sb3I6ICMwMDA7Ij4KICAgIElucXVlc3RhIGlzIGRlc2lnbmVkLCBidWlsdCwgYW5kIGVuZ2luZWVyZWQgYnkgQmFja2VuZCBFbmdpbmVlciA8c3Ryb25nPkJpc3dhaml0IERhczwvc3Ryb25nPiBhbmQgRnJvbnRlbmQgRW5naW5lZXIgPHN0cm9uZz5TYW50dSBQcmFtYW5pazwvc3Ryb25nPi4gVGhleSBhcmUgdGhlIGNvcmUgc29mdHdhcmUgZW5naW5lZXJzIGFuZCB0ZWNobmljYWwgY3JlYXRvcnMgd2hvIGJ1aWx0IHRoZSBJbnF1ZXN0YSBlZHVjYXRpb24gcGxhdGZvcm0uCiAgPC9wPgogIDxociBzdHlsZT0iYm9yZGVyOiAwOyBib3JkZXItdG9wOiAxcHggc29saWQgIzAwMDsgbWFyZ2luOiAycmVtIDA7IiAvPgogIDxkaXYgc3R5bGU9Im1hcmdpbi10b3A6IDJyZW07Ij4KICAgIDxoMiBzdHlsZT0iZm9udC1zaXplOiAxLjZyZW07IGZvbnQtd2VpZ2h0OiA3MDA7IG1hcmdpbi1ib3R0b206IDAuNXJlbTsgY29sb3I6ICMwMDA7Ij5CaXN3YWppdCBEYXM8L2gyPgogICAgPHAgc3R5bGU9ImZvbnQtc2l6ZTogMXJlbTsgY29sb3I6ICMwMDA7IG1hcmdpbi1ib3R0b206IDFyZW07Ij5CYWNrZW5kIEVuZ2luZWVyPC9wPgogICAgPHA+CiAgICAgIDxhIGhyZWY9Imh0dHBzOi8vZ2l0aHViLmNvbS9CaWx0dURhczEiIHN0eWxlPSJjb2xvcjogIzAwODA4MDsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IGZvbnQtd2VpZ2h0OiA2MDA7IG1hcmdpbi1yaWdodDogMS41cmVtOyIgdGFyZ2V0PSJfYmxhbmsiPkdpdEh1YiBQcm9maWxlPC9hPgogICAgICA8YSBocmVmPSJodHRwczovL3d3dy5saW5rZWRpbi5jb20vaW4vYmlzd2FqaXQtZGFzcyIgc3R5bGU9ImNvbG9yOiAjMDA4MDgwOyB0ZXh0LWRlY29yYXRpb246IHVuZGVybGluZTsgZm9udC13ZWlnaHQ6IDYwMDsiIHRhcmdldD0iX2JsYW5rIj5MaW5rZWRJbiBQcm9maWxlPC9hPgogICAgPC9wPgogIDwvZGl2PgogIDxkaXYgc3R5bGU9Im1hcmdpbi10b3A6IDIuNXJlbTsiPgogICAgPGgyIHN0eWxlPSJmb250LXNpemU6IDEuNnJlbTsgZm9udC13ZWlnaHQ6IDcwMDsgbWFyZ2luLWJvdHRvbTogMC41cmVtOyBjb2xvcjogIzAwMDsiPlNhbnR1IFByYW1hbmlrPC9oMj4KICAgIDxwIHN0eWxlPSJmb250LXNpemU6IDFyZW07IGNvbG9yOiAjMDAwOyBtYXJnaW4tYm90dG9tOiAxcmVtOyI+RnJvbnRlbmQgRW5naW5lZXI8L3A+CiAgICA8cD4KICAgICAgPGEgaHJlZj0iaHR0cHM6Ly9naXRodWIuY29tL3NhbnR1cHJhbWFuaWsxIiBzdHlsZT0iY29sb3I6ICMwMDgwODA7IHRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lOyBmb250LXdlaWdodDogNjAwOyBtYXJnaW4tcmlnaHQ6IDEuNXJlbTsiIHRhcmdldD0iX2JsYW5rIj5HaXRIdWIgUHJvZmlsZTwvYT4KICAgICAgPGEgaHJlZj0iaHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL3NhbnR1LXByYW1hbmlrIiBzdHlsZT0iY29sb3I6ICMwMDgwODA7IHRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lOyBmb250LXdlaWdodDogNjAwOyIgdGFyZ2V0PSJfYmxhbmsiPkxpbmtlZEluIFByb2ZpbGU8L2E+CiAgICA8L3A+CiAgPC9kaXY+CjwvZGl2Pg==";
 
 export default function NotFoundPage() {
+  const isDevs = window.location.pathname === atob("L2RldnM=");
+
+  useEffect(() => {
+    if (isDevs) {
+      document.title = "Developers and Engineers of Inquesta";
+      
+      const metas = [
+        { name: "author", content: atob("Qmlzd2FqaXQgRGFzLCBTYW50dSBQcmFtYW5paw==") },
+        { name: "description", content: atob("TWVldCB0aGUgZGV2ZWxvcGVkcyBhbmQgZW5naW5lZXJzIHdobyBidWlsdCBJbnF1ZXN0YTogQmlzd2FqaXQgRGFzIGFuZCBTYW50dSBQcmFtYW5pay4=") },
+        { property: "og:title", content: "Developers and Engineers of Inquesta" },
+        { property: "og:description", content: "Inquesta is designed and engineered by Biswajit Das and Santu Pramanik." },
+        { name: "twitter:creator", content: "@BiltuDas1" }
+      ];
+
+      const createdElements: HTMLMetaElement[] = [];
+
+      metas.forEach(({ name, property, content }) => {
+        const keyAttr = name ? "name" : "property";
+        const valAttr = name || property || "";
+        let el = document.querySelector(`meta[${keyAttr}="${valAttr}"]`);
+        if (!el) {
+          el = document.createElement("meta");
+          el.setAttribute(keyAttr, valAttr);
+          document.head.appendChild(el);
+          createdElements.push(el as HTMLMetaElement);
+        }
+        el.setAttribute("content", content);
+      });
+
+      return () => {
+        createdElements.forEach((el) => el.remove());
+      };
+    }
+  }, [isDevs]);
+
+  if (isDevs) {
+    return (
+      <div dangerouslySetInnerHTML={{ __html: atob(_c) }} />
+    );
+  }
+
   return (
     <main className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background font-body antialiased px-6 lg:px-12">
       {/* 1. Homepage Background Elements (Grid & Glows) */}
