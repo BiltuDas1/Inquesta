@@ -82,6 +82,36 @@ const GET_COURSE_DETAILS = gql`
   }
 `;
 
+const GET_CURRICULUM_UNITS = gql`
+  query GetCurriculumUnits($courseId: String!) {
+    getCurriculumUnits(courseId: $courseId) {
+      success
+      message
+      data {
+        id
+        courseId
+        title
+        description
+        completed
+      }
+    }
+  }
+`;
+
+const GET_COURSE_TAKEAWAYS = gql`
+  query GetCourseTakeaways($courseId: String!) {
+    getCourseTakeaways(courseId: $courseId) {
+      success
+      message
+      data {
+        id
+        courseId
+        takeaway
+      }
+    }
+  }
+`;
+
 interface GetCourseResponse {
   getCourseInfo: {
     success: boolean;
@@ -96,58 +126,7 @@ const fallbackData = {
   courseSeries: "TECHNICAL TRAINING PROGRAM",
   programmeType: "Bootcamp",
   tagline: "Build scalable web applications from scratch to production.",
-  durationSubLabel: "Saturdays & Sundays (10AM - 2PM)",
-  eligibilityDetail: "Basic knowledge of HTML, CSS, and JavaScript required.",
-  deliveryMode: "Hybrid (Online & In-person)",
-  keyTakeaways: [
-    "Master React, TypeScript, and Tailwind CSS",
-    "Build robust RESTful and GraphQL APIs with Node.js",
-    "Deploy scalable applications to AWS and Vercel",
-    "Master database indexing and relationships",
-    "Implement secure user authentication",
-  ],
-  modules: [
-    {
-      title: "Frontend Fundamentals & UI/UX Design",
-      description:
-        "Dive deep into advanced HTML5, CSS3, and modern JavaScript (ES6+). Learn core UI/UX principles to build highly responsive, accessible, and pixel-perfect layouts using Tailwind CSS.",
-    },
-    {
-      title: "Advanced React & State Management",
-      description:
-        "Master React functional components, custom hooks, and the Context API. Handle complex application state globally using Redux Toolkit and optimize component rendering performance.",
-    },
-    {
-      title: "Backend Architecture with Node.js",
-      description:
-        "Build robust and scalable server-side applications using Node.js and Express. Understand the Repository Pattern, middleware architecture, and RESTful API design standards.",
-    },
-    {
-      title: "Database Design (SQL & NoSQL)",
-      description:
-        "Model data effectively using PostgreSQL and MongoDB. Master database normalization, indexing strategies, relationships, and advanced query optimization techniques.",
-    },
-    {
-      title: "Authentication & Security",
-      description:
-        "Implement secure user authentication using JWT and OAuth2. Protect your applications against common web vulnerabilities like XSS, CSRF, and SQL injection.",
-    },
-    {
-      title: "Microservices & API Gateways",
-      description:
-        "Learn how to break down monolithic applications into scalable microservices. Understand service orchestration, message brokers (RabbitMQ/Kafka), and API gateway routing.",
-    },
-    {
-      title: "CI/CD Pipelines & Testing",
-      description:
-        "Automate your workflow using GitHub Actions. Write comprehensive unit, integration, and end-to-end tests using tools like Jest, React Testing Library, and Cypress.",
-    },
-    {
-      title: "Final Capstone Project & Deployment",
-      description:
-        "Synthesize everything by building a complete, production-ready full-stack application. Deploy your frontend to Vercel/Cloudflare Pages and backend services to AWS.",
-    },
-  ],
+  deliveryMode: "Offline Mode",
   instructorCredentialsSuffix:
     "alongside Senior Engineers with 10+ years at top tech companies.",
   registrationLink: "https://example.com/register",
@@ -188,6 +167,32 @@ export default function CourseDetails() {
   );
 
   const course = data?.getCourseInfo?.data;
+
+  const { data: unitsData } = useQuery<{
+    getCurriculumUnits: { data: Array<{ id: string; title: string; description?: string }> };
+  }>(GET_CURRICULUM_UNITS, {
+    variables: { courseId: course?.id || "" },
+    skip: !course?.id,
+    fetchPolicy: "cache-and-network",
+  });
+
+  const { data: takeawaysData } = useQuery<{
+    getCourseTakeaways: { data: Array<{ id: string; takeaway: string }> };
+  }>(GET_COURSE_TAKEAWAYS, {
+    variables: { courseId: course?.id || "" },
+    skip: !course?.id,
+    fetchPolicy: "cache-and-network",
+  });
+
+  const dbUnits = unitsData?.getCurriculumUnits?.data || [];
+  const dbTakeaways = takeawaysData?.getCourseTakeaways?.data || [];
+
+  const modules = dbUnits.map((unit, idx) => ({
+    title: `Unit-${idx + 1}: ${unit.title}`,
+    description: unit.description || ""
+  }));
+
+  const keyTakeaways = dbTakeaways.map(t => t.takeaway);
 
   const { data: enrollmentData, loading: checkingEnrollment } =
     useQuery<EnrolledCoursesResponse>(GET_ENROLLED_COURSES, {
@@ -513,7 +518,6 @@ export default function CourseDetails() {
               {
                 icon: "calendar_today",
                 title: course.duration,
-                sub: fallbackData.durationSubLabel,
               },
               {
                 icon: "pin_drop",
@@ -523,11 +527,11 @@ export default function CourseDetails() {
               {
                 icon: "verified",
                 title: `Lvl: ${course.level}`,
-                sub: fallbackData.eligibilityDetail,
+
               },
               {
                 icon: "library_books",
-                title: `${fallbackData.modules.length} Modules`,
+                title: `${modules.length} Modules`,
                 sub: "Comprehensive Curriculum",
               },
             ].map((item, idx) => (
@@ -587,7 +591,7 @@ export default function CourseDetails() {
                 </h2>
 
                 <div className="space-y-4">
-                  {fallbackData.modules.map((module, index) => {
+                  {modules.map((module, index) => {
                     const isOpen = openModuleIndex === index;
                     return (
                       <div
@@ -646,7 +650,7 @@ export default function CourseDetails() {
                   Key Takeaways
                 </h2>
                 <ul className="space-y-5 relative z-10">
-                  {fallbackData.keyTakeaways.map((takeaway, index) => (
+                  {keyTakeaways.map((takeaway, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <span className="material-symbols-outlined text-[#6fffd9] mt-0.5">
                         check_circle
@@ -749,7 +753,7 @@ export default function CourseDetails() {
                 <p className="text-2xl font-bold">
                   {course.duration}{" "}
                   <span className="text-lg text-gray-500 font-normal">
-                    ({fallbackData.durationSubLabel})
+
                   </span>
                 </p>
               </div>
@@ -800,7 +804,7 @@ export default function CourseDetails() {
                 Curriculum Modules (Part 1)
               </h3>
               <div className="space-y-8">
-                {fallbackData.modules.slice(0, 5).map((module, idx) => {
+                {modules.slice(0, 5).map((module, idx) => {
                   const bulletPoints = getBulletPoints(module.description);
                   return (
                     <div
@@ -838,7 +842,7 @@ export default function CourseDetails() {
                 Curriculum Modules (Part 2)
               </h3>
               <div className="space-y-8">
-                {fallbackData.modules.slice(5).map((module, idx) => {
+                {modules.slice(5).map((module, idx) => {
                   const bulletPoints = getBulletPoints(module.description);
                   return (
                     <div
@@ -877,7 +881,7 @@ export default function CourseDetails() {
                 Key Takeaways
               </h3>
               <ul className="space-y-4 text-gray-700 text-2xl leading-relaxed">
-                {fallbackData.keyTakeaways.map((takeaway, idx) => (
+                {keyTakeaways.map((takeaway, idx) => (
                   <li key={idx} className="flex items-start gap-4">
                     <span className="text-blue-500 font-bold text-2xl leading-none mt-1">
                       ✓

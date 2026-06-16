@@ -4,6 +4,7 @@ import { gql } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useAuth } from "../../auth/context/authcontext";
 import AddCurriculumModal from "../../../components/teacher/curriculum/addcurriculummodal";
+import DeleteConfirmationModal from "../../../components/ui/dialog";
 
 // --- GraphQL Queries and Mutations ---
 
@@ -135,6 +136,7 @@ export default function CurriculumPage() {
   const [takeawayInput, setTakeawayInput] = useState("");
   const [isAddingUnit, setIsAddingUnit] = useState(false);
   const [editingUnit, setEditingUnit] = useState<UnitRecord | null>(null);
+  const [deletingUnitId, setDeletingUnitId] = useState<string | null>(null);
 
   // --- GraphQL Queries ---
   const { data: coursesData, loading: coursesLoading } = useQuery<{
@@ -265,11 +267,11 @@ export default function CurriculumPage() {
     }
   };
 
-  const handleDeleteUnit = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this unit?")) return;
+  const handleDeleteUnit = async () => {
+    if (!deletingUnitId) return;
     try {
       const { data } = await deleteCurriculumUnit({
-        variables: { id },
+        variables: { id: deletingUnitId },
       });
       if (data?.deleteCurriculumUnit?.success) {
         toast.success("Curriculum unit deleted successfully");
@@ -279,6 +281,8 @@ export default function CurriculumPage() {
       }
     } catch (err: any) {
       toast.error(err.message || "An error occurred");
+    } finally {
+      setDeletingUnitId(null);
     }
   };
 
@@ -414,7 +418,7 @@ export default function CurriculumPage() {
         <div className="text-[#84948e] text-sm text-center">Loading curriculum units...</div>
       ) : unitsList.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {unitsList.map((unit) => {
+          {unitsList.map((unit, index) => {
             return (
               <div
                 key={unit.id}
@@ -440,7 +444,7 @@ export default function CurriculumPage() {
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="font-bold text-base md:text-lg text-[#dfe2eb]">
-                        {unit.title}
+                        Unit-{index + 1}: {unit.title}
                       </h2>
                       <span
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 uppercase tracking-wider ${
@@ -466,7 +470,7 @@ export default function CurriculumPage() {
                         <span className="material-symbols-outlined text-lg">edit</span>
                       </button>
                       <button
-                        onClick={() => handleDeleteUnit(unit.id)}
+                        onClick={() => setDeletingUnitId(unit.id)}
                         className="text-[#84948e] hover:text-[#ffb4ab] transition-colors cursor-pointer p-1 rounded-lg hover:bg-[#262a31]"
                         title="Delete Unit"
                       >
@@ -502,6 +506,15 @@ export default function CurriculumPage() {
           onSave={handleSaveUnit}
         />
       )}
+
+      {/* ── Delete Confirmation Modal ── */}
+      <DeleteConfirmationModal
+        isOpen={deletingUnitId !== null}
+        onClose={() => setDeletingUnitId(null)}
+        onConfirm={handleDeleteUnit}
+        title="Delete Unit?"
+        itemName={unitsList.find((u) => u.id === deletingUnitId)?.title || "this unit"}
+      />
     </div>
   );
 }
