@@ -55,6 +55,7 @@ export default function StudentAttendancePage() {
   const [tempEndDate, setTempEndDate] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
 
   // --- GraphQL Queries ──
   const { data: coursesData, loading: coursesLoading } = useQuery<{
@@ -259,41 +260,106 @@ export default function StudentAttendancePage() {
                       </td>
                     </tr>
                   ) : (
-                    tableData.map((sub, idx) => (
-                      <tr
-                        key={sub.id}
-                        className="group hover:bg-[#262a31]/50 transition-colors"
-                      >
-                        <td className="p-4 align-middle text-sm text-[#b9cac3] font-semibold">
-                          {idx + 1}
-                        </td>
-                        <td className="p-4 align-middle">
-                          <div className="font-headline font-semibold text-sm text-[#dfe2eb] group-hover:text-[#6fffd9] transition-colors">
-                            {sub.title}
-                          </div>
-                          <div className="text-[11px] text-[#b9cac3] mt-0.5">
-                            {sub.instructor}
-                          </div>
-                        </td>
-                        <td className="p-4 align-middle text-center text-sm font-semibold text-[#dfe2eb]">
-                          {sub.total}
-                        </td>
-                        <td className="p-4 align-middle text-center text-sm font-semibold text-[#6fffd9]">
-                          {sub.attended}
-                        </td>
-                        <td className="p-4 align-middle text-center text-sm font-semibold text-[#ffb4ab]">
-                          {sub.missed}
-                        </td>
-                        <td className="p-4 align-middle text-center">
-                          <span
-                            className={`text-sm font-bold font-headline ${sub.percentage >= 75 ? "text-[#6fffd9]" : "text-[#ffb4ab]"
-                              }`}
+                    tableData.map((sub, idx) => {
+                      const isExpanded = expandedCourseId === sub.id;
+                      return (
+                        <tr key={sub.id} className="contents">
+                          <tr
+                            className="group hover:bg-[#262a31]/50 transition-colors cursor-pointer"
+                            onClick={() => setExpandedCourseId(isExpanded ? null : sub.id)}
                           >
-                            {sub.percentage}%
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                            <td className="p-4 align-middle text-sm text-[#b9cac3] font-semibold border-b border-[#3b4a44]/30">
+                              {idx + 1}
+                            </td>
+                            <td className="p-4 align-middle border-b border-[#3b4a44]/30">
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="material-symbols-outlined text-lg text-[#84948e] transition-transform duration-200 group-hover:text-[#6fffd9] shrink-0"
+                                  style={{ transform: isExpanded ? "rotate(90deg)" : "none" }}
+                                >
+                                  chevron_right
+                                </span>
+                                <div>
+                                  <div className="font-headline font-semibold text-sm text-[#dfe2eb] group-hover:text-[#6fffd9] transition-colors">
+                                    {sub.title}
+                                  </div>
+                                  <div className="text-[11px] text-[#b9cac3] mt-0.5">
+                                    {sub.instructor}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4 align-middle text-center text-sm font-semibold text-[#dfe2eb] border-b border-[#3b4a44]/30">
+                              {sub.total}
+                            </td>
+                            <td className="p-4 align-middle text-center text-sm font-semibold text-[#6fffd9] border-b border-[#3b4a44]/30">
+                              {sub.attended}
+                            </td>
+                            <td className="p-4 align-middle text-center text-sm font-semibold text-[#ffb4ab] border-b border-[#3b4a44]/30">
+                              {sub.missed}
+                            </td>
+                            <td className="p-4 align-middle text-center border-b border-[#3b4a44]/30">
+                              <span
+                                className={`text-sm font-bold font-headline ${sub.percentage >= 75 ? "text-[#6fffd9]" : "text-[#ffb4ab]"
+                                  }`}
+                              >
+                                {sub.percentage}%
+                              </span>
+                            </td>
+                          </tr>
+                          {isExpanded && (
+                            <tr className="bg-[#10141a]/60">
+                              <td colSpan={6} className="p-4 border-b border-[#3b4a44]">
+                                <div className="space-y-3 pl-8 py-2">
+                                  <h4 className="font-headline font-bold text-xs text-[#bdc2ff] uppercase tracking-wider">
+                                    Date-wise Attendance Details
+                                  </h4>
+                                  {sub.filteredRecords.length === 0 ? (
+                                    <p className="text-xs text-[#84948e] italic">No attendance records for this period.</p>
+                                  ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto custom-scrollbar pr-2 py-1">
+                                      {[...sub.filteredRecords]
+                                        .sort((a, b) => b.date.localeCompare(a.date))
+                                        .map((rec) => {
+                                          const dateObj = new Date(rec.date);
+                                          const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+                                          const formattedDate = isNaN(dateObj.getTime())
+                                            ? rec.date
+                                            : dateObj.toLocaleDateString('en-US', options);
+
+                                          const isPresent = rec.status === "Present";
+
+                                          return (
+                                            <div
+                                              key={rec.id}
+                                              className={`p-3 rounded-lg border flex items-center justify-between text-xs font-semibold ${
+                                                isPresent
+                                                  ? "bg-[#0d2b20]/30 border-[#195c43]/40 text-[#6fffd9]"
+                                                  : "bg-[#331414]/30 border-[#7a2a2a]/40 text-[#ffb4ab]"
+                                              }`}
+                                            >
+                                              <span>{formattedDate}</span>
+                                              <span
+                                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                                  isPresent
+                                                    ? "bg-[#6fffd9]/15 text-[#6fffd9] border border-[#6fffd9]/25"
+                                                    : "bg-[#ffb4ab]/15 text-[#ffb4ab] border border-[#ffb4ab]/25"
+                                                }`}
+                                              >
+                                                {rec.status}
+                                              </span>
+                                            </div>
+                                          );
+                                        })}
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>

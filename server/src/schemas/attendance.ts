@@ -3,6 +3,7 @@ import * as cookie from "cookie";
 import {
   getTeacherCourses,
   getCourseStudents,
+  getAttendanceByDate,
   submitAttendance,
   getAttendanceLogs,
   getStudentAttendance,
@@ -73,6 +74,39 @@ const CourseStudentsResponse = builder
       message: t.exposeString("message"),
       data: t.expose("data", {
         type: [AttendanceStudentObject],
+        nullable: true,
+      }),
+    }),
+  });
+
+interface CourseAttendanceRecord {
+  id: string;
+  userId: string;
+  status: string;
+}
+
+const CourseAttendanceRecordObject = builder
+  .objectRef<CourseAttendanceRecord>("CourseAttendanceRecord")
+  .implement({
+    fields: (t) => ({
+      id: t.exposeString("id"),
+      userId: t.exposeString("userId"),
+      status: t.exposeString("status"),
+    }),
+  });
+
+const CourseAttendanceResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: CourseAttendanceRecord[];
+  }>("CourseAttendanceResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [CourseAttendanceRecordObject],
         nullable: true,
       }),
     }),
@@ -178,6 +212,43 @@ builder.queryField("getCourseStudents", (t) =>
       }
 
       return await getCourseStudents(cookieObj["access_token"], args.courseId);
+    },
+  }),
+);
+
+builder.queryField("getAttendanceByDate", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: CourseAttendanceResponse,
+    args: {
+      courseId: t.arg.string({ required: true }),
+      date: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+          data: [],
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+          data: [],
+        };
+      }
+
+      return await getAttendanceByDate(
+        cookieObj["access_token"],
+        args.courseId,
+        args.date,
+      );
     },
   }),
 );

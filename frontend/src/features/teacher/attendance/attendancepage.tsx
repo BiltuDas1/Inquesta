@@ -33,6 +33,20 @@ const GET_COURSE_STUDENTS = gql`
   }
 `;
 
+const GET_ATTENDANCE_BY_DATE = gql`
+  query GetAttendanceByDate($courseId: String!, $date: String!) {
+    getAttendanceByDate(courseId: $courseId, date: $date) {
+      success
+      message
+      data {
+        id
+        userId
+        status
+      }
+    }
+  }
+`;
+
 const SUBMIT_ATTENDANCE = gql`
   mutation SubmitAttendance($courseId: String!, $date: String!, $records: [AttendanceRecordInput!]!) {
     submitAttendance(courseId: $courseId, date: $date, records: $records) {
@@ -94,14 +108,40 @@ export default function TeacherAttendancePage() {
 
   const studentsList = useMemo(() => studentsData?.getCourseStudents?.data || [], [studentsData]);
 
-  // When students list changes, reset student attendance states to default "Present"
+  // 3. Fetch Existing Attendance for Selected Date & Course
+  const { data: attendanceData, refetch: refetchAttendance } = useQuery<{
+    getAttendanceByDate: {
+      success: boolean;
+      message: string;
+      data: { id: string; userId: string; status: string }[] | null;
+    };
+  }>(GET_ATTENDANCE_BY_DATE, {
+    variables: { courseId: selectedCourseId, date: selectedDate },
+    skip: !selectedCourseId || !selectedDate,
+    fetchPolicy: "network-only",
+  });
+
+  // Sync loaded records or default everyone to "Present"
   useEffect(() => {
     const newState: Record<string, AttendanceStatus> = {};
+    
+    // Default to Present for all students
     studentsList.forEach((student: Student) => {
       newState[student.id] = "Present";
     });
+
+    // Override with saved records if they exist in DB
+    const loggedRecords = attendanceData?.getAttendanceByDate?.data || [];
+    if (loggedRecords.length > 0) {
+      loggedRecords.forEach((record) => {
+        if (record.status === "Present" || record.status === "Absent") {
+          newState[record.userId] = record.status;
+        }
+      });
+    }
+
     setAttendanceState(newState);
-  }, [studentsList]);
+  }, [studentsList, attendanceData]);
 
   // 3. Submit Attendance Mutation
   const [submitAttendanceMutation, { loading: isSubmitting }] = useMutation<{
@@ -163,6 +203,7 @@ export default function TeacherAttendancePage() {
 
       if (data?.submitAttendance?.success) {
         toast.success("Attendance submitted successfully!");
+        refetchAttendance();
       } else {
         toast.error(data?.submitAttendance?.message || "Failed to submit attendance.");
       }
