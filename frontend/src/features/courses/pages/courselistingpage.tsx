@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import type { Course } from "../types/courses";
@@ -11,8 +11,8 @@ import { useLocation } from "react-router";
 
 // Standard query to get default courses
 const GET_COURSES = gql`
-  query GetCourses($limit: Int!, $lastID: String) {
-    courseGet(limit: $limit, lastID: $lastID) {
+  query GetCourses($limit: Int!, $lastID: String, $levels: [String!], $maxPrice: Int) {
+    courseGet(limit: $limit, lastID: $lastID, levels: $levels, maxPrice: $maxPrice) {
       success
       message
       data {
@@ -37,12 +37,16 @@ const SEARCH_COURSES = gql`
     $lastRelevance: Float
     $limit: Int!
     $text: String!
+    $levels: [String!]
+    $maxPrice: Int
   ) {
     searchCourses(
       lastID: $lastID
       lastRelevance: $lastRelevance
       limit: $limit
       text: $text
+      levels: $levels
+      maxPrice: $maxPrice
     ) {
       data {
         id
@@ -55,6 +59,23 @@ const SEARCH_COURSES = gql`
         icon
         slug
         relevance
+      }
+    }
+  }
+`;
+
+const GET_FILTERS = gql`
+  query GetFilters {
+    getFilters {
+      success
+      message
+      data {
+        levels
+        grades
+        price {
+          maxPrice
+          minPrice
+        }
       }
     }
   }
@@ -77,6 +98,21 @@ interface SearchableCourse extends Course {
 interface SearchCoursesResponse {
   searchCourses: {
     data: SearchableCourse[];
+  };
+}
+
+interface GetFiltersResponse {
+  getFilters: {
+    success: boolean;
+    message: string;
+    data: {
+      levels: string[];
+      grades: string[];
+      price: {
+        maxPrice: number;
+        minPrice: number;
+      };
+    };
   };
 }
 
@@ -114,13 +150,36 @@ export default function CourseListingPage() {
     { id: string | null; rel: string | null }[]
   >([]);
 
-  // Reset pagination if the search query changes in the URL
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  // Both start at the same default so the slider begins at max (no filter applied)
+  const [maxPrice, setMaxPrice] = useState<number>(10000);
+  const [maxPriceLimit, setMaxPriceLimit] = useState<number>(10000);
+  const isPriceInitialized = useRef(false);
+
+  // Fetch filters from backend to initialize price range dynamically
+  const { data: filtersData } = useQuery<GetFiltersResponse>(GET_FILTERS, {
+    fetchPolicy: "cache-first",
+  });
+
+  useEffect(() => {
+    // Only initialize once — don't override user's manual slider adjustments
+    if (!isPriceInitialized.current && filtersData?.getFilters?.success) {
+      const maxVal = Number(filtersData.getFilters.data?.price?.maxPrice ?? 0);
+      if (maxVal > 0) {
+        isPriceInitialized.current = true;
+        setMaxPriceLimit(maxVal);
+        setMaxPrice(maxVal); // Slider starts at max (rightmost position)
+      }
+    }
+  }, [filtersData]);
+
+  // Reset pagination if the search query or filters change
   useEffect(() => {
     setLastID(null);
     setLastRelevance(null);
     setPage(1);
     setCursorHistory([]);
-  }, [searchQuery]);
+  }, [searchQuery, selectedLevels, maxPrice]);
 
   // ---URL Update Helper ---
   const updateURL = (
@@ -154,7 +213,12 @@ export default function CourseListingPage() {
     error: defaultError,
     data: defaultData,
   } = useQuery<GetCoursesResponse>(GET_COURSES, {
-    variables: { limit: 12, lastID: lastID }, // Strict Int for limit
+    variables: {
+      limit: 12,
+      lastID: lastID,
+      levels: selectedLevels.length > 0 ? selectedLevels : null,
+      maxPrice: maxPrice,
+    }, // Strict Int for limit
     skip: !!searchQuery, // Skip this query if searchQuery exists
     fetchPolicy: "cache-and-network",
   });
@@ -170,6 +234,8 @@ export default function CourseListingPage() {
       limit: 12,
       lastID: lastID,
       lastRelevance: lastRelevance ? parseFloat(lastRelevance) : 0,
+      levels: selectedLevels.length > 0 ? selectedLevels : null,
+      maxPrice: maxPrice,
     },
     skip: !searchQuery, // Skip this query if searchQuery is empty/null
     fetchPolicy: "network-only",
@@ -255,6 +321,11 @@ export default function CourseListingPage() {
           />
           <div className="absolute right-0 top-0 h-full w-80 bg-[#1c2026] shadow-2xl overflow-y-auto">
             <FilterPanel
+              selectedLevels={selectedLevels}
+              onLevelsChange={setSelectedLevels}
+              maxPrice={maxPrice}
+              onMaxPriceChange={setMaxPrice}
+              maxPriceLimit={maxPriceLimit}
               onClose={() => setFilterOpen(false)}
               isSidebar={true}
             />
@@ -302,7 +373,14 @@ export default function CourseListingPage() {
           >
             <div className="w-64 text-on-surface font-headline">
               <div className="sticky top-6">
-                <FilterPanel isSidebar={false} />
+                <FilterPanel
+                  selectedLevels={selectedLevels}
+                  onLevelsChange={setSelectedLevels}
+                  maxPrice={maxPrice}
+                  onMaxPriceChange={setMaxPrice}
+                  maxPriceLimit={maxPriceLimit}
+                  isSidebar={false}
+                />
               </div>
             </div>
           </aside>

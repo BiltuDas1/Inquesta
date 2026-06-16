@@ -85,12 +85,16 @@ builder.queryField("courseGet", (t) =>
     args: {
       lastID: t.arg.string({ required: false }),
       limit: t.arg.int({ required: true }),
+      levels: t.arg.stringList({ required: false }),
+      maxPrice: t.arg.int({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
         const result: (Course & { id: string })[] = await getCourses(
           args.limit,
           args.lastID,
+          args.levels,
+          args.maxPrice,
         );
 
         return {
@@ -361,6 +365,8 @@ builder.queryField("searchCourses", (t) =>
       limit: t.arg.int({ required: true }),
       lastRelevance: t.arg.float({ required: false }),
       lastID: t.arg.string({ required: false }),
+      levels: t.arg.stringList({ required: false }),
+      maxPrice: t.arg.int({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       const result = await searchCourses(
@@ -368,6 +374,8 @@ builder.queryField("searchCourses", (t) =>
         args.limit,
         args.lastID ? args.lastID : undefined,
         args.lastRelevance ? args.lastRelevance : undefined,
+        args.levels,
+        args.maxPrice,
       );
       return {
         success: true,
