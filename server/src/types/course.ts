@@ -14,6 +14,7 @@ export type Course = {
   iconName?: string | null | undefined;
   slug?: string;
   teacherId?: string | null | undefined;
+  status?: string | null | undefined;
 };
 
 export const CourseObject = builder
@@ -30,6 +31,7 @@ export const CourseObject = builder
       instructorName: t.exposeString("instructorName"),
       slug: t.exposeString("slug"),
       teacherId: t.exposeString("teacherId", { nullable: true }),
+      status: t.exposeString("status", { nullable: true }),
     }),
   });
 
@@ -39,6 +41,7 @@ export const CourseEnrolledObject = builder
       course_id: string;
       enrolled_at: number;
       transaction_id: string;
+      status: string;
     } & UserDetails
   >("CourseEnrollment")
   .implement({
@@ -57,6 +60,7 @@ export const CourseEnrolledObject = builder
       course_instructorName: t.exposeString("instructorName"),
       enrolled_at: t.exposeInt("enrolled_at"),
       transaction_id: t.exposeString("transaction_id"),
+      status: t.exposeString("status"),
       user_phone_country_code: t.exposeInt("phone_country_code", {
         nullable: true,
       }),

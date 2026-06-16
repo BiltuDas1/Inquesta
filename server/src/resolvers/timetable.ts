@@ -7,10 +7,10 @@ export interface AddTimetableInput {
   subject: string;
   day: string;
   startHour: number;
-  durationHours?: number | null;
-  room?: string | null;
-  colorClass?: string | null;
-  eventType?: string | null;
+  durationHours?: number | null | undefined;
+  room?: string | null | undefined;
+  colorClass?: string | null | undefined;
+  eventType?: string | null | undefined;
 }
 
 export async function getTimetableEntries(access_token: string) {

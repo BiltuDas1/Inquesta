@@ -38,6 +38,7 @@ const GET_ENROLLED_COURSES = gql`
     enrolledCourses {
       data {
         id
+        status
       }
     }
   }
@@ -47,6 +48,7 @@ interface EnrolledCoursesResponse {
   enrolledCourses: {
     data: Array<{
       id: string;
+      status: string;
     }>;
   };
 }
@@ -86,9 +88,11 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
   });
 
   // Check if the current course ID exists in the user's list
-  const isAlreadyEnrolled = enrollmentData?.enrolledCourses?.data?.some(
+  const courseEnrollment = enrollmentData?.enrolledCourses?.data?.find(
     (item: any) => String(item.id) === String(course.id),
   );
+  const isAlreadyEnrolled = courseEnrollment?.status === "verified";
+  const isPendingVerification = courseEnrollment?.status === "pending";
 
   const [enrollCourse, { loading: isSubmitting }] = useMutation<
     EnrollCourseResponse,
@@ -198,6 +202,13 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
               className="w-full bg-[#6fffd9] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(111,255,217,0.3)] text-base font-headline hover:bg-[#5cebc5] hover:scale-[1.02] active:scale-[0.98]"
             >
               Go to Dashboard
+            </button>
+          ) : isPendingVerification ? (
+            <button
+              disabled
+              className="w-full bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-black py-3.5 rounded-xl text-base font-headline opacity-60 cursor-not-allowed"
+            >
+              Pending Verification
             </button>
           ) : (
             <button

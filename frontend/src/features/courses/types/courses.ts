@@ -11,4 +11,5 @@ export interface Course {
   icon: string;
   slug: string;
   teacherId?: string | null;
+  status?: string;
 }

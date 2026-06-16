@@ -134,10 +134,50 @@ export async function enrollToCourse(
   }
 
   try {
+    const existing = await db
+      .select()
+      .from(courseEnrollments)
+      .where(
+        and(
+          eq(courseEnrollments.course_id, courseID),
+          eq(courseEnrollments.user_id, accessToken.getSub()),
+        )
+      );
+
+    const [enrollment] = existing;
+    if (enrollment) {
+      if (enrollment.status === "verified") {
+        return {
+          success: false,
+          message: "You are already enrolled in this course.",
+        };
+      } else if (enrollment.status === "pending") {
+        return {
+          success: false,
+          message: "Your enrollment is pending verification.",
+        };
+      } else if (enrollment.status === "rejected") {
+        await db
+          .update(courseEnrollments)
+          .set({
+            transaction_id: transactionID,
+            status: "pending",
+            enrolledAt: new Date(),
+          })
+          .where(eq(courseEnrollments.id, enrollment.id));
+
+        return {
+          success: true,
+          message: "Payment details re-submitted successfully for verification.",
+        };
+      }
+    }
+
     await db.insert(courseEnrollments).values({
       course_id: courseID,
       user_id: accessToken.getSub(),
       transaction_id: transactionID,
+      status: "pending",
     });
 
     return {
@@ -174,6 +214,7 @@ export async function getAllEnrolledCourses(access_token: string) {
         iconName: courses.iconName,
         slug: courses.slug,
         teacherId: courses.teacherId,
+        status: courseEnrollments.status,
       })
       .from(courseEnrollments)
       .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))
@@ -213,6 +254,7 @@ export async function getAllEnrollments(access_token: string) {
       course_id: string;
       enrolled_at: number;
       transaction_id: string;
+      status: string;
     } & UserDetails)[] = [];
 
     for (const item of result) {
@@ -234,6 +276,7 @@ export async function getAllEnrollments(access_token: string) {
           item.course_enrollments.enrolledAt.getTime() / 1000,
         ),
         transaction_id: item.course_enrollments.transaction_id,
+        status: item.course_enrollments.status,
         phone_country_code: item.users_info
           ? item.users_info.phone_number_cc
           : null,
@@ -255,6 +298,50 @@ export async function getAllEnrollments(access_token: string) {
     return {
       success: false,
       message: "failed to fetch enrollment details",
+    };
+  }
+}
+
+export async function verifyEnrollmentStatus(
+  access_token: string,
+  transactionId: string,
+  status: "verified" | "rejected"
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access_token",
+    };
+  }
+
+  try {
+    const [adminUser] = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.id, accessToken.getSub()));
+
+    if (!adminUser || adminUser.role !== "admin") {
+      return {
+        success: false,
+        message: "Unauthorized: Only administrators can perform this action.",
+      };
+    }
+
+    await db
+      .update(courseEnrollments)
+      .set({ status })
+      .where(eq(courseEnrollments.transaction_id, transactionId));
+
+    return {
+      success: true,
+      message: `Enrollment status updated to '${status}' successfully.`,
+    };
+  } catch (error) {
+    console.error("verifyEnrollmentStatus error:", error);
+    return {
+      success: false,
+      message: "Failed to update enrollment status.",
     };
   }
 }
