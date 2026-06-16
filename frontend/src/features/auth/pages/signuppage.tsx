@@ -195,50 +195,6 @@ export default function SignupPage() {
           </div>
 
           <form onSubmit={handleSave}>
-            {/* UPDATE 4: Role Selection UI added here */}
-            <div className="mb-5">
-              <label className="block text-[#8aabb0] text-sm font-medium mb-3">
-                I am signing up as a:
-              </label>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, is_student: true })}
-                  className={`flex-1 py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer ${
-                    formData.is_student
-                      ? "bg-[#00d4aa]/10 border-[#00d4aa] text-[#00d4aa]"
-                      : "bg-[#1b2e2e] border-[#2a4040] text-[#6a8f8f] hover:bg-[#1f3535]"
-                  }`}
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: "20px" }}
-                  >
-                    school
-                  </span>
-                  Student
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData({ ...formData, is_student: false })
-                  }
-                  className={`flex-1 py-3 px-4 rounded-xl border flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer ${
-                    !formData.is_student
-                      ? "bg-[#00d4aa]/10 border-[#00d4aa] text-[#00d4aa]"
-                      : "bg-[#1b2e2e] border-[#2a4040] text-[#6a8f8f] hover:bg-[#1f3535]"
-                  }`}
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: "20px" }}
-                  >
-                    co_present
-                  </span>
-                  Parent
-                </button>
-              </div>
-            </div>
 
             {/* Name row */}
             <div className="flex flex-col sm:flex-row gap-4 mb-4">

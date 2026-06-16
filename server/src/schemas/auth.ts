@@ -17,6 +17,7 @@ import {
   update_userinfo,
   updateTeacherByAdmin,
   verify_email,
+  getAdminDashboardStats,
 } from "../resolvers/user.ts";
 import {
   TeacherDetailsObject,
@@ -775,6 +776,117 @@ builder.queryField("getTeachers", (t) =>
     type: GetTeachersResponse,
     resolve: async () => {
       return await getAllTeachers();
+    },
+  }),
+);
+
+// --- Admin Dashboard Stats Types & Schema ---
+
+const UserBreakdownItemObject = builder
+  .objectRef<{ role: string; count: string }>("UserBreakdownItem")
+  .implement({
+    fields: (t) => ({
+      role: t.exposeString("role"),
+      count: t.exposeString("count"),
+    }),
+  });
+
+const PendingActionObject = builder
+  .objectRef<{ id: string; title: string; subtitle: string; actionText: string; type: string }>("PendingAction")
+  .implement({
+    fields: (t) => ({
+      id: t.exposeString("id"),
+      title: t.exposeString("title"),
+      subtitle: t.exposeString("subtitle"),
+      actionText: t.exposeString("actionText"),
+      type: t.exposeString("type"),
+    }),
+  });
+
+const ActivityLogItemObject = builder
+  .objectRef<{ id: string; action: string; time: string; dotColor: string }>("ActivityLogItem")
+  .implement({
+    fields: (t) => ({
+      id: t.exposeString("id"),
+      action: t.exposeString("action"),
+      time: t.exposeString("time"),
+      dotColor: t.exposeString("dotColor"),
+    }),
+  });
+
+const AdminDashboardStatsObject = builder
+  .objectRef<{
+    totalUsers: string;
+    registeredThisMonth: string;
+    activeCourses: string;
+    pendingApprovals: string;
+    openIssues: string;
+    userBreakdown: { role: string; count: string }[];
+    pendingActions: { id: string; title: string; subtitle: string; actionText: string; type: string }[];
+    activityLog: { id: string; action: string; time: string; dotColor: string }[];
+  }>("AdminDashboardStats")
+  .implement({
+    fields: (t) => ({
+      totalUsers: t.exposeString("totalUsers"),
+      registeredThisMonth: t.exposeString("registeredThisMonth"),
+      activeCourses: t.exposeString("activeCourses"),
+      pendingApprovals: t.exposeString("pendingApprovals"),
+      openIssues: t.exposeString("openIssues"),
+      userBreakdown: t.expose("userBreakdown", { type: [UserBreakdownItemObject] }),
+      pendingActions: t.expose("pendingActions", { type: [PendingActionObject] }),
+      activityLog: t.expose("activityLog", { type: [ActivityLogItemObject] }),
+    }),
+  });
+
+const GetAdminDashboardStatsResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: {
+      totalUsers: string;
+      registeredThisMonth: string;
+      activeCourses: string;
+      pendingApprovals: string;
+      openIssues: string;
+      userBreakdown: { role: string; count: string }[];
+      pendingActions: { id: string; title: string; subtitle: string; actionText: string; type: string }[];
+      activityLog: { id: string; action: string; time: string; dotColor: string }[];
+    } | null;
+  }>("GetAdminDashboardStatsResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: AdminDashboardStatsObject,
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getAdminDashboardStats", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GetAdminDashboardStatsResponse,
+    resolve: async (_parent, _args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      return await getAdminDashboardStats(cookieObj["access_token"]);
     },
   }),
 );

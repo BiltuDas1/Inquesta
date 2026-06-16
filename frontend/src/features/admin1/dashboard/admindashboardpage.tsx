@@ -1,3 +1,7 @@
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import { useNavigate } from "react-router";
+
 // --- Types ---
 interface StatCard {
   label: string;
@@ -25,76 +29,96 @@ interface ActivityLogItem {
   dotColor: string;
 }
 
+const GET_ADMIN_DASHBOARD_STATS = gql`
+  query GetAdminDashboardStats {
+    getAdminDashboardStats {
+      success
+      message
+      data {
+        totalUsers
+        registeredThisMonth
+        activeCourses
+        pendingApprovals
+        openIssues
+        userBreakdown {
+          role
+          count
+        }
+        pendingActions {
+          id
+          title
+          subtitle
+          actionText
+          type
+        }
+        activityLog {
+          id
+          action
+          time
+          dotColor
+        }
+      }
+    }
+  }
+`;
+
+interface GetAdminDashboardStatsResponse {
+  getAdminDashboardStats: {
+    success: boolean;
+    message: string;
+    data: {
+      totalUsers: string;
+      registeredThisMonth: string;
+      activeCourses: string;
+      pendingApprovals: string;
+      openIssues: string;
+      userBreakdown: UserBreakdownItem[];
+      pendingActions: PendingAction[];
+      activityLog: ActivityLogItem[];
+    };
+  };
+}
+
 export default function AdminDashboardPage() {
-  // --- Mock Data (Based on the image) ---
+  const navigate = useNavigate();
+  const { data, loading, error } = useQuery<GetAdminDashboardStatsResponse>(GET_ADMIN_DASHBOARD_STATS, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-[#6fffd9] font-bold text-xl">
+        <span className="material-symbols-outlined animate-spin mr-3">
+          progress_activity
+        </span>
+        Loading Admin Dashboard...
+      </div>
+    );
+  }
+
+  if (error || !data?.getAdminDashboardStats?.success) {
+    return (
+      <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-[#ffb4ab] font-bold text-xl">
+        Error loading dashboard data. Please try again.
+      </div>
+    );
+  }
+
+  const statsData = data.getAdminDashboardStats.data;
+
   const stats: StatCard[] = [
-    { label: "Total users", value: "2,416", subtext: "+34 this week" },
-    { label: "Active courses", value: "148", subtext: "12 pending review" },
+    { label: "Total users", value: statsData.totalUsers, subtext: `+${statsData.registeredThisMonth} this month` },
+    { label: "Active courses", value: statsData.activeCourses, subtext: "0 pending review" },
     {
       label: "Pending approvals",
-      value: "19",
+      value: statsData.pendingApprovals,
       subtext: "Registrations & content",
     },
-    { label: "Open issues", value: "5", subtext: "3 high priority" },
   ];
 
-  const userBreakdown: UserBreakdownItem[] = [
-    { role: "Students", count: "1,840" },
-    { role: "Teachers", count: "124" },
-    { role: "Parents", count: "382" },
-    { role: "Instructors", count: "58" },
-  ];
-
-  const pendingActions: PendingAction[] = [
-    {
-      id: "a1",
-      title: "New registrations",
-      subtitle: "14 awaiting approval",
-      actionText: "Review",
-      type: "blue",
-    },
-    {
-      id: "a2",
-      title: "Content submissions",
-      subtitle: "5 awaiting approval",
-      actionText: "Review",
-      type: "amber",
-    },
-    {
-      id: "a3",
-      title: "Refund requests",
-      subtitle: "2 open",
-      actionText: "Review",
-      type: "red",
-    },
-  ];
-
-  const activityLog: ActivityLogItem[] = [
-    {
-      id: "log1",
-      action: "New teacher registered",
-      time: "10 min ago",
-      dotColor: "bg-[#bdc2ff]",
-    }, // Secondary
-    {
-      id: "log2",
-      action: "Course flagged for review",
-      time: "1 hr ago",
-      dotColor: "bg-[#f59e0b]",
-    }, // Warning/Amber
-    {
-      id: "log3",
-      action: "Support ticket raised",
-      time: "2 hrs ago",
-      dotColor: "bg-[#ffb4ab]",
-    }, // Error
-    {
-      id: "log4",
-      action: "Payment processed",
-      time: "3 hrs ago",
-      dotColor: "bg-[#00e5bc]",
-    }, // Primary container
-  ];
+  const userBreakdown: UserBreakdownItem[] = statsData.userBreakdown;
+  const pendingActions: PendingAction[] = statsData.pendingActions;
+  const activityLog: ActivityLogItem[] = statsData.activityLog;
 
   // Helper function for styling the action buttons
   const getActionButtonStyle = (type: PendingAction["type"]) => {
@@ -112,18 +136,8 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
-      {/* ── Header ── */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold font-headline text-[#dfe2eb]">
-          Organisation dashboard
-        </h1>
-        <p className="text-[#b9cac3] text-sm mt-1">
-          Green Valley Academy — Last updated just now
-        </p>
-      </div>
-
       {/* ── Stats Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map((stat, index) => (
           <div
             key={index}
@@ -181,7 +195,14 @@ export default function AdminDashboardPage() {
                   </span>
                 </div>
                 <button
-                  className={`px-3 py-1 rounded-full text-[12px] font-bold tracking-wide shrink-0 mt-0.5 transition-colors focus:outline-none ${getActionButtonStyle(
+                  onClick={() => {
+                    if (action.title === "Course Enrollments" || action.title === "New registrations") {
+                      navigate("/admin/students");
+                    } else if (action.title === "Content submissions") {
+                      navigate("/admin/courses");
+                    }
+                  }}
+                  className={`px-3 py-1 rounded-full text-[12px] font-bold tracking-wide shrink-0 mt-0.5 transition-colors focus:outline-none cursor-pointer ${getActionButtonStyle(
                     action.type,
                   )}`}
                 >
