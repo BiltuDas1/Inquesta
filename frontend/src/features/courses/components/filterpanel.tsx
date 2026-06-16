@@ -5,8 +5,8 @@ interface FilterSectionState {
   topic: boolean;
   subcategory: boolean;
   level: boolean;
-  mode: boolean; // NEW
-  price: boolean; // NEW
+  mode: boolean;
+  price: boolean;
 }
 
 interface SectionProps {
@@ -18,6 +18,11 @@ interface SectionProps {
 }
 
 interface FilterPanelProps {
+  selectedLevels: string[];
+  onLevelsChange: (levels: string[]) => void;
+  maxPrice: number;
+  onMaxPriceChange: (price: number) => void;
+  maxPriceLimit: number;
   onClose?: () => void;
   isSidebar: boolean;
 }
@@ -47,6 +52,11 @@ const Section: React.FC<SectionProps> = ({
 );
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
+  selectedLevels,
+  onLevelsChange,
+  maxPrice,
+  onMaxPriceChange,
+  maxPriceLimit,
   onClose,
   isSidebar,
 }) => {
@@ -54,16 +64,22 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     courseDuration: true,
     topic: false,
     subcategory: false,
-    level: false,
+    level: true, // Default open level section
     mode: false,
-    price: false,
+    price: true, // Default open price section
   });
-
-  // State added for the range slider
-  const [maxPrice, setMaxPrice] = useState<number>(300);
 
   const toggle = (key: keyof FilterSectionState) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleLevelChange = (label: string, checked: boolean) => {
+    const val = label.toLowerCase();
+    if (checked) {
+      onLevelsChange([...selectedLevels, val]);
+    } else {
+      onLevelsChange(selectedLevels.filter((l) => l !== val));
+    }
   };
 
   // NEW Data Arrays
@@ -73,16 +89,11 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     { label: "Advanced" },
   ];
 
-  const grades = [
-    { label: "10th" },
-    { label: "12th" },
-    { label: "UG" },
-    { label: "PG" },
-  ];
+
 
   return (
     <div
-      className={`text-on-surface font-headline isSidebar ? px-4 py-2: px-2  `}
+      className={`text-on-surface font-headline ${isSidebar ? "px-4 py-2" : "px-2"}`}
     >
       {/* Level Section */}
       <Section
@@ -98,6 +109,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           >
             <input
               type="checkbox"
+              checked={selectedLevels.includes(l.label.toLowerCase())}
+              onChange={(e) => handleLevelChange(l.label, e.target.checked)}
               className="accent-[#6fffd9] w-4 h-4 rounded bg-[#1c2026] border-[#84948e]"
             />
             <span className="text-sm text-[#dfe2eb]">{l.label}</span>
@@ -105,26 +118,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         ))}
       </Section>
 
-      {/* --- Grade Section --- */}
-      <Section
-        label="Grade"
-        sKey="mode"
-        isOpen={openSections.mode}
-        toggle={toggle}
-      >
-        {grades.map((m) => (
-          <label
-            key={m.label}
-            className="flex items-center gap-2 cursor-pointer group"
-          >
-            <input
-              type="checkbox"
-              className="accent-[#6fffd9] w-4 h-4 rounded bg-[#1c2026] border-[#84948e]"
-            />
-            <span className="text-sm text-[#dfe2eb]">{m.label}</span>
-          </label>
-        ))}
-      </Section>
+
 
       {/* --- Price Section --- */}
       <Section
@@ -148,10 +142,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             <input
               type="range"
               min="0"
-              max="300"
-              step="5"
+              max={maxPriceLimit}
+              step={maxPriceLimit <= 100 ? 1 : maxPriceLimit <= 1000 ? 10 : 50}
               value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
+              onChange={(e) => onMaxPriceChange(Number(e.target.value))}
               className="w-full h-1.5 bg-[#10141a] rounded-lg  cursor-pointer accent-[#6fffd9] outline-none"
             />
           </div>

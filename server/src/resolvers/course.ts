@@ -1,4 +1,4 @@
-import { and, desc, eq, like, lt, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, like, lt, lte, or, sql, inArray } from "drizzle-orm";
 import { db, redis, s3PublicEndpoint } from "../config.ts";
 import {
   courseEnrollments,
@@ -43,41 +43,47 @@ export async function addCourse(data: Course) {
   return true;
 }
 
-export async function getCourses(limit: number, lastID?: string | null) {
+export async function getCourses(
+  limit: number,
+  lastID?: string | null,
+  levels?: string[] | null,
+  maxPrice?: number | null,
+) {
+  const conditions = [];
+
   if (lastID) {
-    const response = await db
-      .select()
-      .from(courses)
-      .where(lte(courses.id, lastID))
-      .orderBy(desc(courses.id))
-      .limit(limit);
-
-    const data = [];
-    for (const item of response) {
-      data.push({
-        ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
-      });
-    }
-
-    return data;
-  } else {
-    const response = await db
-      .select()
-      .from(courses)
-      .orderBy(desc(courses.id))
-      .limit(limit);
-
-    const data = [];
-    for (const item of response) {
-      data.push({
-        ...item,
-        iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
-      });
-    }
-
-    return data;
+    conditions.push(lte(courses.id, lastID));
   }
+
+  if (levels && levels.length > 0) {
+    conditions.push(inArray(courses.level, levels as any));
+  }
+
+  if (maxPrice !== undefined && maxPrice !== null) {
+    conditions.push(lte(courses.price, maxPrice));
+  }
+
+  const query = db
+    .select()
+    .from(courses)
+    .orderBy(desc(courses.id))
+    .limit(limit);
+
+  if (conditions.length > 0) {
+    query.where(and(...conditions));
+  }
+
+  const response = await query;
+
+  const data = [];
+  for (const item of response) {
+    data.push({
+      ...item,
+      iconName: item.iconName ? `${s3PublicEndpoint}${item.iconName}` : null,
+    });
+  }
+
+  return data;
 }
 
 export async function updateCourse(uuid: string, data: Course) {
@@ -351,6 +357,8 @@ export async function searchCourses(
   limit: number,
   lastID?: string,
   lastRelevance?: number,
+  levels?: string[] | null,
+  maxPrice?: number | null,
 ) {
   const relevanceSql = sql<number>`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`;
 
@@ -361,6 +369,21 @@ export async function searchCourses(
       lt(relevanceSql, lastRelevance),
       and(sql`${relevanceSql} = ${lastRelevance}`, lte(courses.id, lastID)),
     );
+  }
+
+  const conditions = [];
+  conditions.push(sql`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`);
+
+  if (cursorCondition) {
+    conditions.push(cursorCondition);
+  }
+
+  if (levels && levels.length > 0) {
+    conditions.push(inArray(courses.level, levels as any));
+  }
+
+  if (maxPrice !== undefined && maxPrice !== null) {
+    conditions.push(lte(courses.price, maxPrice));
   }
 
   const response = await db
@@ -378,12 +401,7 @@ export async function searchCourses(
       relevance: relevanceSql,
     })
     .from(courses)
-    .where(
-      and(
-        sql`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`,
-        cursorCondition,
-      ),
-    )
+    .where(and(...conditions))
     .orderBy(desc(relevanceSql), desc(courses.id))
     .limit(limit);
 
