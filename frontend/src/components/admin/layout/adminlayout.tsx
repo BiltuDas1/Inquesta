@@ -49,22 +49,65 @@ export default function DashboardLayout() {
 
   // ── Fetch Notifications ──
   const { data: notifData } = useQuery<GetNotificationsResponse>(GET_NOTIFICATIONS, {
-    fetchPolicy: "network-only", // Ensures fresh data
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
   });
 
-  // ── Map Backend Data to Frontend UI Format ──
-  // Since the DB currently only returns title and description, we map default UI properties
+  // ── Read/Unread Tracking ──
+  const [readKeys, setReadKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("read_notifications");
+    if (stored) {
+      try {
+        setReadKeys(JSON.parse(stored));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [isNotificationModalOpen, currentUrl]);
+
+  const handleMarkAllRead = () => {
+    if (notifData?.getNotifications?.success && notifData?.getNotifications?.data) {
+      const allKeys = notifData.getNotifications.data.map((n: any) => `${n.title}-${n.description}`);
+      localStorage.setItem("read_notifications", JSON.stringify(allKeys));
+      setReadKeys(allKeys);
+    }
+  };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const stored = localStorage.getItem("read_notifications");
+      if (stored) {
+        try {
+          setReadKeys(JSON.parse(stored));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleStorageChange);
+    };
+  }, []);
+
   const notifications: NotificationItem[] = notifData?.getNotifications?.success && notifData?.getNotifications?.data
-    ? notifData.getNotifications.data.map((notif: any, index: number) => ({
-        id: index, // Using index as fallback ID
-        title: notif.title,
-        desc: notif.description,
-        time: "Just now", 
-        unread: true, 
-        icon: index % 2 === 0 ? "mail" : "info",
-        iconColor: index % 2 === 0 ? "text-[#6fffd9]" : "text-[#bdc2ff]",
-        bgColor: index % 2 === 0 ? "bg-[#00e5bc]/10" : "bg-[#343d96]/40",
-      }))
+    ? notifData.getNotifications.data.map((notif: any, index: number) => {
+        const key = `${notif.title}-${notif.description}`;
+        return {
+          id: index,
+          title: notif.title,
+          desc: notif.description,
+          time: "Just now",
+          unread: !readKeys.includes(key),
+          icon: "info",
+          iconColor: "text-[#bdc2ff]",
+          bgColor: "bg-[#343d96]/40",
+        };
+      })
     : [];
 
   const unreadCount = notifications.filter((n) => n.unread).length;
@@ -344,7 +387,10 @@ export default function DashboardLayout() {
               <NotificationModal 
                 isOpen={isNotificationModalOpen} 
                 onClose={() => setIsNotificationModalOpen(false)} 
-                notifications={notifications} 
+                notifications={notifications}
+                onMarkAllRead={handleMarkAllRead}
+                onViewAll={() => navigate("/admin/notifications")}
+                onNotificationClick={(index) => navigate(`/admin/notifications/${index}`)}
               />
             </div>
 
