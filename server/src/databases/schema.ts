@@ -183,3 +183,18 @@ export const timetable_entries = mysqlTable("timetable_entries", {
   eventType: varchar("event_type", { length: 50 }),
 });
 
+export const attendance = mysqlTable("attendance", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  courseId: varchar("course_id", { length: 36 })
+    .notNull()
+    .references(() => courses.id, { onDelete: "cascade" }),
+  userId: varchar("user_id", { length: 36 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  date: varchar("date", { length: 10 }).notNull(),
+  status: varchar("status", { length: 20 }).notNull(),
+  markedAt: timestamp("marked_at").defaultNow().notNull(),
+});
+

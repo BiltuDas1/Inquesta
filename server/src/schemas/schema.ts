@@ -11,4 +11,5 @@ import "./cart.ts";
 import "./notification.ts"
 import "./assignment.ts";
 import "./timetable.ts";
+import "./attendance.ts";
 export const schema = builder.toSchema();

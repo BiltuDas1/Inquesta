@@ -47,6 +47,7 @@ import TeacherAssignmentsPage from "./features/teacher/assignments/assignmentspa
 import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
 import ReportsAnalyticsPage from "./features/teacher/reports/reportspage";
 import TimetablePage from "./features/teacher/timetable/timetablepage";
+import TeacherAttendancePage from "./features/teacher/attendance/attendancepage";
 import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
 import ApprovalsPage from "./features/admin1/approvals/approvalspage";
 import OrganisationReportsPage from "./features/admin1/reports/reportspage";
@@ -212,6 +213,10 @@ function App() {
             />
 
             <Route path="timetable" element={<TimetablePage></TimetablePage>} />
+            <Route
+              path="attendance"
+              element={<TeacherAttendancePage></TeacherAttendancePage>}
+            />
           </Route>
         </Route>
 
