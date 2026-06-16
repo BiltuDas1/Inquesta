@@ -298,6 +298,7 @@ import { formatLevel, LEVELS, PER_PAGE } from "../../courses/utils/courseutils";
 import toast from "react-hot-toast";
 import CourseTable from "../../../components/admin/courses/coursetable";
 import CourseModal from "../../../components/admin/courses/addcoursemodal";
+import DeleteConfirmationModal from "../../../components/ui/dialog";
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 
@@ -424,24 +425,39 @@ export default function CoursesPage() {
     setPage(1);
   };
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
   // ── Action Handlers ──
-  const handleDelete = async (id: string | number) => {
-    if (window.confirm("Are you sure you want to delete this course?")) {
-      try {
-        const { data: delData } = await deleteCourse({
-          variables: { id: String(id) },
-        });
-        if (delData?.courseDelete?.success) {
-          await refetch();
-          if (displayCourses.length === 1 && page > 1) {
-            handlePreviousPage();
-          }
-        } else {
-          alert(`Delete failed: ${delData?.courseDelete?.message}`);
+  const handleDeleteClick = (id: string | number) => {
+    const course = displayCourses.find((c) => c.id === String(id));
+    if (course) {
+      setDeleteTarget({ id: String(id), name: course.title });
+      setDeleteModalOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      const { data: delData } = await deleteCourse({
+        variables: { id: deleteTarget.id },
+      });
+      if (delData?.courseDelete?.success) {
+        toast.success("Course deleted successfully");
+        await refetch();
+        if (displayCourses.length === 1 && page > 1) {
+          handlePreviousPage();
         }
-      } catch (e: any) {
-        console.error("Delete Error:", e);
+      } else {
+        toast.error(delData?.courseDelete?.message || "Failed to delete course");
       }
+    } catch (e: any) {
+      console.error("Delete Error:", e);
+      toast.error("An error occurred while deleting the course");
+    } finally {
+      setDeleteModalOpen(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -573,7 +589,7 @@ export default function CoursesPage() {
               courses={displayCourses}
               teachers={teachersList}
               onEdit={(id) => setModal(id)}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick}
             />
 
             {/* Pagination */}
@@ -599,6 +615,18 @@ export default function CoursesPage() {
           teachers={teachersList} // <--- Pass the fetched dynamic array
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setDeleteTarget(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete Course?"
+        itemName={deleteTarget?.name}
+      />
     </>
   );
 }
