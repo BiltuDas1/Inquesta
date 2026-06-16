@@ -200,3 +200,25 @@ export const attendance = mysqlTable("attendance", {
   markedAt: timestamp("marked_at").defaultNow().notNull(),
 });
 
+export const curriculum_units = mysqlTable("curriculum_units", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  courseId: varchar("course_id", { length: 36 })
+    .notNull()
+    .references(() => courses.id, { onDelete: "cascade" }),
+  title: varchar({ length: 255 }).notNull(),
+  description: text(),
+  completed: boolean().notNull().default(false),
+});
+
+export const course_takeaways = mysqlTable("course_takeaways", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  courseId: varchar("course_id", { length: 36 })
+    .notNull()
+    .references(() => courses.id, { onDelete: "cascade" }),
+  takeaway: text().notNull(),
+});
+
