@@ -6,14 +6,19 @@ interface AddCurriculumModalProps {
     title: string;
     description: string;
   }) => void;
+  editingUnit?: {
+    title: string;
+    description?: string;
+  } | null;
 }
 
 export default function AddCurriculumModal({
   onClose,
   onSave,
+  editingUnit = null,
 }: AddCurriculumModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(editingUnit?.title ?? "");
+  const [description, setDescription] = useState(editingUnit?.description ?? "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +46,7 @@ export default function AddCurriculumModal({
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-headline text-[1.2rem] font-bold text-[#dfe2eb]">
-            Add Curriculum Unit
+            {editingUnit ? "Edit Curriculum Unit" : "Add Curriculum Unit"}
           </h2>
           <button
             onClick={onClose}
@@ -88,7 +93,7 @@ export default function AddCurriculumModal({
               type="submit"
               className="bg-[#6fffd9] border-none rounded-full px-6 py-2 text-[#00382c] font-headline font-semibold text-[0.875rem] cursor-pointer hover:opacity-90 transition-opacity"
             >
-              Add Unit
+              {editingUnit ? "Save Changes" : "Add Unit"}
             </button>
           </div>
         </form>
@@ -96,6 +101,7 @@ export default function AddCurriculumModal({
     </div>
   );
 }
+
 
 
 

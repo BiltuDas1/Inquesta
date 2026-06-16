@@ -2,15 +2,11 @@ import { useState } from "react";
 import AddCurriculumModal from "../../../components/teacher/curriculum/addcurriculummodal";
 
 // --- Types ---
-type UnitStatus = "Green" | "Amber" | "Gray";
-
 interface UnitRecord {
   id: string;
   title: string;
-  completedLessons: number;
-  totalLessons: number;
-  status: UnitStatus;
   description?: string;
+  completed: boolean;
 }
 
 export default function CurriculumPage() {
@@ -19,42 +15,32 @@ export default function CurriculumPage() {
     {
       id: "u1",
       title: "Unit 1: Algebra fundamentals",
-      completedLessons: 10,
-      totalLessons: 10,
-      status: "Green",
       description: "Foundational algebraic expressions, simplifying terms, solving basic linear equations, and variable operations.",
+      completed: true,
     },
     {
       id: "u2",
       title: "Unit 2: Linear equations",
-      completedLessons: 6,
-      totalLessons: 8,
-      status: "Green",
       description: "Graphing linear equations, finding slope, intercept forms, and solving simultaneous equations graphically.",
+      completed: true,
     },
     {
       id: "u3",
       title: "Unit 3: Quadratic equations",
-      completedLessons: 4,
-      totalLessons: 10,
-      status: "Amber",
       description: "Factoring quadratics, completing the square, using the quadratic formula, and graphing parabolas.",
+      completed: false,
     },
     {
       id: "u4",
       title: "Unit 4: Geometry — Lines & angles",
-      completedLessons: 0,
-      totalLessons: 8,
-      status: "Gray",
       description: "Angles on straight lines, parallel lines, triangle angle sums, congruency, and properties of polygons.",
+      completed: false,
     },
     {
       id: "u5",
       title: "Unit 5: Statistics & probability",
-      completedLessons: 0,
-      totalLessons: 6,
-      status: "Gray",
       description: "Calculating mean, median, mode, range, constructing histograms, and understanding simple probability experiments.",
+      completed: false,
     },
   ]);
 
@@ -68,21 +54,9 @@ export default function CurriculumPage() {
   ]);
   const [takeawayInput, setTakeawayInput] = useState("");
 
-  // --- Modal Form Toggle State ---
+  // --- Modal & Edit States ---
   const [isAddingUnit, setIsAddingUnit] = useState(false);
-
-  // Helper functions for badge styling
-  const getBadgeStyle = (status: UnitStatus) => {
-    switch (status) {
-      case "Green":
-        return "bg-[#00e5bc]/10 text-[#00e5bc] border border-[#00e5bc]/20"; // Primary container color
-      case "Amber":
-        return "bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20"; // Warning color
-      case "Gray":
-      default:
-        return "bg-[#31353c] text-[#84948e] border border-[#3b4a44]"; // Neutral surface color
-    }
-  };
+  const [editingUnit, setEditingUnit] = useState<UnitRecord | null>(null);
 
   const handleAddTakeaway = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,21 +70,39 @@ export default function CurriculumPage() {
     setTakeaways(takeaways.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleSaveUnit = (data: {
-    title: string;
-    description: string;
-  }) => {
-    const newUnit: UnitRecord = {
-      id: `u-${Date.now()}`,
-      title: data.title,
-      description: data.description,
-      completedLessons: 0,
-      totalLessons: 10,
-      status: "Gray",
-    };
+  const handleToggleComplete = (id: string) => {
+    setUnits(
+      units.map((unit) =>
+        unit.id === id ? { ...unit, completed: !unit.completed } : unit,
+      ),
+    );
+  };
 
-    setUnits([...units, newUnit]);
+  const handleSaveUnit = (data: { title: string; description: string }) => {
+    if (editingUnit) {
+      setUnits(
+        units.map((unit) =>
+          unit.id === editingUnit.id
+            ? { ...unit, title: data.title, description: data.description }
+            : unit,
+        ),
+      );
+      setEditingUnit(null);
+    } else {
+      const newUnit: UnitRecord = {
+        id: `u-${Date.now()}`,
+        title: data.title,
+        description: data.description,
+        completed: false,
+      };
+      setUnits([...units, newUnit]);
+    }
     setIsAddingUnit(false);
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingUnit(null);
+    setIsAddingUnit(true);
   };
 
   return (
@@ -126,7 +118,7 @@ export default function CurriculumPage() {
           </p>
         </div>
         <button
-          onClick={() => setIsAddingUnit(true)}
+          onClick={handleOpenAddModal}
           className="flex items-center justify-center gap-2 bg-[#6fffd9] text-[#00382c] hover:opacity-90 transition-opacity px-5 py-2.5 rounded-full font-headline font-semibold text-sm shadow-md cursor-pointer shrink-0"
         >
           <span className="material-symbols-outlined text-lg">add</span>
@@ -134,11 +126,6 @@ export default function CurriculumPage() {
         </button>
       </div>
 
-      {/* ── Context Label ── */}
-      <div className="text-[13px] font-semibold text-[#bdc2ff] uppercase tracking-wide">
-        Class: Grade 8A <span className="mx-1.5 text-[#3b4a44]">·</span>{" "}
-        Mathematics <span className="mx-1.5 text-[#3b4a44]">·</span> Term 2
-      </div>
 
       {/* ── Key Takeaways Section (Global Course Goals) ── */}
       <div className="bg-[#1c2026] border border-[#3b4a44] p-5 sm:p-6 rounded-xl space-y-4 shadow-sm">
@@ -170,10 +157,10 @@ export default function CurriculumPage() {
             {takeaways.map((takeaway, idx) => (
               <li
                 key={idx}
-                className="flex items-start justify-between gap-3 bg-[#262a31]/45 border border-[#3b4a44]/55 p-3 rounded-lg text-sm text-[#dfe2eb] transition-colors hover:border-[#84948e]"
+                className="flex items-center justify-between gap-3 bg-[#262a31]/45 border border-[#3b4a44]/55 p-3 rounded-lg text-sm text-[#dfe2eb] transition-colors hover:border-[#84948e]"
               >
-                <div className="flex items-start gap-2.5">
-                  <span className="material-symbols-outlined text-[#00e5bc] text-[18px] leading-none shrink-0 mt-0.5 select-none">
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[#00e5bc] text-[18px] leading-none shrink-0 select-none">
                     check_circle
                   </span>
                   <span className="leading-tight font-light">{takeaway}</span>
@@ -196,67 +183,81 @@ export default function CurriculumPage() {
       {/* ── Units List ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {units.map((unit) => {
-          // Calculate progress percentage
-          const progressPercentage =
-            unit.totalLessons > 0
-              ? Math.round((unit.completedLessons / unit.totalLessons) * 100)
-              : 0;
-
           return (
             <div
               key={unit.id}
-              className="bg-[#1c2026] border border-[#3b4a44] p-5 rounded-xl flex flex-col justify-between shadow-sm transition-all hover:border-[#84948e] hover:shadow-md min-h-[160px]"
+              className={`bg-[#1c2026] border p-5 rounded-xl flex items-start gap-4 shadow-sm transition-all hover:shadow-md ${unit.completed
+                ? "border-[#00e5bc]/50 bg-[#1c2026]/80"
+                : "border-[#3b4a44] hover:border-[#84948e]"
+                }`}
             >
-              <div>
-                {/* Card Header (Title & Badge) */}
-                <div className="flex justify-between items-start gap-4 mb-2">
-                  <h2 className="text-[#dfe2eb] font-bold text-base md:text-lg">
-                    {unit.title}
-                  </h2>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold shrink-0 ${getBadgeStyle(
-                      unit.status,
-                    )}`}
+              {/* Checkbox Icon */}
+              <button
+                onClick={() => handleToggleComplete(unit.id)}
+                className="text-[#84948e] hover:text-[#00e5bc] transition-colors cursor-pointer shrink-0 mt-0.5"
+                title={unit.completed ? "Mark as Incomplete" : "Mark as Completed"}
+              >
+                <span className={`material-symbols-outlined text-[24px] select-none ${unit.completed ? "text-[#00e5bc]" : "text-[#84948e]"}`}>
+                  {unit.completed ? "check_box" : "check_box_outline_blank"}
+                </span>
+              </button>
+
+              {/* Title & Description */}
+              <div className="flex-1 space-y-1.5 min-w-0">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="font-bold text-base md:text-lg text-[#dfe2eb]">
+                      {unit.title}
+                    </h2>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 uppercase tracking-wider ${unit.completed
+                        ? "bg-[#00e5bc]/10 text-[#00e5bc] border border-[#00e5bc]/20"
+                        : "bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20"
+                        }`}
+                    >
+                      {unit.completed ? "Completed" : "Pending"}
+                    </span>
+                  </div>
+
+                  {/* Actions (Edit) */}
+                  <button
+                    onClick={() => {
+                      setEditingUnit(unit);
+                      setIsAddingUnit(true);
+                    }}
+                    className="text-[#84948e] hover:text-[#6fffd9] transition-colors cursor-pointer p-1 rounded-lg hover:bg-[#262a31] shrink-0"
+                    title="Edit Unit"
                   >
-                    {unit.status}
-                  </span>
+                    <span className="material-symbols-outlined text-lg">edit</span>
+                  </button>
                 </div>
 
-                {/* Description */}
                 {unit.description && (
-                  <p className="text-[#b9cac3] text-sm mb-4 line-clamp-3 leading-relaxed font-light">
+                  <p className="text-sm leading-relaxed font-light text-[#b9cac3]">
                     {unit.description}
                   </p>
                 )}
-
-                {/* Subtext */}
-                <p className="text-[#84948e] text-xs mb-3">
-                  {unit.completedLessons}/{unit.totalLessons} lessons completed
-                </p>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-[#31353c] rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-1000 ease-out bg-[#a8afff]"
-                  style={{ width: `${progressPercentage}%` }}
-                ></div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* ── Add Unit Modal ── */}
+      {/* ── Add/Edit Unit Modal ── */}
       {isAddingUnit && (
         <AddCurriculumModal
-          onClose={() => setIsAddingUnit(false)}
+          editingUnit={editingUnit}
+          onClose={() => {
+            setIsAddingUnit(false);
+            setEditingUnit(null);
+          }}
           onSave={handleSaveUnit}
         />
       )}
     </div>
   );
 }
+
 
 
 
