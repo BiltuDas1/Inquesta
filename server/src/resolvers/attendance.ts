@@ -93,6 +93,66 @@ export async function getCourseStudents(access_token: string, courseId: string) 
   }
 }
 
+export async function getAttendanceByDate(
+  access_token: string,
+  courseId: string,
+  date: string,
+) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+      data: [],
+    };
+  }
+
+  try {
+    const teacherId = accessToken.getSub();
+    // Validate course ownership
+    const courseCheck = await db
+      .select()
+      .from(courses)
+      .where(and(eq(courses.id, courseId), eq(courses.teacherId, teacherId)))
+      .limit(1);
+
+    if (courseCheck.length === 0) {
+      return {
+        success: false,
+        message: "Unauthorized or course not found",
+        data: [],
+      };
+    }
+
+    const records = await db
+      .select({
+        id: attendance.id,
+        userId: attendance.userId,
+        status: attendance.status,
+      })
+      .from(attendance)
+      .where(
+        and(
+          eq(attendance.courseId, courseId),
+          eq(attendance.date, date),
+        ),
+      );
+
+    return {
+      success: true,
+      message: "attendance records retrieved successfully",
+      data: records,
+    };
+  } catch (error) {
+    console.error("Error retrieving attendance by date:", error);
+    return {
+      success: false,
+      message: "internal server error",
+      data: [],
+    };
+  }
+}
+
 export async function submitAttendance(
   access_token: string,
   courseId: string,
