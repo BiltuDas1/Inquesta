@@ -35,6 +35,7 @@ const GET_ENROLLED_COURSES = gql`
     enrolledCourses {
       data {
         id
+        status
       }
     }
   }
@@ -44,6 +45,7 @@ interface EnrolledCoursesResponse {
   enrolledCourses: {
     data: Array<{
       id: string;
+      status: string;
     }>;
   };
 }
@@ -208,9 +210,11 @@ export default function CourseDetails() {
     EnrollCourseVariables
   >(ENROLL_COURSE_MUTATION);
 
-  const isAlreadyEnrolled = enrollmentData?.enrolledCourses?.data?.some(
+  const courseEnrollment = enrollmentData?.enrolledCourses?.data?.find(
     (item: any) => String(item.id) === String(course?.id),
   );
+  const isAlreadyEnrolled = courseEnrollment?.status === "verified";
+  const isPendingVerification = courseEnrollment?.status === "pending";
 
   const handleEnroll = async () => {
     if (!user) {
@@ -698,6 +702,13 @@ export default function CourseDetails() {
                   >
                     Go to Dashboard
                     <span className="material-symbols-outlined text-sm">arrow_outward</span>
+                  </button>
+                ) : isPendingVerification ? (
+                  <button
+                    disabled
+                    className="w-full flex items-center justify-center gap-2 bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl opacity-60 cursor-not-allowed"
+                  >
+                    Pending Verification
                   </button>
                 ) : (
                   <button

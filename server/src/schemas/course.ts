@@ -10,6 +10,7 @@ import {
   searchCourses,
   updateCourse,
   getTeacherAllocatedCourses,
+  verifyEnrollmentStatus,
 } from "../resolvers/course.ts";
 import {
   CourseEnrolledObject,
@@ -293,6 +294,7 @@ const coursesResponse = builder
       course_id: string;
       enrolled_at: number;
       transaction_id: string;
+      status: string;
     } & UserDetails)[];
   }>("CoursesResponse")
   .implement({
@@ -384,6 +386,48 @@ builder.queryField("getTeacherAllocatedCourses", (t) =>
     type: GetTeacherAllocatedCoursesResponseObject,
     resolve: async () => {
       return await getTeacherAllocatedCourses();
+    },
+  }),
+);
+
+builder.mutationField("verifyEnrollment", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: GQLResponse,
+    args: {
+      transactionID: t.arg.string({ required: true }),
+      status: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+        };
+      }
+
+      if (args.status !== "verified" && args.status !== "rejected") {
+        return {
+          success: false,
+          message: "Invalid status value. Must be 'verified' or 'rejected'.",
+        };
+      }
+
+      return await verifyEnrollmentStatus(
+        cookieObj["access_token"],
+        args.transactionID,
+        args.status as "verified" | "rejected",
+      );
     },
   }),
 );

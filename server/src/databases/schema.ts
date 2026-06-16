@@ -73,6 +73,7 @@ export const courseEnrollments = mysqlTable("course_enrollments", {
   }),
   transaction_id: varchar("transaction_id", { length: 255 }).notNull().unique(),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
+  status: mysqlEnum("status", ["pending", "verified", "rejected"]).notNull().default("pending"),
 });
 
 export const notices = mysqlTable("notices", {

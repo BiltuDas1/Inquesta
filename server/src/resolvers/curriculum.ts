@@ -34,13 +34,14 @@ export async function toggleCurriculumUnitComplete(id: string) {
     .where(eq(curriculum_units.id, id))
     .limit(1);
 
-  if (current.length === 0) {
+  const unit = current[0];
+  if (!unit) {
     throw new Error("Unit not found");
   }
 
   await db
     .update(curriculum_units)
-    .set({ completed: !current[0].completed })
+    .set({ completed: !unit.completed })
     .where(eq(curriculum_units.id, id));
   return true;
 }

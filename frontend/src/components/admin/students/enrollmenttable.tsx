@@ -1,5 +1,7 @@
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 // ==========================================
 // 1. INTERFACES & TYPES
@@ -16,6 +18,7 @@ export interface Enrollment {
   transactionId: string;
   courseId: string; // Added to handle routing
   course_slug: string;
+  status: string;
 }
 
 interface RawEnrollmentData {
@@ -24,6 +27,7 @@ interface RawEnrollmentData {
   course_slug: string;
   enrolled_at: number;
   transaction_id: string;
+  status: string;
   user_email: string;
   user_firstname: string;
   user_id: string;
@@ -58,6 +62,7 @@ const GET_ALL_ENROLLMENTS = gql`
         course_slug
         enrolled_at
         transaction_id
+        status
         user_email
         user_firstname
         user_id
@@ -72,11 +77,60 @@ const GET_ALL_ENROLLMENTS = gql`
   }
 `;
 
+const VERIFY_ENROLLMENT_MUTATION = gql`
+  mutation verifyEnrollment($transactionID: String!, $status: String!) {
+    verifyEnrollment(transactionID: $transactionID, status: $status) {
+      success
+      message
+    }
+  }
+`;
+
 // ==========================================
 // 3. TABLE COMPONENT
 // ==========================================
 
+interface VerifyEnrollmentResponse {
+  verifyEnrollment: {
+    success: boolean;
+    message: string;
+  };
+}
+
+interface VerifyEnrollmentVariables {
+  transactionID: string;
+  status: string;
+}
+
 function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
+  const [verifyEnrollment] = useMutation<VerifyEnrollmentResponse, VerifyEnrollmentVariables>(VERIFY_ENROLLMENT_MUTATION, {
+    refetchQueries: [{ query: GET_ALL_ENROLLMENTS }],
+  });
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const handleVerify = async (transactionId: string, status: "verified" | "rejected") => {
+    setUpdatingId(transactionId);
+    try {
+      const { data } = await verifyEnrollment({
+        variables: {
+          transactionID: transactionId,
+          status: status,
+        },
+      });
+
+      if (data?.verifyEnrollment?.success) {
+        toast.success(data.verifyEnrollment.message);
+      } else {
+        toast.error(data?.verifyEnrollment?.message || "Failed to update status.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "An error occurred.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[16px] overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
@@ -88,6 +142,7 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
                 "Contact Details",
                 "Course Enrolled",
                 "Transaction ID",
+                "Status / Actions",
               ].map((h, i) => (
                 <th
                   key={i}
@@ -101,7 +156,7 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
           <tbody className="divide-y divide-[#3b4a44]">
             {enrollments.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center p-12 text-[#b9cac3]">
+                <td colSpan={5} className="text-center p-12 text-[#b9cac3]">
                   No enrollments found
                 </td>
               </tr>
@@ -193,6 +248,49 @@ function EnrollmentTable({ enrollments }: EnrollmentTableProps) {
                       {enrollment.transactionId}
                     </span>
                   </td>
+
+                  {/* Column 5: Status / Actions */}
+                  <td className="p-4 align-middle">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold font-headline uppercase tracking-wider border ${
+                          enrollment.status === "verified"
+                            ? "bg-[#0c2d24] text-[#6fffd9] border-[#6fffd9]/20"
+                            : enrollment.status === "rejected"
+                              ? "bg-[#2a0d10] text-[#ffb4ab] border-[#ffb4ab]/20"
+                              : "bg-[#2a220d] text-[#ffe082] border-[#ffe082]/20"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          {enrollment.status === "verified"
+                            ? "verified"
+                            : enrollment.status === "rejected"
+                              ? "cancel"
+                              : "hourglass_empty"}
+                        </span>
+                        {enrollment.status}
+                      </span>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleVerify(enrollment.transactionId, "verified")}
+                          disabled={updatingId === enrollment.transactionId || enrollment.status === "verified"}
+                          title="Verify Enrollment"
+                          className="flex items-center justify-center p-1.5 rounded-lg border border-[#6fffd9]/30 text-[#6fffd9] hover:bg-[#6fffd9]/10 transition-colors disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                        </button>
+                        <button
+                          onClick={() => handleVerify(enrollment.transactionId, "rejected")}
+                          disabled={updatingId === enrollment.transactionId || enrollment.status === "rejected"}
+                          title="Reject Enrollment"
+                          className="flex items-center justify-center p-1.5 rounded-lg border border-[#ffb4ab]/30 text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">cancel</span>
+                        </button>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
@@ -233,6 +331,7 @@ export default function EnrollmentsDashboard() {
       qualification: item.user_qualification || "",
       title: item.course_title,
       transactionId: item.transaction_id,
+      status: item.status,
       courseId: item.course_id || item.course_title, // Fallback to title if course_id is missing
       course_slug: item.course_slug,
     }),

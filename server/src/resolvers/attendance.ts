@@ -136,11 +136,12 @@ export async function submitAttendance(
         )
         .limit(1);
 
-      if (existing.length > 0) {
+      const existingRecord = existing[0];
+      if (existingRecord) {
         await db
           .update(attendance)
           .set({ status: rec.status, markedAt: new Date() })
-          .where(eq(attendance.id, existing[0].id));
+          .where(eq(attendance.id, existingRecord.id));
       } else {
         await db.insert(attendance).values({
           courseId,
@@ -150,10 +151,11 @@ export async function submitAttendance(
         });
       }
 
-      if (rec.status === "Absent") {
+      const courseInfo = courseCheck[0];
+      if (rec.status === "Absent" && courseInfo) {
         await db.insert(notification).values({
-          title: `Absent Alert: ${courseCheck[0].title}`,
-          description: `You were marked absent in ${courseCheck[0].title} on ${date}.`,
+          title: `Absent Alert: ${courseInfo.title}`,
+          description: `You were marked absent in ${courseInfo.title} on ${date}.`,
           userId: rec.userId,
         });
       }
@@ -206,12 +208,14 @@ export async function getAttendanceLogs(access_token: string, courseId: string) 
 
     const grouped: Record<string, { date: string; presentCount: number; totalCount: number }> = {};
     for (const rec of allRecords) {
-      if (!grouped[rec.date]) {
-        grouped[rec.date] = { date: rec.date, presentCount: 0, totalCount: 0 };
+      let group = grouped[rec.date];
+      if (!group) {
+        group = { date: rec.date, presentCount: 0, totalCount: 0 };
+        grouped[rec.date] = group;
       }
-      grouped[rec.date].totalCount++;
+      group.totalCount++;
       if (rec.status === "Present" || rec.status === "Late") {
-        grouped[rec.date].presentCount++;
+        group.presentCount++;
       }
     }
 

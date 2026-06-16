@@ -12,6 +12,7 @@ const GET_ENROLLED_COURSES = gql`
         id
         title
         instructorName
+        status
       }
     }
   }
@@ -64,7 +65,10 @@ export default function StudentAttendancePage() {
     getStudentAttendance: { success: boolean; message: string; data: AttendanceRecord[] | null };
   }>(GET_STUDENT_ATTENDANCE);
 
-  const coursesList = useMemo(() => coursesData?.enrolledCourses?.data || [], [coursesData]);
+  const coursesList = useMemo(
+    () => (coursesData?.enrolledCourses?.data || []).filter((c: any) => c.status === "verified"),
+    [coursesData],
+  );
   const attendanceList = useMemo(() => attendanceData?.getStudentAttendance?.data || [], [attendanceData]);
 
   // --- Calculate filtered attendance for each subject ---
