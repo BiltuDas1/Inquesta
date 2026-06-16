@@ -26,6 +26,7 @@ import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./components/admin/layout/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
+import StudentDashboardPage from "./features/students/pages/studentdashboardpage";
 import ParentDashboardLayout from "./components/parent/layout/parentdashboardlayout";
 import NoticePage from "./features/admin1/setting/notice/noticepage";
 import ContactPage from "./shared/pages/contactpage";
@@ -136,7 +137,7 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
 
             {/* The actual dashboard page */}
-            <Route path="dashboard" element={<StudentEnrollmentsPage />} />
+            <Route path="dashboard" element={<StudentDashboardPage />} />
             <Route path="courses" element={<StudentEnrollmentsPage />} />
 
             {/* Coming Soon pages */}

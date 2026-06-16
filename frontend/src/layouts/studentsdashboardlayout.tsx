@@ -113,6 +113,11 @@ export default function StudentsDashboardLayout() {
 
   const navItems = [
     {
+      name: "Dashboard",
+      icon: "dashboard",
+      path: "/students/dashboard",
+    },
+    {
       name: "My Enrollments",
       icon: "library_books",
       path: "/students/courses",
