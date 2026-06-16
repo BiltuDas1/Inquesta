@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router";
 import { useAuth } from "../../auth/context/authcontext";
 import AddCurriculumModal from "../../../components/teacher/curriculum/addcurriculummodal";
 import DeleteConfirmationModal from "../../../components/ui/dialog";
@@ -131,9 +132,21 @@ export default function CurriculumPage() {
   const { user } = useAuth();
   const teacherEmail = user?.email;
 
+  const location = useLocation();
+  const state = location.state as { selectCourseId?: string } | null;
+
   // --- States ---
-  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(
+    state?.selectCourseId || ""
+  );
   const [takeawayInput, setTakeawayInput] = useState("");
+
+  // Sync selectedCourseId if location state changes
+  useEffect(() => {
+    if (state?.selectCourseId) {
+      setSelectedCourseId(state.selectCourseId);
+    }
+  }, [state?.selectCourseId]);
   const [isAddingUnit, setIsAddingUnit] = useState(false);
   const [editingUnit, setEditingUnit] = useState<UnitRecord | null>(null);
   const [deletingUnitId, setDeletingUnitId] = useState<string | null>(null);

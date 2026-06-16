@@ -1,193 +1,273 @@
-// --- Types ---
-interface StatCard {
-  label: string;
-  value: string;
-  subtext: string;
-}
+import { useQuery } from "@apollo/client/react";
+import { gql } from "@apollo/client";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../../auth/context/authcontext";
 
-interface TimetableItem {
+const GET_TEACHER_COURSES = gql`
+  query GetTeacherCourses {
+    getTeacherCourses {
+      success
+      message
+      data {
+        id
+        title
+        level
+      }
+    }
+  }
+`;
+
+const GET_TEACHER_ASSIGNMENTS = gql`
+  query GetTeacherAssignments {
+    getTeacherAssignments {
+      success
+      message
+      data {
+        id
+        courseName
+        assignmentName
+        creationDate
+        dueDate
+        totalSubmission
+        isPublished
+      }
+    }
+  }
+`;
+
+interface Course {
   id: string;
   title: string;
-  time: string;
+  level: string;
 }
 
-interface ReviewItem {
+interface Assignment {
   id: string;
-  title: string;
-  submissions: string;
-  status: "Urgent" | "Due today" | "Pending";
+  courseName: string;
+  assignmentName: string;
+  creationDate: string;
+  dueDate: string | null;
+  totalSubmission: number;
+  isPublished: boolean;
 }
 
-interface AtRiskStudent {
-  id: string;
-  name: string;
-  reason: string;
-  status: "Alert" | "Watch";
+interface TeacherCoursesData {
+  getTeacherCourses: {
+    success: boolean;
+    data: Course[];
+  };
+}
+
+interface TeacherAssignmentsData {
+  getTeacherAssignments: {
+    success: boolean;
+    data: Assignment[];
+  };
 }
 
 export default function TeacherDashboard() {
-  // --- Mock Data (Based on the image) ---
-  const stats: StatCard[] = [
-    { label: "My classes", value: "5", subtext: "4 active today" },
-    { label: "Total students", value: "142", subtext: "Across all classes" },
-    { label: "Pending reviews", value: "12", subtext: "Submissions" },
-    { label: "Avg class score", value: "74%", subtext: "This term" },
-  ];
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const timetable: TimetableItem[] = [
-    { id: "t1", title: "Maths — Grade 8A", time: "9:00–10:00 AM" },
-    { id: "t2", title: "Maths — Grade 9B", time: "11:00 AM–12:00 PM" },
-    { id: "t3", title: "Extra class", time: "2:00–3:00 PM" },
-  ];
+  const { data: coursesData, loading: coursesLoading } = useQuery<TeacherCoursesData>(GET_TEACHER_COURSES, {
+    fetchPolicy: "cache-and-network",
+  });
 
-  const pendingReviews: ReviewItem[] = [
-    {
-      id: "r1",
-      title: "Algebra test — 8A",
-      submissions: "32 submissions",
-      status: "Urgent",
-    },
-    {
-      id: "r2",
-      title: "Geometry HW — 9B",
-      submissions: "18 submissions",
-      status: "Due today",
-    },
-    {
-      id: "r3",
-      title: "Problem set 3 — 8B",
-      submissions: "28 submissions",
-      status: "Pending",
-    },
-  ];
+  const { data: assignmentsData, loading: assignmentsLoading } = useQuery<TeacherAssignmentsData>(GET_TEACHER_ASSIGNMENTS, {
+    fetchPolicy: "cache-and-network",
+  });
 
-  const atRiskStudents: AtRiskStudent[] = [
-    { id: "s1", name: "Rahul S.", reason: "Attendance: 72%", status: "Alert" },
-    { id: "s2", name: "Meera P.", reason: "Avg score: 42%", status: "Watch" },
-    { id: "s3", name: "Dev M.", reason: "Missing 3 HW", status: "Watch" },
-  ];
+  const coursesList = coursesData?.getTeacherCourses?.data || [];
+  const assignmentsList = assignmentsData?.getTeacherAssignments?.data || [];
 
-  // Helper function for styling status badges based on urgency/brand colors
-  const getBadgeStyle = (status: string) => {
-    switch (status) {
-      case "Urgent":
-      case "Alert":
-        // Error color (red/pink) for high priority
-        return "bg-[#ffb4ab]/10 text-[#ffb4ab] border border-[#ffb4ab]/20";
-      case "Due today":
-      case "Watch":
-        // Warning color (amber) for medium priority
-        return "bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20";
-      case "Pending":
-      default:
-        // Neutral surface color for standard status
-        return "bg-[#262a31] text-[#dfe2eb] border border-[#3b4a44]";
-    }
-  };
+  // Calculate stats
+  const totalCourses = coursesList.length;
+  const totalAssignments = assignmentsList.length;
+  const totalSubmissions = assignmentsList.reduce((sum, item) => sum + (item.totalSubmission || 0), 0);
+  const activeAssignments = assignmentsList.filter(item => item.isPublished).length;
+
+  const isLoading = coursesLoading || assignmentsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#10141a] flex items-center justify-center text-[#6fffd9] font-bold text-xl">
+        <span className="material-symbols-outlined animate-spin mr-3">
+          progress_activity
+        </span>
+        Loading Dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-6 lg:p-8 pb-12 max-w-7xl mx-auto space-y-6 font-body text-[#dfe2eb] w-full">
       {/* ── Header ── */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold font-headline text-[#dfe2eb]">
-          Good morning, Ms. Kumar
+          Welcome back, {user?.firstname || "Teacher"} 👋🏼
         </h1>
         <p className="text-[#b9cac3] text-sm mt-1">
-          3 classes today — 12 assignments to review
+          You have {totalCourses} allocated course{totalCourses !== 1 ? "s" : ""} and {totalSubmissions} student submission{totalSubmissions !== 1 ? "s" : ""} to manage.
         </p>
       </div>
 
       {/* ── Stats Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <div
+        {[
+          {
+            label: "Allocated Courses",
+            value: totalCourses,
+            subtext: "Active teaching programs",
+            icon: "book",
+            link: "/teacher/curriculum"
+          },
+          {
+            label: "Total Assignments",
+            value: totalAssignments,
+            subtext: "Tasks created",
+            icon: "assignment",
+            link: "/teacher/assignments"
+          },
+          {
+            label: "Total Submissions",
+            value: totalSubmissions,
+            subtext: "Awaiting grading",
+            icon: "school",
+            link: "/teacher/assignments"
+          },
+          {
+            label: "Active Assignments",
+            value: activeAssignments,
+            subtext: "Currently published",
+            icon: "published_with_changes",
+            link: "/teacher/assignments"
+          }
+        ].map((stat, index) => (
+          <Link
             key={index}
-            className="bg-[#1c2026] border border-[#3b4a44] p-5 rounded-xl flex flex-col justify-between shadow-sm transition-colors hover:border-[#84948e]"
+            to={stat.link}
+            className="bg-[#1c2026] border border-[#3b4a44] p-5 rounded-xl flex items-center justify-between shadow-sm transition-all hover:border-[#6fffd9] hover:bg-[#262a31]/50 group"
           >
-            <span className="text-[#b9cac3] text-sm font-medium">
-              {stat.label}
+            <div className="flex flex-col">
+              <span className="text-[#b9cac3] text-sm font-medium">
+                {stat.label}
+              </span>
+              <span className="text-3xl font-bold text-[#dfe2eb] mt-2 group-hover:text-[#6fffd9] transition-colors">
+                {stat.value}
+              </span>
+              <span className="text-[#84948e] text-xs mt-1">{stat.subtext}</span>
+            </div>
+            <span className="material-symbols-outlined text-3xl text-[#3b4a44] group-hover:text-[#6fffd9] transition-colors shrink-0">
+              {stat.icon}
             </span>
-            <span className="text-3xl font-bold text-[#dfe2eb] my-3">
-              {stat.value}
-            </span>
-            <span className="text-[#84948e] text-xs">{stat.subtext}</span>
-          </div>
+          </Link>
         ))}
       </div>
 
-      {/* ── Main Content Columns (3-Col Grid) ── */}
+      {/* ── Main Content Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Column 1: Today's Timetable */}
-        <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm flex flex-col">
-          <h2 className="text-[#84948e] text-xs font-bold tracking-wider mb-2 uppercase">
-            Today's Timetable
-          </h2>
-          <div className="flex-1 divide-y divide-[#3b4a44]/50">
-            {timetable.map((item) => (
-              <div key={item.id} className="py-4 first:pt-2 flex flex-col">
-                <span className="text-[#dfe2eb] font-medium">{item.title}</span>
-                <span className="text-[#84948e] text-sm mt-1">{item.time}</span>
-              </div>
-            ))}
+        {/* Allocated Courses List (Span 2) */}
+        <div className="lg:col-span-2 bg-[#1c2026] border border-[#3b4a44] rounded-xl p-6 shadow-sm flex flex-col">
+          <div className="flex justify-between items-center pb-4 border-b border-[#3b4a44]/50 mb-4">
+            <h2 className="text-[#dfe2eb] text-lg font-bold font-headline flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#6fffd9]">menu_book</span>
+              My Allocated Courses
+            </h2>
+            <Link to="/teacher/curriculum" className="text-xs text-[#bdc2ff] hover:text-[#a8afff] font-semibold flex items-center gap-1">
+              Curriculum Manager <span className="material-symbols-outlined text-xs">arrow_forward</span>
+            </Link>
           </div>
+
+          {coursesList.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+              <span className="material-symbols-outlined text-5xl text-[#3b4a44] mb-3">auto_stories</span>
+              <p className="text-[#b9cac3] text-sm">No courses currently allocated to you.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {coursesList.map((course) => (
+                <div
+                  key={course.id}
+                  className="bg-[#10141a]/40 p-4 rounded-xl border border-[#3b4a44]/50 flex flex-wrap items-center justify-between gap-4 hover:border-[#84948e]/60 transition-colors"
+                >
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-[#dfe2eb] truncate text-base">{course.title}</h3>
+                    <p className="text-[#84948e] text-xs mt-1">Level: {course.level || "All Levels"}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => navigate("/teacher/attendance", { state: { selectCourseId: course.id } })}
+                      className="text-xs bg-[#262a31] hover:bg-[#343d96]/30 text-[#bdc2ff] border border-[#3b4a44] font-semibold py-2 px-4 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sm">co_present</span>
+                      Attendance
+                    </button>
+                    <button
+                      onClick={() => navigate("/teacher/curriculum", { state: { selectCourseId: course.id } })}
+                      className="text-xs bg-[#262a31] hover:bg-[#6fffd9]/15 text-[#6fffd9] border border-[#3b4a44] font-semibold py-2 px-4 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sm">edit_note</span>
+                      Syllabus
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Column 2: Pending Reviews */}
-        <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm flex flex-col">
-          <h2 className="text-[#84948e] text-xs font-bold tracking-wider mb-2 uppercase">
-            Pending Reviews
-          </h2>
-          <div className="flex-1 divide-y divide-[#3b4a44]/50">
-            {pendingReviews.map((review) => (
-              <div
-                key={review.id}
-                className="py-4 first:pt-2 flex justify-between items-start"
-              >
-                <div>
-                  <span className="text-[#dfe2eb] font-medium block">
-                    {review.title}
-                  </span>
-                  <span className="text-[#84948e] text-sm mt-1 block">
-                    {review.submissions}
-                  </span>
-                </div>
-                <span
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider shrink-0 mt-0.5 ${getBadgeStyle(review.status)}`}
-                >
-                  {review.status}
-                </span>
-              </div>
-            ))}
+        {/* Recent Assignments (Span 1) */}
+        <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-6 shadow-sm flex flex-col">
+          <div className="flex justify-between items-center pb-4 border-b border-[#3b4a44]/50 mb-4">
+            <h2 className="text-[#dfe2eb] text-lg font-bold font-headline flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#6fffd9]">assignment_late</span>
+              Recent Assignments
+            </h2>
+            <Link to="/teacher/assignments" className="text-xs text-[#bdc2ff] hover:text-[#a8afff] font-semibold">
+              View All
+            </Link>
           </div>
-        </div>
 
-        {/* Column 3: At-Risk Students */}
-        <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm flex flex-col">
-          <h2 className="text-[#84948e] text-xs font-bold tracking-wider mb-2 uppercase">
-            At-Risk Students
-          </h2>
-          <div className="flex-1 divide-y divide-[#3b4a44]/50">
-            {atRiskStudents.map((student) => (
-              <div
-                key={student.id}
-                className="py-4 first:pt-2 flex justify-between items-start"
-              >
-                <div>
-                  <span className="text-[#dfe2eb] font-medium block">
-                    {student.name}
-                  </span>
-                  <span className="text-[#84948e] text-sm mt-1 block">
-                    {student.reason}
-                  </span>
+          {assignmentsList.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+              <span className="material-symbols-outlined text-5xl text-[#3b4a44] mb-3">assignment</span>
+              <p className="text-[#b9cac3] text-sm">No assignments created yet.</p>
+            </div>
+          ) : (
+            <div className="flex-1 divide-y divide-[#3b4a44]/30 space-y-3">
+              {assignmentsList.slice(0, 4).map((assignment) => (
+                <div key={assignment.id} className="pt-3 first:pt-0 flex flex-col justify-between h-full">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <span className="text-[#dfe2eb] font-semibold block text-sm truncate">
+                        {assignment.assignmentName}
+                      </span>
+                      <span className="text-[#84948e] text-xs block truncate mt-0.5">
+                        {assignment.courseName}
+                      </span>
+                    </div>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-wider shrink-0 border ${
+                        assignment.isPublished
+                          ? "bg-[#6fffd9]/10 text-[#6fffd9] border-[#6fffd9]/20"
+                          : "bg-[#84948e]/10 text-[#84948e] border-[#3b4a44]"
+                      }`}
+                    >
+                      {assignment.isPublished ? "Active" : "Draft"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-[#b9cac3] mt-2">
+                    <span>Submissions: <strong className="text-[#dfe2eb]">{assignment.totalSubmission || 0}</strong></span>
+                    {assignment.dueDate && (
+                      <span className="text-xs text-[#ffb4ab]">
+                        Due: {new Date(assignment.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <span
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider shrink-0 mt-0.5 ${getBadgeStyle(student.status)}`}
-                >
-                  {student.status}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
