@@ -14,9 +14,17 @@ interface NotificationModalProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: NotificationItem[];
+  onMarkAllRead?: () => void;
+  onViewAll?: () => void;
 }
 
-export default function NotificationModal({ isOpen, onClose, notifications }: NotificationModalProps) {
+export default function NotificationModal({ 
+  isOpen, 
+  onClose, 
+  notifications,
+  onMarkAllRead,
+  onViewAll
+}: NotificationModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -27,9 +35,14 @@ export default function NotificationModal({ isOpen, onClose, notifications }: No
         <h3 className="font-headline font-bold text-[#dfe2eb]">
           Notifications
         </h3>
-        <button className="text-xs text-[#6fffd9] hover:text-[#00e5bc] font-medium transition-colors focus:outline-none">
-          Mark all as read
-        </button>
+        {onMarkAllRead && (
+          <button 
+            onClick={onMarkAllRead}
+            className="text-xs text-[#6fffd9] hover:text-[#00e5bc] font-medium transition-colors focus:outline-none"
+          >
+            Mark all as read
+          </button>
+        )}
       </div>
 
       {/* ── Notification List ── */}
@@ -72,7 +85,7 @@ export default function NotificationModal({ isOpen, onClose, notifications }: No
 
               {/* Unread dot per item */}
               {notif.unread && (
-                <div className="w-2 h-2 rounded-full bg-[#6fffd9] shrink-0 mt-1 shadow-sm"></div>
+                <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1 shadow-[0_0_5px_rgba(239,68,68,0.5)] z-10"></div>
               )}
             </div>
           ))
@@ -91,7 +104,9 @@ export default function NotificationModal({ isOpen, onClose, notifications }: No
         <button 
           onClick={() => {
             onClose();
-            // navigate('/admin/notifications'); 
+            if (onViewAll) {
+              onViewAll();
+            }
           }}
           className="text-[13px] text-[#b9cac3] hover:text-[#dfe2eb] font-medium transition-colors focus:outline-none"
         >

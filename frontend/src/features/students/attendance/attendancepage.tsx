@@ -50,6 +50,8 @@ interface Course {
 
 export default function StudentAttendancePage() {
   // --- States for Date Filters ---
+  const [tempStartDate, setTempStartDate] = useState<string>("");
+  const [tempEndDate, setTempEndDate] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -118,8 +120,8 @@ export default function StudentAttendancePage() {
   const isLoading = coursesLoading || attendanceLoading;
 
   return (
-    <div className="min-h-screen bg-[#10141a] p-4 md:p-6 lg:p-8 font-body text-[#dfe2eb]">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="absolute inset-0 p-4 sm:p-6 lg:p-8 flex flex-col bg-[#10141a] font-body text-[#dfe2eb] overflow-y-auto custom-scrollbar">
+      <div className="max-w-6xl mx-auto space-y-8 w-full">
 
         {/* --- Header --- */}
         <div>
@@ -133,31 +135,59 @@ export default function StudentAttendancePage() {
 
         {/* --- Filters & Date Pickers Panel --- */}
         <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl p-5 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end gap-4">
             {/* Start Date */}
-            <div className="space-y-1.5">
+            <div className="flex-1 space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#b9cac3]">
                 Start Date
               </label>
               <input
                 type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                value={tempStartDate}
+                onChange={(e) => setTempStartDate(e.target.value)}
+                style={{ colorScheme: "dark" }}
                 className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-3 py-2 text-[#dfe2eb] text-sm outline-none focus:border-[#6fffd9] transition-colors"
               />
             </div>
 
             {/* End Date */}
-            <div className="space-y-1.5">
+            <div className="flex-1 space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-[#b9cac3]">
                 End Date
               </label>
               <input
                 type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                value={tempEndDate}
+                onChange={(e) => setTempEndDate(e.target.value)}
+                style={{ colorScheme: "dark" }}
                 className="w-full bg-[#10141a] border border-[#3b4a44] rounded-lg px-3 py-2 text-[#dfe2eb] text-sm outline-none focus:border-[#6fffd9] transition-colors"
               />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="w-full md:w-auto flex gap-2">
+              <button
+                onClick={() => {
+                  setStartDate(tempStartDate);
+                  setEndDate(tempEndDate);
+                }}
+                className="w-full bg-[#6fffd9] hover:bg-[#5ee6c3] text-[#10141a] font-bold text-sm px-6 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#6fffd9]/50 h-[38px] flex items-center justify-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-lg">search</span>
+                Search
+              </button>
+              <button
+                onClick={() => {
+                  setTempStartDate("");
+                  setTempEndDate("");
+                  setStartDate("");
+                  setEndDate("");
+                }}
+                className="w-full bg-[#262a31] hover:bg-[#323741] text-[#dfe2eb] border border-[#3b4a44] font-bold text-sm px-6 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#3b4a44]/50 h-[38px] flex items-center justify-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-lg">restart_alt</span>
+                Reset
+              </button>
             </div>
           </div>
         </div>

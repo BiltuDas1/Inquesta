@@ -42,31 +42,74 @@ export default function StudentsDashboardLayout() {
 
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentUrl = location.pathname;
   const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
   // ── Fetch Notifications ──
   const { data: notifData } = useQuery<GetNotificationsResponse>(GET_NOTIFICATIONS, {
     fetchPolicy: "network-only",
+    pollInterval: 5000,
   });
 
+  const [readKeys, setReadKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("read_notifications");
+    if (stored) {
+      try {
+        setReadKeys(JSON.parse(stored));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [isNotificationModalOpen, currentUrl]); // Refresh when modal opens or user navigates routes
+
+  const handleMarkAllRead = () => {
+    if (notifData?.getNotifications?.success && notifData?.getNotifications?.data) {
+      const allKeys = notifData.getNotifications.data.map((n: any) => `${n.title}-${n.description}`);
+      localStorage.setItem("read_notifications", JSON.stringify(allKeys));
+      setReadKeys(allKeys);
+    }
+  };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const stored = localStorage.getItem("read_notifications");
+      if (stored) {
+        try {
+          setReadKeys(JSON.parse(stored));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleStorageChange);
+    };
+  }, []);
+
   const notifications: NotificationItem[] = notifData?.getNotifications?.success && notifData?.getNotifications?.data
-    ? notifData.getNotifications.data.map((notif: any, index: number) => ({
-        id: index,
-        title: notif.title,
-        desc: notif.description,
-        time: "Just now", 
-        unread: true, 
-        icon: "info",
-        iconColor: "text-[#ffb4ab]",
-        bgColor: "bg-[#93000a]/10",
-      }))
+    ? notifData.getNotifications.data.map((notif: any, index: number) => {
+        const key = `${notif.title}-${notif.description}`;
+        return {
+          id: index,
+          title: notif.title,
+          desc: notif.description,
+          time: "Just now", 
+          unread: !readKeys.includes(key), 
+          icon: "info",
+          iconColor: "text-[#ffb4ab]",
+          bgColor: "bg-[#93000a]/10",
+        };
+      })
     : [];
 
   const unreadCount = notifications.filter((n) => n.unread).length;
-
-  const location = useLocation();
-  const currentUrl = location.pathname;
 
   const navItems = [
     {
@@ -267,7 +310,7 @@ export default function StudentsDashboardLayout() {
                   notifications
                 </span>
                 {unreadCount > 0 && (
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#6fffd9] rounded-full shadow-[0_0_5px_rgba(111,255,217,0.5)]"></span>
+                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)] z-10"></span>
                 )}
               </button>
               
@@ -275,6 +318,8 @@ export default function StudentsDashboardLayout() {
                 isOpen={isNotificationModalOpen} 
                 onClose={() => setIsNotificationModalOpen(false)} 
                 notifications={notifications} 
+                onMarkAllRead={handleMarkAllRead}
+                onViewAll={() => navigate("/students/notifications")}
               />
             </div>
 

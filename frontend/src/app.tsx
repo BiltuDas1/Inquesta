@@ -37,6 +37,7 @@ import SchedulePage from "./features/students/schedule/pages/schedulepage";
 import AssignmentsPage from "./features/students/assignment/pages/assignmentspage";
 import GradesPage from "./features/students/grades/pages/gradespages";
 import StudentAttendancePage from "./features/students/attendance/attendancepage";
+import StudentNotificationsPage from "./features/students/notifications/pages/notificationspage";
 import DashboardOverview from "./features/parent/dashboard/dashboardoverview";
 import ReportsPage from "./features/parent/reports/reportspage";
 import FeesPage from "./features/parent/fees/feespage";
@@ -145,6 +146,7 @@ function App() {
               element={<AssignmentsPage></AssignmentsPage>}
             />
             <Route path="grades" element={<GradesPage></GradesPage>} />
+            <Route path="notifications" element={<StudentNotificationsPage />} />
             <Route
               path="resources"
               element={
