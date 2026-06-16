@@ -3,19 +3,113 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router"; // Ensure
 import { useAuth } from "../features/auth/context/authcontext";
 import { Logo } from "../shared/components/logo";
 import { getGreeting } from "../shared/svg/utils/helper";
+import { gql } from "@apollo/client"; 
+import { useQuery } from "@apollo/client/react";
+import type { NotificationItem } from "../components/admin/notification/notificationmodal";
+import NotificationModal from "../components/admin/notification/notificationmodal";
+
+// ── GraphQL Query ──
+const GET_NOTIFICATIONS = gql`
+  query getNotifications {
+    getNotifications {
+      success
+      message
+      data {
+        title
+        description
+      }
+    }
+  }
+`;
+
+interface GetNotificationsResponse {
+  getNotifications: {
+    success: boolean;
+    message: string;
+    data: {
+      title: string;
+      description: string;
+    }[] | null;
+  };
+}
 
 export default function StudentsDashboardLayout() {
   // ── States for Responsive Sidebar & Profile ──
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const profileRef = useRef<HTMLDivElement>(null);
-
   const location = useLocation();
   const currentUrl = location.pathname;
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  // ── Fetch Notifications ──
+  const { data: notifData } = useQuery<GetNotificationsResponse>(GET_NOTIFICATIONS, {
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
+  });
+
+  const [readKeys, setReadKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("read_notifications");
+    if (stored) {
+      try {
+        setReadKeys(JSON.parse(stored));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [isNotificationModalOpen, currentUrl]); // Refresh when modal opens or user navigates routes
+
+  const handleMarkAllRead = () => {
+    if (notifData?.getNotifications?.success && notifData?.getNotifications?.data) {
+      const allKeys = notifData.getNotifications.data.map((n: any) => `${n.title}-${n.description}`);
+      localStorage.setItem("read_notifications", JSON.stringify(allKeys));
+      setReadKeys(allKeys);
+    }
+  };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const stored = localStorage.getItem("read_notifications");
+      if (stored) {
+        try {
+          setReadKeys(JSON.parse(stored));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleStorageChange);
+    };
+  }, []);
+
+  const notifications: NotificationItem[] = notifData?.getNotifications?.success && notifData?.getNotifications?.data
+    ? notifData.getNotifications.data.map((notif: any, index: number) => {
+        const key = `${notif.title}-${notif.description}`;
+        return {
+          id: index,
+          title: notif.title,
+          desc: notif.description,
+          time: "Just now", 
+          unread: !readKeys.includes(key), 
+          icon: "info",
+          iconColor: "text-[#ffb4ab]",
+          bgColor: "bg-[#93000a]/10",
+        };
+      })
+    : [];
+
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   const navItems = [
     {
@@ -63,6 +157,9 @@ export default function StudentsDashboardLayout() {
       const target = event.target as Node;
       if (profileRef.current && !profileRef.current.contains(target)) {
         setIsProfileOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(target)) {
+        setIsNotificationModalOpen(false);
       }
     };
     document.addEventListener("click", handleClickOutside);
@@ -199,6 +296,33 @@ export default function StudentsDashboardLayout() {
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
+            {/* ── Interactive Notification Bell & Modal Wrapper ── */}
+            <div className="relative animate-fade-in" ref={notificationRef}>
+              <button
+                onClick={() => setIsNotificationModalOpen(!isNotificationModalOpen)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors relative focus:outline-none ${
+                  isNotificationModalOpen 
+                    ? "bg-[#262a31] text-[#dfe2eb]" 
+                    : "text-[#b9cac3] hover:text-[#dfe2eb] hover:bg-[#262a31]"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[24px]">
+                  notifications
+                </span>
+                {unreadCount > 0 && (
+                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.6)] z-10"></span>
+                )}
+              </button>
+              
+              <NotificationModal 
+                isOpen={isNotificationModalOpen} 
+                onClose={() => setIsNotificationModalOpen(false)} 
+                notifications={notifications} 
+                onMarkAllRead={handleMarkAllRead}
+                onViewAll={() => navigate("/students/notifications")}
+              />
+            </div>
+
             {/* ── Interactive Profile Dropdown ── */}
             <div className="relative" ref={profileRef}>
               <button

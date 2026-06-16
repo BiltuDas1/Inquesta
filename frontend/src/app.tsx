@@ -36,6 +36,8 @@ import CourseCartPage from "./features/courses/pages/coursecartpage";
 import SchedulePage from "./features/students/schedule/pages/schedulepage";
 import AssignmentsPage from "./features/students/assignment/pages/assignmentspage";
 import GradesPage from "./features/students/grades/pages/gradespages";
+import StudentAttendancePage from "./features/students/attendance/attendancepage";
+import StudentNotificationsPage from "./features/students/notifications/pages/notificationspage";
 import DashboardOverview from "./features/parent/dashboard/dashboardoverview";
 import ReportsPage from "./features/parent/reports/reportspage";
 import FeesPage from "./features/parent/fees/feespage";
@@ -47,6 +49,7 @@ import TeacherAssignmentsPage from "./features/teacher/assignments/assignmentspa
 import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
 import ReportsAnalyticsPage from "./features/teacher/reports/reportspage";
 import TimetablePage from "./features/teacher/timetable/timetablepage";
+import TeacherAttendancePage from "./features/teacher/attendance/attendancepage";
 import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
 import ApprovalsPage from "./features/admin1/approvals/approvalspage";
 import OrganisationReportsPage from "./features/admin1/reports/reportspage";
@@ -136,20 +139,14 @@ function App() {
             <Route path="courses" element={<StudentEnrollmentsPage />} />
 
             {/* Coming Soon pages */}
-            <Route
-              path="attendance"
-              element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
-              }
-            />
+            <Route path="attendance" element={<StudentAttendancePage />} />
             <Route path="schedule" element={<SchedulePage></SchedulePage>} />
             <Route
               path="assignments"
               element={<AssignmentsPage></AssignmentsPage>}
             />
             <Route path="grades" element={<GradesPage></GradesPage>} />
+            <Route path="notifications" element={<StudentNotificationsPage />} />
             <Route
               path="resources"
               element={
@@ -212,6 +209,10 @@ function App() {
             />
 
             <Route path="timetable" element={<TimetablePage></TimetablePage>} />
+            <Route
+              path="attendance"
+              element={<TeacherAttendancePage></TeacherAttendancePage>}
+            />
           </Route>
         </Route>
 

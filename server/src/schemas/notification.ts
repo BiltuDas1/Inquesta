@@ -11,9 +11,10 @@ builder.mutationField("sendNotification", (t) =>
     args: {
       title: t.arg.string({ required: true }),
       description: t.arg.string({ required: true }),
+      role: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
-      return await notificationSend(args.title, args.description);
+      return await notificationSend(args.title, args.description, args.role);
     },
   }),
 );

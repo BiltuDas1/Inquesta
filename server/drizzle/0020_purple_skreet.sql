@@ -1,0 +1,2 @@
+ALTER TABLE `notification` ADD `user_id` varchar(36);--> statement-breakpoint
+ALTER TABLE `notification` ADD CONSTRAINT `notification_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;

@@ -42,6 +42,11 @@ export default function ParentDashboardLayout() {
       icon: "calendar_clock",
       path: "/teacher/timetable",
     },
+    {
+      name: "Attendance",
+      icon: "co_present",
+      path: "/teacher/attendance",
+    },
   ];
 
   // Close profile dropdown when clicking outside
