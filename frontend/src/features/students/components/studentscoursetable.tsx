@@ -64,15 +64,26 @@ export default function StudentCourseTable({
 
                   {/* Action Button (Universal "View Course") */}
                   <td className="p-4 align-middle text-right">
-                    <Link
-                      to={`/course/${c.slug}`}
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs transition-colors duration-200 whitespace-nowrap bg-[#6fffd9] text-[#00382c] hover:bg-[#00e5bc]"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">
-                        menu_book
-                      </span>
-                      View Course
-                    </Link>
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        to={`/students/course-report?courseId=${c.id}`}
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg font-semibold text-xs transition-colors duration-200 whitespace-nowrap bg-[#262a31] border border-[#3b4a44] text-[#b9cac3] hover:text-[#dfe2eb] hover:bg-[#31353c]"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          analytics
+                        </span>
+                        View Report
+                      </Link>
+                      <Link
+                        to={`/course/${c.slug}`}
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg font-semibold text-xs transition-colors duration-200 whitespace-nowrap bg-[#6fffd9] text-[#00382c] hover:bg-[#00e5bc]"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          menu_book
+                        </span>
+                        View Course
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))

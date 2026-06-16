@@ -133,6 +133,11 @@ export default function StudentsDashboardLayout() {
       path: "/students/assignments",
     },
     {
+      name: "Course Report",
+      icon: "analytics",
+      path: "/students/course-report",
+    },
+    {
       name: "Grades",
       icon: "grading",
       path: "/students/grades",
