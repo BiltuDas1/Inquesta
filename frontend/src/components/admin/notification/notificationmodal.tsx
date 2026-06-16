@@ -16,6 +16,7 @@ interface NotificationModalProps {
   notifications: NotificationItem[];
   onMarkAllRead?: () => void;
   onViewAll?: () => void;
+  onNotificationClick?: (index: number) => void;
 }
 
 export default function NotificationModal({ 
@@ -23,7 +24,8 @@ export default function NotificationModal({
   onClose, 
   notifications,
   onMarkAllRead,
-  onViewAll
+  onViewAll,
+  onNotificationClick
 }: NotificationModalProps) {
   if (!isOpen) return null;
 
@@ -48,9 +50,15 @@ export default function NotificationModal({
       {/* ── Notification List ── */}
       <div className="max-h-[60vh] overflow-y-auto custom-scrollbar divide-y divide-[#3b4a44]/50">
         {notifications.length > 0 ? (
-          notifications.map((notif) => (
+          notifications.map((notif, index) => (
             <div
               key={notif.id}
+              onClick={() => {
+                onClose();
+                if (onNotificationClick) {
+                  onNotificationClick(index);
+                }
+              }}
               className={`p-4 flex gap-3 hover:bg-[#262a31] transition-colors cursor-pointer ${
                 notif.unread ? "bg-[#262a31]/30" : ""
               }`}

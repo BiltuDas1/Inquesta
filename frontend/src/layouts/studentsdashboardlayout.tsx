@@ -330,6 +330,7 @@ export default function StudentsDashboardLayout() {
                 notifications={notifications} 
                 onMarkAllRead={handleMarkAllRead}
                 onViewAll={() => navigate("/students/notifications")}
+                onNotificationClick={(index) => navigate(`/students/notifications/${index}`)}
               />
             </div>
 

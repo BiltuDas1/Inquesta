@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router";
 
 const GET_NOTIFICATIONS = gql`
   query getNotifications {
@@ -28,7 +29,9 @@ interface GetNotificationsResponse {
   };
 }
 
-export default function StudentNotificationsPage() {
+export default function NotificationsPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { data, loading, refetch } = useQuery<GetNotificationsResponse>(GET_NOTIFICATIONS, {
     fetchPolicy: "network-only",
   });
@@ -74,6 +77,16 @@ export default function StudentNotificationsPage() {
       localStorage.setItem("read_notifications", JSON.stringify(updated));
       setReadKeys(updated);
     }
+  };
+
+  const handleNotificationClick = (notif: typeof notificationsList[number]) => {
+    handleMarkSingleRead(notif.key);
+    // Navigate to detail page relative to current base path
+    // e.g. /students/notifications -> /students/notifications/0
+    const basePath = location.pathname.endsWith("/notifications")
+      ? location.pathname
+      : location.pathname.replace(/\/$/, "") + "/notifications";
+    navigate(`${basePath}/${notif.id}`);
   };
 
   return (
@@ -128,7 +141,7 @@ export default function StudentNotificationsPage() {
               {notificationsList.map((notif) => (
                 <div
                   key={notif.id}
-                  onClick={() => handleMarkSingleRead(notif.key)}
+                  onClick={() => handleNotificationClick(notif)}
                   className={`p-5 flex gap-4 hover:bg-[#262a31]/40 transition-colors cursor-pointer relative ${notif.unread ? "bg-[#262a31]/20" : ""
                     }`}
                 >
@@ -157,9 +170,14 @@ export default function StudentNotificationsPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-[#b9cac3] mt-1.5 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#b9cac3] mt-1.5 leading-relaxed line-clamp-2">
                       {notif.description}
                     </p>
+                  </div>
+
+                  {/* Arrow indicator */}
+                  <div className="flex items-center shrink-0 text-[#84948e]">
+                    <span className="material-symbols-outlined text-lg">chevron_right</span>
                   </div>
                 </div>
               ))}
