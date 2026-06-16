@@ -462,18 +462,6 @@ export default function CourseDetails() {
           <div className="bg-[#1c2026] rounded-3xl shadow-xl border border-[#3b4a44] overflow-hidden mb-8">
             <div className="grid grid-cols-1 lg:grid-cols-2">
               <div className="p-10 lg:p-14 flex flex-col justify-center relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="bg-[#343d96]/30 text-[#bdc2ff] border border-[#343d96] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                    {fallbackData.programmeType}
-                  </span>
-                  <span className="text-[#b9cac3] text-sm font-medium tracking-wide flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">
-                      {"terminal"}
-                    </span>
-                    {fallbackData.courseSeries}
-                  </span>
-                </div>
-
                 <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-4xl sm:text-5xl font-extrabold text-[#dfe2eb] mb-5 leading-tight">
                   {course.title}
                 </h1>
@@ -482,27 +470,13 @@ export default function CourseDetails() {
                   {fallbackData.tagline}
                 </p>
 
-                <div className="mt-auto border-t border-[#3b4a44] pt-6 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-[#b9cac3] font-medium mb-1">
-                      Cost Per Student
-                    </p>
-                    <p className="font-['Plus_Jakarta_Sans',_sans-serif] text-3xl font-bold text-[#bdc2ff]">
-                      {course.price}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={handleDownloadBrochure}
-                      disabled={isGeneratingPDF}
-                      className="text-[#bdc2ff] hover:text-[#a8afff] font-medium text-sm flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        {isGeneratingPDF ? "hourglass_empty" : "download"}
-                      </span>
-                      {isGeneratingPDF ? "Generating..." : "Brochure"}
-                    </button>
-                  </div>
+                <div className="mt-auto border-t border-[#3b4a44] pt-6">
+                  <p className="text-sm text-[#b9cac3] font-medium mb-1">
+                    Cost Per Student
+                  </p>
+                  <p className="font-['Plus_Jakarta_Sans',_sans-serif] text-3xl font-bold text-[#bdc2ff]">
+                    {course.price}
+                  </p>
                 </div>
               </div>
 
@@ -510,7 +484,7 @@ export default function CourseDetails() {
                 <img
                   src={`${course.icon}`}
                   alt="Course Visual"
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
+                  className="absolute inset-0 w-full h-full object-cover opacity-90"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1c2026] via-[#1c2026]/80 to-transparent"></div>
               </div>
@@ -519,10 +493,11 @@ export default function CourseDetails() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
             {[
-              {
+              course.duration ? {
                 icon: "calendar_today",
                 title: course.duration,
-              },
+                sub: "",
+              } : null,
               {
                 icon: "pin_drop",
                 title: fallbackData.deliveryMode,
@@ -531,29 +506,31 @@ export default function CourseDetails() {
               {
                 icon: "verified",
                 title: `Lvl: ${course.level}`,
-
+                sub: "",
               },
               {
                 icon: "library_books",
                 title: `${modules.length} Modules`,
                 sub: "Comprehensive Curriculum",
               },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-[#1c2026] p-6 rounded-2xl border border-[#3b4a44] shadow-md flex flex-row md:flex-col items-center md:items-start gap-4 hover:bg-[#262a31] transition-colors duration-300"
-              >
-                <span className="material-symbols-outlined text-3xl text-[#6fffd9]">
-                  {item.icon}
-                </span>
-                <div>
-                  <p className="text-base font-bold text-[#dfe2eb] font-['Plus_Jakarta_Sans',_sans-serif]">
-                    {item.title}
-                  </p>
-                  <p className="text-sm text-[#b9cac3] mt-1">{item.sub}</p>
+            ]
+              .filter((item): item is Exclude<typeof item, null> => item !== null)
+              .map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#1c2026] p-6 rounded-2xl border border-[#3b4a44] shadow-md flex flex-row md:flex-col items-center md:items-start gap-4 hover:bg-[#262a31] transition-colors duration-300"
+                >
+                  <span className="material-symbols-outlined text-3xl text-[#6fffd9]">
+                    {item.icon}
+                  </span>
+                  <div>
+                    <p className="text-base font-bold text-[#dfe2eb] font-['Plus_Jakarta_Sans',_sans-serif]">
+                      {item.title}
+                    </p>
+                    {item.sub && <p className="text-sm text-[#b9cac3] mt-1">{item.sub}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
@@ -568,22 +545,6 @@ export default function CourseDetails() {
                 <p className="text-[#b9cac3] leading-relaxed text-lg mb-8 whitespace-pre-wrap">
                   {course.description}
                 </p>
-
-                <div className="bg-[#262a31] p-6 rounded-2xl border border-[#3b4a44]">
-                  <h3 className="text-sm font-bold text-[#dfe2eb] uppercase tracking-wider mb-2 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[#6fffd9] text-lg">
-                      workspace_premium
-                    </span>
-                    Instructor Credentials
-                  </h3>
-                  <p className="text-[#b9cac3]">
-                    Led by{" "}
-                    <strong className="text-[#dfe2eb]">
-                      {course.instructorName}
-                    </strong>
-                    , {fallbackData.instructorCredentialsSuffix}
-                  </p>
-                </div>
               </section>
 
               <section className="bg-[#1c2026] p-8 rounded-3xl shadow-md border border-[#3b4a44]">
@@ -641,60 +602,13 @@ export default function CourseDetails() {
             </div>
 
             <div className="lg:col-span-4 space-y-6">
-              <div className="bg-[#262a31] text-[#dfe2eb] p-8 rounded-3xl shadow-lg border border-[#3b4a44] relative overflow-hidden">
-                <div className="absolute -top-4 -right-4 p-4 opacity-5">
-                  <span className="material-symbols-outlined text-9xl text-[#bdc2ff]">
-                    lightbulb
-                  </span>
-                </div>
-                <h2 className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold mb-6 relative z-10 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#bdc2ff]">
-                    psychology
-                  </span>
-                  Key Takeaways
-                </h2>
-                <ul className="space-y-5 relative z-10">
-                  {keyTakeaways.map((takeaway, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-[#6fffd9] mt-0.5">
-                        check_circle
-                      </span>
-                      <span className="text-[#b9cac3] text-sm leading-relaxed">
-                        {takeaway}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
               <div
                 id="register"
                 className="bg-[#1c2026] p-8 rounded-3xl shadow-lg border border-[#3b4a44]"
               >
-                <h2 className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-[#dfe2eb] mb-2">
+                <h2 className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-[#dfe2eb] pb-6 border-b border-[#3b4a44] mb-6">
                   Secure Your Spot
                 </h2>
-                <p className="text-sm text-[#b9cac3] mb-6 pb-6 border-b border-[#3b4a44]">
-                  {fallbackData.notes}
-                </p>
-                <div className="space-y-4 mb-8">
-                  {[
-                    { icon: "mail", text: fallbackData.email },
-                    { icon: "phone", text: fallbackData.phone },
-                    { icon: "language", text: fallbackData.website },
-                    { icon: "location_on", text: fallbackData.venue },
-                  ].map((contact, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-3 text-sm text-[#dfe2eb]"
-                    >
-                      <span className="material-symbols-outlined text-[#bdc2ff] text-[20px]">
-                        {contact.icon}
-                      </span>
-                      <span className="truncate">{contact.text}</span>
-                    </div>
-                  ))}
-                </div>
                 {isAlreadyEnrolled ? (
                   <button
                     onClick={() => navigate(`/courses`)}
@@ -730,6 +644,32 @@ export default function CourseDetails() {
                   </span>
                   {isGeneratingPDF ? "Generating PDF..." : "Download Brochure"}
                 </button>
+              </div>
+
+              <div className="bg-[#262a31] text-[#dfe2eb] p-8 rounded-3xl shadow-lg border border-[#3b4a44] relative overflow-hidden">
+                <div className="absolute -top-4 -right-4 p-4 opacity-5">
+                  <span className="material-symbols-outlined text-9xl text-[#bdc2ff]">
+                    lightbulb
+                  </span>
+                </div>
+                <h2 className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold mb-6 relative z-10 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#bdc2ff]">
+                    psychology
+                  </span>
+                  Key Takeaways
+                </h2>
+                <ul className="space-y-5 relative z-10">
+                  {keyTakeaways.map((takeaway, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-[#6fffd9] mt-0.5">
+                        check_circle
+                      </span>
+                      <span className="text-[#b9cac3] text-sm leading-relaxed">
+                        {takeaway}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
