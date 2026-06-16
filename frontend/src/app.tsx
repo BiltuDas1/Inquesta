@@ -26,6 +26,7 @@ import CheckEmailPage from "./features/auth/pages/checkemailpage";
 import DashboardLayout from "./components/admin/layout/adminlayout";
 import StudentsDashboardLayout from "./layouts/studentsdashboardlayout";
 import StudentEnrollmentsPage from "./features/students/pages/studentenrollmentpage";
+import StudentDashboardPage from "./features/students/pages/studentdashboardpage";
 import ParentDashboardLayout from "./components/parent/layout/parentdashboardlayout";
 import NoticePage from "./features/admin1/setting/notice/noticepage";
 import ContactPage from "./shared/pages/contactpage";
@@ -38,6 +39,7 @@ import AssignmentsPage from "./features/students/assignment/pages/assignmentspag
 import GradesPage from "./features/students/grades/pages/gradespages";
 import StudentAttendancePage from "./features/students/attendance/attendancepage";
 import StudentNotificationsPage from "./features/students/notifications/pages/notificationspage";
+import StudentCourseReportPage from "./features/students/pages/coursereportpage";
 import DashboardOverview from "./features/parent/dashboard/dashboardoverview";
 import ReportsPage from "./features/parent/reports/reportspage";
 import FeesPage from "./features/parent/fees/feespage";
@@ -135,7 +137,7 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
 
             {/* The actual dashboard page */}
-            <Route path="dashboard" element={<StudentEnrollmentsPage />} />
+            <Route path="dashboard" element={<StudentDashboardPage />} />
             <Route path="courses" element={<StudentEnrollmentsPage />} />
 
             {/* Coming Soon pages */}
@@ -147,6 +149,7 @@ function App() {
             />
             <Route path="grades" element={<GradesPage></GradesPage>} />
             <Route path="notifications" element={<StudentNotificationsPage />} />
+            <Route path="course-report" element={<StudentCourseReportPage />} />
             <Route
               path="resources"
               element={

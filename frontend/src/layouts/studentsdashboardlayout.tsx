@@ -113,6 +113,11 @@ export default function StudentsDashboardLayout() {
 
   const navItems = [
     {
+      name: "Dashboard",
+      icon: "dashboard",
+      path: "/students/dashboard",
+    },
+    {
       name: "My Enrollments",
       icon: "library_books",
       path: "/students/courses",
@@ -131,6 +136,11 @@ export default function StudentsDashboardLayout() {
       name: "Assignments",
       icon: "assignment",
       path: "/students/assignments",
+    },
+    {
+      name: "Course Report",
+      icon: "analytics",
+      path: "/students/course-report",
     },
     {
       name: "Grades",

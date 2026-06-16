@@ -420,6 +420,7 @@ export async function getStudentAssignments(access_token: string) {
         creationDate: assignments.createdAt,
         dueDate: assignments.dueDate,
         submissionStatus: submissions.status,
+        submissionScore: submissions.score,
       })
       .from(courseEnrollments)
       .innerJoin(courses, eq(courseEnrollments.course_id, courses.id))
@@ -446,6 +447,7 @@ export async function getStudentAssignments(access_token: string) {
         creationDate: row.creationDate.toISOString(),
         dueDate: row.dueDate ? row.dueDate.toISOString() : null,
         status: displayStatus,
+        score: row.submissionScore ?? 0,
       };
     });
 

@@ -12,4 +12,5 @@ import "./notification.ts"
 import "./assignment.ts";
 import "./timetable.ts";
 import "./attendance.ts";
+import "./curriculum.ts";
 export const schema = builder.toSchema();

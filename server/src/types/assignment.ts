@@ -96,6 +96,7 @@ export type StudentAssignmentInfo = {
   creationDate: string;
   dueDate: string | null;
   status: string;
+  score: number;
 };
 
 export const StudentAssignmentInfoObject = builder
@@ -109,6 +110,7 @@ export const StudentAssignmentInfoObject = builder
       creationDate: t.exposeString("creationDate"),
       dueDate: t.exposeString("dueDate", { nullable: true }),
       status: t.exposeString("status"),
+      score: t.exposeInt("score"),
     }),
   });
 
