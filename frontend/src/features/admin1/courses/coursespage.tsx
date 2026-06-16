@@ -354,6 +354,7 @@ export default function CoursesPage() {
   const [modal, setModal] = useState<"add" | string | null>(null);
   const [search, setSearch] = useState("");
   const [filterLevel, setFilterLevel] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   // ── GraphQL Hooks ──
   
@@ -466,17 +467,22 @@ export default function CoursesPage() {
       let finalIcon = formData.icon;
 
       if (file) {
-        const { data: uploadRes } = await requestUpload({
-          variables: { mimetype: file.type },
-        });
-        if (uploadRes?.request_upload?.success) {
-          const { url, filename } = uploadRes.request_upload.data;
-          await fetch(url, {
-            method: "PUT",
-            body: file,
-            headers: { "Content-Type": file.type },
+        setIsUploading(true);
+        try {
+          const { data: uploadRes } = await requestUpload({
+            variables: { mimetype: file.type },
           });
-          finalIcon = filename;
+          if (uploadRes?.request_upload?.success) {
+            const { url, filename } = uploadRes.request_upload.data;
+            await fetch(url, {
+              method: "PUT",
+              body: file,
+              headers: { "Content-Type": file.type },
+            });
+            finalIcon = filename;
+          }
+        } finally {
+          setIsUploading(false);
         }
       }
 
@@ -611,7 +617,7 @@ export default function CoursesPage() {
           editing={displayCourses.find((c) => c.id === modal) || null}
           onClose={() => setModal(null)}
           onSave={handleSave}
-          isSubmitting={adding || updating}
+          isSubmitting={adding || updating || isUploading}
           teachers={teachersList} // <--- Pass the fetched dynamic array
         />
       )}

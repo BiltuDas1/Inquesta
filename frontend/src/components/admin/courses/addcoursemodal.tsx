@@ -296,6 +296,25 @@ export default function CourseModal({
           {editing ? "Edit Course" : "Add New Course"}
         </h2>
 
+        {isSubmitting && (
+          <div className="w-full h-1 bg-[#262a31] rounded-full overflow-hidden mb-6 relative">
+            <div
+              className="absolute top-0 bottom-0 bg-[#6fffd9] rounded-full"
+              style={{
+                width: "40%",
+                animation: "modal-shimmer 1.5s infinite ease-in-out",
+              }}
+            />
+            <style>{`
+              @keyframes modal-shimmer {
+                0% { left: -40%; }
+                50% { left: 40%; width: 60%; }
+                100% { left: 100%; }
+              }
+            `}</style>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-4">
             <div>
