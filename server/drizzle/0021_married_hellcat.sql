@@ -1,0 +1,1 @@
+ALTER TABLE `notification` ADD `role` varchar(50);

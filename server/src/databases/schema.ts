@@ -128,6 +128,8 @@ export const notification = mysqlTable("notification", {
     .$defaultFn(() => uuidv7()),
   title: varchar({ length: 255 }).notNull(),
   description: text().notNull(),
+  userId: varchar("user_id", { length: 36 }).references(() => users.id, { onDelete: "cascade" }),
+  role: varchar("role", { length: 50 }),
   addedAt: timestamp("added_at").defaultNow().notNull()
 });
 

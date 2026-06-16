@@ -1,5 +1,5 @@
 import { db } from "../config.ts";
-import { attendance, courses, courseEnrollments, users } from "../databases/schema.ts";
+import { attendance, courses, courseEnrollments, users, notification } from "../databases/schema.ts";
 import { and, eq, desc } from "drizzle-orm";
 import { JWT } from "../utils/jwt/jwt.ts";
 
@@ -147,6 +147,14 @@ export async function submitAttendance(
           userId: rec.userId,
           date,
           status: rec.status,
+        });
+      }
+
+      if (rec.status === "Absent") {
+        await db.insert(notification).values({
+          title: `Absent Alert: ${courseCheck[0].title}`,
+          description: `You were marked absent in ${courseCheck[0].title} on ${date}.`,
+          userId: rec.userId,
         });
       }
     }

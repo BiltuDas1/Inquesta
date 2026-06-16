@@ -141,6 +141,20 @@
       "when": 1781593750102,
       "tag": "0019_supreme_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1781595559673,
+      "tag": "0020_purple_skreet",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1781595754411,
+      "tag": "0021_married_hellcat",
+      "breakpoints": true
     }
   ]
 }

@@ -52,7 +52,6 @@ export default function StudentAttendancePage() {
   // --- States for Date Filters ---
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
 
   // --- GraphQL Queries ──
   const { data: coursesData, loading: coursesLoading } = useQuery<{
@@ -115,11 +114,6 @@ export default function StudentAttendancePage() {
       rate,
     };
   }, [tableData]);
-
-  // Selected subject details for logs drawer/history view below table
-  const selectedSubject = useMemo(() => {
-    return tableData.find((s) => s.id === selectedSubjectId) || null;
-  }, [tableData, selectedSubjectId]);
 
   const isLoading = coursesLoading || attendanceLoading;
 
@@ -234,9 +228,7 @@ export default function StudentAttendancePage() {
                     tableData.map((sub, idx) => (
                       <tr
                         key={sub.id}
-                        onClick={() => setSelectedSubjectId(sub.id === selectedSubjectId ? null : sub.id)}
-                        className={`group hover:bg-[#262a31]/50 cursor-pointer transition-colors ${selectedSubjectId === sub.id ? "bg-[#262a31]/30" : ""
-                          }`}
+                        className="group hover:bg-[#262a31]/50 transition-colors"
                       >
                         <td className="p-4 align-middle text-sm text-[#b9cac3] font-semibold">
                           {idx + 1}
@@ -274,51 +266,6 @@ export default function StudentAttendancePage() {
             </div>
           )}
         </div>
-
-        {/* --- Selected Subject Details (Clicking row displays detailed logs list) --- */}
-        {!isLoading && selectedSubject && (
-          <div className="bg-[#1c2026] border border-[#3b4a44] rounded-xl overflow-hidden shadow-sm animate-in fade-in slide-in-from-bottom duration-200">
-            <div className="px-6 py-4 border-b border-[#3b4a44]">
-              <h3 className="font-headline font-semibold text-base text-[#dfe2eb]">
-                Detailed Class Log — {selectedSubject.title}
-              </h3>
-            </div>
-            <div className="divide-y divide-[#3b4a44] max-h-[300px] overflow-y-auto custom-scrollbar">
-              {selectedSubject.filteredRecords.length === 0 ? (
-                <div className="text-center p-8 text-sm text-[#b9cac3]">
-                  No records found for this date range
-                </div>
-              ) : (
-                selectedSubject.filteredRecords.map((record: AttendanceRecord) => {
-                  const isPresent = record.status === "Present";
-                  return (
-                    <div
-                      key={record.id}
-                      className="flex items-center justify-between p-4 sm:px-6 hover:bg-[#262a31]/20 transition-colors"
-                    >
-                      <div>
-                        <div className="font-semibold text-sm text-[#dfe2eb]">
-                          {record.date}
-                        </div>
-                        <div className="text-xs text-[#b9cac3] mt-0.5">
-                          Regular Class
-                        </div>
-                      </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${isPresent
-                            ? "bg-[#00e5bc]/15 text-[#6fffd9] border border-[#00e5bc]/30"
-                            : "bg-[#ffb4ab]/15 text-[#ffb4ab] border border-[#ffb4ab]/30"
-                          }`}
-                      >
-                        {record.status}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        )}
 
       </div>
     </div>
