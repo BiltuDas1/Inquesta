@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router";
 
 // --- GraphQL Operations ---
 const GET_TEACHER_COURSES = gql`
@@ -73,14 +74,26 @@ interface Course {
 }
 
 export default function TeacherAttendancePage() {
+  const location = useLocation();
+  const state = location.state as { selectCourseId?: string } | null;
+
   // --- States ---
-  const [selectedCourseId, setSelectedCourseId] = useState<string>("");
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(
+    state?.selectCourseId || ""
+  );
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
   
   // Track attendance status
   const [attendanceState, setAttendanceState] = useState<Record<string, AttendanceStatus>>({});
+
+  // Sync selectedCourseId if location state changes
+  useEffect(() => {
+    if (state?.selectCourseId) {
+      setSelectedCourseId(state.selectCourseId);
+    }
+  }, [state?.selectCourseId]);
 
   // ── GraphQL Queries ──
   

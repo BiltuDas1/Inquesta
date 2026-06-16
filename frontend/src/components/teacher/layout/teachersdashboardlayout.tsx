@@ -18,8 +18,8 @@ export default function ParentDashboardLayout() {
 
   const navItems = [
     {
-      name: "My Classes",
-      icon: "book",
+      name: "Dashboard",
+      icon: "dashboard",
       path: "/teacher/dashboard",
     },
     {
@@ -31,11 +31,6 @@ export default function ParentDashboardLayout() {
       name: "Curriculum",
       icon: "export_notes",
       path: "/teacher/curriculum",
-    },
-    {
-      name: "Reports",
-      icon: "clock_loader_60",
-      path: "/teacher/reports",
     },
     {
       name: "Time Table",
