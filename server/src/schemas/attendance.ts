@@ -5,6 +5,7 @@ import {
   getCourseStudents,
   submitAttendance,
   getAttendanceLogs,
+  getStudentAttendance,
 } from "../resolvers/attendance.ts";
 
 // Course representation in attendance context
@@ -249,6 +250,71 @@ builder.mutationField("submitAttendance", (t) =>
         args.date,
         args.records,
       );
+    },
+  }),
+);
+
+interface StudentAttendanceRecord {
+  id: string;
+  courseId: string;
+  date: string;
+  status: string;
+}
+
+const StudentAttendanceRecordObject = builder
+  .objectRef<StudentAttendanceRecord>("StudentAttendanceRecord")
+  .implement({
+    fields: (t) => ({
+      id: t.exposeString("id"),
+      courseId: t.exposeString("courseId"),
+      date: t.exposeString("date"),
+      status: t.exposeString("status"),
+    }),
+  });
+
+const StudentAttendanceResponse = builder
+  .objectRef<{
+    success: boolean;
+    message: string;
+    data?: StudentAttendanceRecord[];
+  }>("StudentAttendanceResponse")
+  .implement({
+    fields: (t) => ({
+      success: t.exposeBoolean("success"),
+      message: t.exposeString("message"),
+      data: t.expose("data", {
+        type: [StudentAttendanceRecordObject],
+        nullable: true,
+      }),
+    }),
+  });
+
+builder.queryField("getStudentAttendance", (t) =>
+  t.field({
+    authScopes: {
+      isValidSession: true,
+    },
+    type: StudentAttendanceResponse,
+    args: {},
+    resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "no cookie has been passed to the server",
+          data: [],
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "no access_token cookie",
+          data: [],
+        };
+      }
+
+      return await getStudentAttendance(cookieObj["access_token"]);
     },
   }),
 );

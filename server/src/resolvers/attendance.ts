@@ -221,3 +221,40 @@ export async function getAttendanceLogs(access_token: string, courseId: string) 
     };
   }
 }
+
+export async function getStudentAttendance(access_token: string) {
+  const accessToken = await JWT.toAccessToken(access_token);
+  if (accessToken === null) {
+    return {
+      success: false,
+      message: "invalid access token",
+      data: [],
+    };
+  }
+
+  try {
+    const studentId = accessToken.getSub();
+    const result = await db
+      .select({
+        id: attendance.id,
+        courseId: attendance.courseId,
+        date: attendance.date,
+        status: attendance.status,
+      })
+      .from(attendance)
+      .where(eq(attendance.userId, studentId));
+
+    return {
+      success: true,
+      message: "Student attendance records retrieved successfully",
+      data: result,
+    };
+  } catch (error) {
+    console.error("Error retrieving student attendance:", error);
+    return {
+      success: false,
+      message: "internal server error",
+      data: [],
+    };
+  }
+}
