@@ -246,7 +246,7 @@ export default function StudentDashboardPage() {
 
   // Attendance Rate
   const attendanceStats = useMemo(() => {
-    if (attendanceList.length === 0) return { percent: 100, label: "No logs yet" };
+    if (attendanceList.length === 0) return { percent: 0, label: "No logs yet" };
     const presentCount = attendanceList.filter((r) => r.status.toLowerCase() === "present").length;
     const rate = Math.round((presentCount / attendanceList.length) * 100);
     return {
@@ -268,7 +268,7 @@ export default function StudentDashboardPage() {
 
   // Average Score / Grade
   const gradeStats = useMemo(() => {
-    if (assignments.length === 0) return { avgScore: 100, letter: "A", label: "Excellent standing" };
+    if (assignments.length === 0) return { avgScore: 0, letter: "N/A", label: "No assignments graded yet" };
     const totalScore = assignments.reduce((acc, a) => acc + a.score, 0);
     const avg = Math.round(totalScore / assignments.length);
 
