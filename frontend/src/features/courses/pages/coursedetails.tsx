@@ -459,78 +459,96 @@ export default function CourseDetails() {
     <>
       <div className="min-h-screen bg-[#10141a] text-[#dfe2eb] font-['Inter',_sans-serif] selection:bg-[#6fffd9] selection:text-[#00382c]">
         <main className="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#1c2026] rounded-3xl shadow-xl border border-[#3b4a44] overflow-hidden mb-8">
+          <div className="bg-[#1c2026] rounded-3xl shadow-xl border border-[#3b4a44] overflow-hidden mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2">
-              <div className="p-10 lg:p-14 flex flex-col justify-center relative z-10">
-                <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-4xl sm:text-5xl font-extrabold text-[#dfe2eb] mb-5 leading-tight">
-                  {course.title}
-                </h1>
-
-                <p className="text-lg text-[#6fffd9] mb-8 leading-relaxed font-medium">
-                  {fallbackData.tagline}
-                </p>
-
-                <div className="mt-auto border-t border-[#3b4a44] pt-6">
-                  <p className="text-sm text-[#b9cac3] font-medium mb-1">
-                    Cost Per Student
+              {/* Left Column - Hero Content */}
+              <div className="p-8 sm:p-12 lg:p-14 flex flex-col justify-between relative z-10">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#343d96]/20 border border-[#343d96]/50 text-[#bdc2ff] text-xs font-bold tracking-wider uppercase mb-6 w-fit">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#6fffd9] animate-pulse"></span>
+                    Featured Program
+                  </div>
+                  <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-4xl sm:text-5xl font-extrabold text-[#dfe2eb] mb-5 leading-tight tracking-tight">
+                    {course.title}
+                  </h1>
+                  <p className="text-base sm:text-lg text-[#b9cac3] leading-relaxed font-medium">
+                    {fallbackData.tagline}
                   </p>
-                  <p className="font-['Plus_Jakarta_Sans',_sans-serif] text-3xl font-bold text-[#bdc2ff]">
-                    {course.price}
-                  </p>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-[#3b4a44]/60 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-[#b9cac3] font-semibold uppercase tracking-wider mb-1">
+                      Cost Per Student
+                    </p>
+                    <p className="font-['Plus_Jakarta_Sans',_sans-serif] text-3xl font-black text-[#6fffd9]">
+                      {course.price}
+                    </p>
+                  </div>
+                  <span className="material-symbols-outlined text-4xl text-[#bdc2ff]/20 select-none">
+                    payments
+                  </span>
                 </div>
               </div>
 
-              <div className="relative h-64 lg:h-auto hidden sm:block bg-[#181c22]">
-                <img
-                  src={`${course.icon}`}
-                  alt="Course Visual"
-                  className="absolute inset-0 w-full h-full object-cover opacity-90"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1c2026] via-[#1c2026]/80 to-transparent"></div>
+              {/* Right Column - Premium Metadata Cards Grid */}
+              <div className="relative p-8 sm:p-12 lg:p-14 bg-gradient-to-br from-[#14181f] to-[#1c2026] border-t lg:border-t-0 lg:border-l border-[#3b4a44]/60 flex flex-col justify-center overflow-hidden">
+                {/* Ambient Radial Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6fffd9]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <h3 className="relative z-10 font-['Plus_Jakarta_Sans',_sans-serif] text-xs font-bold text-[#84948e] uppercase tracking-widest mb-6">
+                  Program Overview
+                </h3>
+
+                <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+                  {[
+                    course.duration ? {
+                      icon: "calendar_today",
+                      title: course.duration,
+                      sub: "Duration",
+                    } : null,
+                    {
+                      icon: "pin_drop",
+                      title: fallbackData.deliveryMode,
+                      sub: fallbackData.city,
+                    },
+                    {
+                      icon: "verified",
+                      title: `Level: ${course.level}`,
+                      sub: "Difficulty Level",
+                    },
+                    {
+                      icon: "library_books",
+                      title: `${modules.length} Modules`,
+                      sub: "Comprehensive Curriculum",
+                    },
+                  ]
+                    .filter((item): item is Exclude<typeof item, null> => item !== null)
+                    .map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-[#1c2026]/60 backdrop-blur-md p-5 rounded-2xl border border-[#3b4a44]/80 shadow-lg flex flex-row items-center gap-4 hover:bg-[#222730] hover:border-[#6fffd9] transition-all duration-300 group"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-[#262a31] border border-[#3b4a44]/60 group-hover:bg-[#6fffd9]/10 group-hover:border-[#6fffd9]/30 flex items-center justify-center transition-all duration-300 shrink-0">
+                          <span className="material-symbols-outlined text-2xl text-[#6fffd9] group-hover:scale-110 transition-transform duration-300">
+                            {item.icon}
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-bold text-[#dfe2eb] font-['Plus_Jakarta_Sans',_sans-serif] leading-tight">
+                            {item.title}
+                          </p>
+                          {item.sub ? (
+                            <p className="text-xs text-[#b9cac3] mt-1 font-medium leading-normal">
+                              {item.sub}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-            {[
-              course.duration ? {
-                icon: "calendar_today",
-                title: course.duration,
-                sub: "",
-              } : null,
-              {
-                icon: "pin_drop",
-                title: fallbackData.deliveryMode,
-                sub: fallbackData.city,
-              },
-              {
-                icon: "verified",
-                title: `Lvl: ${course.level}`,
-                sub: "",
-              },
-              {
-                icon: "library_books",
-                title: `${modules.length} Modules`,
-                sub: "Comprehensive Curriculum",
-              },
-            ]
-              .filter((item): item is Exclude<typeof item, null> => item !== null)
-              .map((item, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#1c2026] p-6 rounded-2xl border border-[#3b4a44] shadow-md flex flex-row md:flex-col items-center md:items-start gap-4 hover:bg-[#262a31] transition-colors duration-300"
-                >
-                  <span className="material-symbols-outlined text-3xl text-[#6fffd9]">
-                    {item.icon}
-                  </span>
-                  <div>
-                    <p className="text-base font-bold text-[#dfe2eb] font-['Plus_Jakarta_Sans',_sans-serif]">
-                      {item.title}
-                    </p>
-                    {item.sub && <p className="text-sm text-[#b9cac3] mt-1">{item.sub}</p>}
-                  </div>
-                </div>
-              ))}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
@@ -618,12 +636,22 @@ export default function CourseDetails() {
                     <span className="material-symbols-outlined text-sm">arrow_outward</span>
                   </button>
                 ) : isPendingVerification ? (
-                  <button
-                    disabled
-                    className="w-full flex items-center justify-center gap-2 bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl opacity-60 cursor-not-allowed"
-                  >
-                    Pending Verification
-                  </button>
+                  <>
+                    <button
+                      disabled
+                      className="w-full flex items-center justify-center gap-2 bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl opacity-60"
+                    >
+                      Pending Verification
+                    </button>
+                    <div className="mt-3 p-3 bg-[#ffb4ab]/10 border border-[#ffb4ab]/30 rounded-xl flex items-start gap-2">
+                      <span className="material-symbols-outlined text-base text-[#ffb4ab] shrink-0 mt-0.5">
+                        info
+                      </span>
+                      <p className="text-xs text-[#b9cac3] leading-relaxed font-medium">
+                        Payment verification will be done within 2 - 5 hours.
+                      </p>
+                    </div>
+                  </>
                 ) : (
                   <button
                     onClick={handleEnroll}
