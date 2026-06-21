@@ -224,3 +224,16 @@ export const course_takeaways = mysqlTable("course_takeaways", {
   takeaway: text().notNull(),
 });
 
+export const courseResources = mysqlTable("course_resources", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  courseId: varchar("course_id", { length: 36 })
+    .references(() => courses.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // pdf, video, link, document
+  url: text("url").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+

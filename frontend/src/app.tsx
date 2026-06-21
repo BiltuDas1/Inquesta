@@ -50,6 +50,7 @@ import TeachersDashboardLayout from "./components/teacher/layout/teachersdashboa
 import TeacherDashboard from "./features/teacher/myclass/teacherdashboard";
 import TeacherAssignmentsPage from "./features/teacher/assignments/assignmentspage";
 import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
+import TeacherResourcesPage from "./features/teacher/resources/resourcespage";
 import TimetablePage from "./features/teacher/timetable/timetablepage";
 import TeacherAttendancePage from "./features/teacher/attendance/attendancepage";
 import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
@@ -206,6 +207,10 @@ function App() {
             <Route
               path="curriculum"
               element={<CurriculumPage></CurriculumPage>}
+            />
+            <Route
+              path="resources"
+              element={<TeacherResourcesPage></TeacherResourcesPage>}
             />
 
             <Route path="timetable" element={<TimetablePage></TimetablePage>} />

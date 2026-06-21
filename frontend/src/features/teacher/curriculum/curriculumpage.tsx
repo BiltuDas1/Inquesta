@@ -183,12 +183,14 @@ export default function CurriculumPage() {
   });
 
   // --- GraphQL Mutations ---
-  const [addCurriculumUnit] = useMutation<any>(ADD_CURRICULUM_UNIT);
-  const [updateCurriculumUnit] = useMutation<any>(UPDATE_CURRICULUM_UNIT);
+  const [addCurriculumUnit, { loading: addingUnit }] = useMutation<any>(ADD_CURRICULUM_UNIT);
+  const [updateCurriculumUnit, { loading: updatingUnit }] = useMutation<any>(UPDATE_CURRICULUM_UNIT);
   const [toggleCurriculumUnitComplete] = useMutation<any>(TOGGLE_CURRICULUM_UNIT_COMPLETE);
   const [deleteCurriculumUnit] = useMutation<any>(DELETE_CURRICULUM_UNIT);
   const [addCourseTakeaway] = useMutation<any>(ADD_COURSE_TAKEAWAY);
   const [deleteCourseTakeaway] = useMutation<any>(DELETE_COURSE_TAKEAWAY);
+
+  const isSaving = addingUnit || updatingUnit;
 
   const handleAddTakeaway = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -517,6 +519,7 @@ export default function CurriculumPage() {
             setEditingUnit(null);
           }}
           onSave={handleSaveUnit}
+          isSaving={isSaving}
         />
       )}
 

@@ -10,12 +10,14 @@ interface AddCurriculumModalProps {
     title: string;
     description?: string;
   } | null;
+  isSaving: boolean;
 }
 
 export default function AddCurriculumModal({
   onClose,
   onSave,
   editingUnit = null,
+  isSaving,
 }: AddCurriculumModalProps) {
   const [title, setTitle] = useState(editingUnit?.title ?? "");
   const [description, setDescription] = useState(editingUnit?.description ?? "");
@@ -85,15 +87,22 @@ export default function AddCurriculumModal({
             <button
               type="button"
               onClick={onClose}
-              className="bg-transparent border border-[#3b4a44] rounded-full px-5 py-2 text-[#b9cac3] font-headline font-semibold text-[0.875rem] cursor-pointer hover:bg-[#3b4a44]/30 transition-colors"
+              disabled={isSaving}
+              className="bg-transparent border border-[#3b4a44] rounded-full px-5 py-2 text-[#b9cac3] font-headline font-semibold text-[0.875rem] cursor-pointer hover:bg-[#3b4a44]/30 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-[#6fffd9] border-none rounded-full px-6 py-2 text-[#00382c] font-headline font-semibold text-[0.875rem] cursor-pointer hover:opacity-90 transition-opacity"
+              disabled={isSaving}
+              className="bg-[#6fffd9] border-none rounded-full px-6 py-2 text-[#00382c] font-headline font-semibold text-[0.875rem] cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
             >
-              {editingUnit ? "Save Changes" : "Add Unit"}
+              {isSaving && (
+                <span className="material-symbols-outlined animate-spin text-sm" style={{ fontSize: "16px" }}>
+                  progress_activity
+                </span>
+              )}
+              {isSaving ? "Saving..." : editingUnit ? "Save Changes" : "Add Unit"}
             </button>
           </div>
         </form>

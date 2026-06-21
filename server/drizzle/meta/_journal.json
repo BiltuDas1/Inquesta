@@ -176,6 +176,13 @@
       "when": 1782015000876,
       "tag": "0024_sloppy_crusher_hogan",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1782015788207,
+      "tag": "0025_opposite_spot",
+      "breakpoints": true
     }
   ]
 }
