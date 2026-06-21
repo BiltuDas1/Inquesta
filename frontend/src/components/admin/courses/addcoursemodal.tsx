@@ -250,6 +250,7 @@ export default function CourseModal({
     assignedTeacher: editing?.teacherId ?? editing?.assignedTeacher ?? "", 
     description: editing?.description ?? "",
     icon: editing?.icon ?? "",
+    status: editing?.status ?? "draft",
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -395,6 +396,20 @@ export default function CourseModal({
                     {teacher.firstname} {teacher.lastname || ""}
                   </option>
                 ))}
+              </select>
+            </div>
+
+            {/* Status Dropdown Field */}
+            <div>
+              <label className={labelClass}>Status</label>
+              <select
+                name="status"
+                className={inputClass}
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="draft" className="bg-[#1c2026]">Draft</option>
+                <option value="live" className="bg-[#1c2026]">Live</option>
               </select>
             </div>
           </div>

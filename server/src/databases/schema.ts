@@ -42,6 +42,7 @@ export const courses = mysqlTable("courses", {
   iconName: varchar("icon_name", { length: 255 }),
   slug: varchar({ length: 255 }).notNull().unique(),
   teacherId: varchar("teacher_id", { length: 36 }).references(() => users.id),
+  status: mysqlEnum("status", ["draft", "live"]).default("draft").notNull(),
 });
 
 export const users_info = mysqlTable("users_info", {

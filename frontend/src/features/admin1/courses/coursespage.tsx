@@ -462,6 +462,36 @@ export default function CoursesPage() {
     }
   };
 
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    const course = displayCourses.find((c) => c.id === id);
+    if (!course) return;
+    try {
+      const { data } = await updateCourse({
+        variables: {
+          id: course.id,
+          title: course.title,
+          description: course.description || "",
+          duration: course.duration,
+          icon_name: course.icon || "",
+          instructor_name: course.instructorName,
+          level: course.level,
+          price: course.price,
+          teacher_id: course.teacherId || null,
+          status: newStatus,
+        },
+      });
+      if (data?.courseUpdate?.success) {
+        toast.success("Course status updated successfully");
+        await refetch();
+      } else {
+        toast.error(data?.courseUpdate?.message || "Failed to update course status");
+      }
+    } catch (e: any) {
+      console.error("Status Update Error:", e);
+      toast.error("An error occurred while updating course status");
+    }
+  };
+
   async function handleSave(formData: any, file: File | null) {
     try {
       let finalIcon = formData.icon;
@@ -596,6 +626,7 @@ export default function CoursesPage() {
               teachers={teachersList}
               onEdit={(id) => setModal(id)}
               onDelete={handleDeleteClick}
+              onStatusChange={handleStatusChange}
             />
 
             {/* Pagination */}

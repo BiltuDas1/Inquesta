@@ -169,6 +169,13 @@
       "when": 1781635711121,
       "tag": "0023_outstanding_meggan",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1782015000876,
+      "tag": "0024_sloppy_crusher_hogan",
+      "breakpoints": true
     }
   ]
 }

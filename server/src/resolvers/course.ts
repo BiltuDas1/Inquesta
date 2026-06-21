@@ -48,6 +48,7 @@ export async function getCourses(
   lastID?: string | null,
   levels?: string[] | null,
   maxPrice?: number | null,
+  status?: string | null,
 ) {
   const conditions = [];
 
@@ -61,6 +62,10 @@ export async function getCourses(
 
   if (maxPrice !== undefined && maxPrice !== null) {
     conditions.push(lte(courses.price, maxPrice));
+  }
+
+  if (status !== undefined && status !== null) {
+    conditions.push(eq(courses.status, status as any));
   }
 
   const query = db
@@ -359,6 +364,7 @@ export async function searchCourses(
   lastRelevance?: number,
   levels?: string[] | null,
   maxPrice?: number | null,
+  status?: string | null,
 ) {
   const relevanceSql = sql<number>`MATCH(${courses.title}, ${courses.description}) AGAINST(${text})`;
 
@@ -384,6 +390,10 @@ export async function searchCourses(
 
   if (maxPrice !== undefined && maxPrice !== null) {
     conditions.push(lte(courses.price, maxPrice));
+  }
+
+  if (status !== undefined && status !== null) {
+    conditions.push(eq(courses.status, status as any));
   }
 
   const response = await db

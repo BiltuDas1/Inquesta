@@ -12,6 +12,7 @@ interface CourseTableProps {
   teachers: Teacher[];
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  onStatusChange: (id: string, newStatus: string) => void;
 }
 
 export default function CourseTable({
@@ -19,6 +20,7 @@ export default function CourseTable({
   teachers,
   onEdit,
   onDelete,
+  onStatusChange,
 }: CourseTableProps) {
   return (
     <div className="bg-[#1c2026] border border-[#3b4a44] rounded-[16px] overflow-hidden shadow-sm">
@@ -26,7 +28,7 @@ export default function CourseTable({
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-[#181c22] border-b border-[#3b4a44]">
-              {["Course", "Level", "Duration", "Price", ""].map((h, i) => (
+              {["Course", "Level", "Duration", "Price", "Status", ""].map((h, i) => (
                 <th
                   key={i}
                   className="p-[0.8rem_1rem] text-left font-headline text-[0.75rem] font-bold text-[#b9cac3] tracking-widest uppercase"
@@ -39,7 +41,7 @@ export default function CourseTable({
           <tbody className="divide-y divide-[#3b4a44]">
             {courses.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center p-12 text-[#b9cac3]">
+                <td colSpan={6} className="text-center p-12 text-[#b9cac3]">
                   No courses found
                 </td>
               </tr>
@@ -75,6 +77,16 @@ export default function CourseTable({
                       <span className="text-[#dfe2eb] font-headline font-bold text-[0.95rem]">
                         ₹ {c.price}
                       </span>
+                    </td>
+                    <td className="p-4 align-middle">
+                      <select
+                        value={c.status || "draft"}
+                        onChange={(e) => onStatusChange(c.id, e.target.value)}
+                        className="bg-[#1c2026] border border-[#3b4a44] rounded-[8px] px-2 py-1 text-[#dfe2eb] text-sm outline-none focus:border-[#6fffd9] cursor-pointer"
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="live">Live</option>
+                      </select>
                     </td>
                     <td className="p-4 align-middle text-right">
                       <div className="flex justify-end gap-2">
