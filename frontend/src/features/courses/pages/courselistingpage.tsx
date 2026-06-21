@@ -11,8 +11,8 @@ import { useLocation } from "react-router";
 
 // Standard query to get default courses
 const GET_COURSES = gql`
-  query GetCourses($limit: Int!, $lastID: String, $levels: [String!], $maxPrice: Int) {
-    courseGet(limit: $limit, lastID: $lastID, levels: $levels, maxPrice: $maxPrice) {
+  query GetCourses($limit: Int!, $lastID: String, $levels: [String!], $maxPrice: Int, $status: String) {
+    courseGet(limit: $limit, lastID: $lastID, levels: $levels, maxPrice: $maxPrice, status: $status) {
       success
       message
       data {
@@ -39,6 +39,7 @@ const SEARCH_COURSES = gql`
     $text: String!
     $levels: [String!]
     $maxPrice: Int
+    $status: String
   ) {
     searchCourses(
       lastID: $lastID
@@ -47,6 +48,7 @@ const SEARCH_COURSES = gql`
       text: $text
       levels: $levels
       maxPrice: $maxPrice
+      status: $status
     ) {
       data {
         id
@@ -218,6 +220,7 @@ export default function CourseListingPage() {
       lastID: lastID,
       levels: selectedLevels.length > 0 ? selectedLevels : null,
       maxPrice: maxPrice,
+      status: "live",
     }, // Strict Int for limit
     skip: !!searchQuery, // Skip this query if searchQuery exists
     fetchPolicy: "cache-and-network",
@@ -236,6 +239,7 @@ export default function CourseListingPage() {
       lastRelevance: lastRelevance ? parseFloat(lastRelevance) : 0,
       levels: selectedLevels.length > 0 ? selectedLevels : null,
       maxPrice: maxPrice,
+      status: "live",
     },
     skip: !searchQuery, // Skip this query if searchQuery is empty/null
     fetchPolicy: "network-only",

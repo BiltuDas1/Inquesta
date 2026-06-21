@@ -129,6 +129,11 @@ export default function ParentDashboardLayout() {
       path: "/teacher/curriculum",
     },
     {
+      name: "Resources",
+      icon: "folder_open",
+      path: "/teacher/resources",
+    },
+    {
       name: "Time Table",
       icon: "calendar_clock",
       path: "/teacher/timetable",

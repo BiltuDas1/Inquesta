@@ -1,0 +1,1 @@
+ALTER TABLE `courses` ADD `status` enum('draft','live') DEFAULT 'draft' NOT NULL;

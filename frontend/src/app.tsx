@@ -41,6 +41,7 @@ import StudentAttendancePage from "./features/students/attendance/attendancepage
 import NotificationsPage from "./shared/pages/notificationspage";
 import NotificationDetailPage from "./shared/pages/notificationdetailpage";
 import StudentCourseReportPage from "./features/students/pages/coursereportpage";
+import StudentResourcesPage from "./features/students/pages/resourcespage";
 import DashboardOverview from "./features/parent/dashboard/dashboardoverview";
 import ReportsPage from "./features/parent/reports/reportspage";
 import FeesPage from "./features/parent/fees/feespage";
@@ -50,6 +51,7 @@ import TeachersDashboardLayout from "./components/teacher/layout/teachersdashboa
 import TeacherDashboard from "./features/teacher/myclass/teacherdashboard";
 import TeacherAssignmentsPage from "./features/teacher/assignments/assignmentspage";
 import CurriculumPage from "./features/teacher/curriculum/curriculumpage";
+import TeacherResourcesPage from "./features/teacher/resources/resourcespage";
 import TimetablePage from "./features/teacher/timetable/timetablepage";
 import TeacherAttendancePage from "./features/teacher/attendance/attendancepage";
 import AdminDashboardPage from "./features/admin1/dashboard/admindashboardpage";
@@ -153,11 +155,7 @@ function App() {
             <Route path="course-report" element={<StudentCourseReportPage />} />
             <Route
               path="resources"
-              element={
-                <div>
-                  This feature is currently under development. Check back soon!
-                </div>
-              }
+              element={<StudentResourcesPage />}
             />
           </Route>
         </Route>
@@ -206,6 +204,10 @@ function App() {
             <Route
               path="curriculum"
               element={<CurriculumPage></CurriculumPage>}
+            />
+            <Route
+              path="resources"
+              element={<TeacherResourcesPage></TeacherResourcesPage>}
             />
 
             <Route path="timetable" element={<TimetablePage></TimetablePage>} />

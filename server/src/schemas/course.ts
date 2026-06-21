@@ -38,6 +38,7 @@ builder.mutationField("courseAdd", (t) =>
       instructor_name: t.arg.string({ required: true }),
       icon_name: t.arg.string({ required: false }),
       teacher_id: t.arg.string({ required: false }),
+      status: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -47,6 +48,7 @@ builder.mutationField("courseAdd", (t) =>
           instructorName: args.instructor_name,
           iconName: args.icon_name,
           teacherId: args.teacher_id,
+          status: args.status,
         });
         return {
           success: true,
@@ -87,6 +89,7 @@ builder.queryField("courseGet", (t) =>
       limit: t.arg.int({ required: true }),
       levels: t.arg.stringList({ required: false }),
       maxPrice: t.arg.int({ required: false }),
+      status: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -95,6 +98,7 @@ builder.queryField("courseGet", (t) =>
           args.lastID,
           args.levels,
           args.maxPrice,
+          args.status,
         );
 
         return {
@@ -155,6 +159,7 @@ builder.mutationField("courseUpdate", (t) =>
       instructor_name: t.arg.string({ required: true }),
       icon_name: t.arg.string({ required: false }),
       teacher_id: t.arg.string({ required: false }),
+      status: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       try {
@@ -164,6 +169,7 @@ builder.mutationField("courseUpdate", (t) =>
           level: args.level as CourseLevel,
           instructorName: args.instructor_name,
           teacherId: args.teacher_id,
+          status: args.status,
         });
         return {
           success: true,
@@ -367,6 +373,7 @@ builder.queryField("searchCourses", (t) =>
       lastID: t.arg.string({ required: false }),
       levels: t.arg.stringList({ required: false }),
       maxPrice: t.arg.int({ required: false }),
+      status: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
       const result = await searchCourses(
@@ -376,6 +383,7 @@ builder.queryField("searchCourses", (t) =>
         args.lastRelevance ? args.lastRelevance : undefined,
         args.levels,
         args.maxPrice,
+        args.status,
       );
       return {
         success: true,

@@ -42,6 +42,7 @@ export const courses = mysqlTable("courses", {
   iconName: varchar("icon_name", { length: 255 }),
   slug: varchar({ length: 255 }).notNull().unique(),
   teacherId: varchar("teacher_id", { length: 36 }).references(() => users.id),
+  status: mysqlEnum("status", ["draft", "live"]).default("draft").notNull(),
 });
 
 export const users_info = mysqlTable("users_info", {
@@ -221,5 +222,18 @@ export const course_takeaways = mysqlTable("course_takeaways", {
     .notNull()
     .references(() => courses.id, { onDelete: "cascade" }),
   takeaway: text().notNull(),
+});
+
+export const courseResources = mysqlTable("course_resources", {
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  courseId: varchar("course_id", { length: 36 })
+    .references(() => courses.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // pdf, video, link, document
+  url: text("url").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

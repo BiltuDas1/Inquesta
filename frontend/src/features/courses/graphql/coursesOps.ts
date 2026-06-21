@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_COURSES = gql`
-  query courseGet($lastID: String, $limit: Int!) {
-    courseGet(lastID: $lastID, limit: $limit) {
+  query courseGet($lastID: String, $limit: Int!, $status: String) {
+    courseGet(lastID: $lastID, limit: $limit, status: $status) {
       success
       message
       data {
@@ -15,6 +15,7 @@ export const GET_COURSES = gql`
         price
         icon
         teacherId
+        status
       }
     }
   }
@@ -43,6 +44,7 @@ export const ADD_COURSE = gql`
     $title: String!
     $icon_name: String
     $teacher_id: String
+    $status: String
   ) {
     courseAdd(
       description: $description
@@ -53,6 +55,7 @@ export const ADD_COURSE = gql`
       title: $title
       icon_name: $icon_name
       teacher_id: $teacher_id
+      status: $status
     ) {
       message
       success
@@ -60,32 +63,6 @@ export const ADD_COURSE = gql`
   }
 `;
 
-// export const UPDATE_COURSE = gql`
-//   mutation courseUpdate(
-//     $id: String!
-//     $description: String
-//     $duration: String!
-//     $icon_name:String!
-//     $instructor_name: String!
-//     $level: String!
-//     $price: Int!
-//     $title: String!
-//   ) {
-//     courseUpdate(
-//       id: $id
-//       description: $description
-//       duration: $duration
-//       $icon_name:$icon_name
-//       instructor_name: $instructor_name
-//       level: $level
-//       price: $price
-//       title: $title
-//     ) {
-//       message
-//       success
-//     }
-//   }
-// `;
 export const UPDATE_COURSE = gql`
   mutation courseUpdate(
     $id: String!
@@ -97,6 +74,7 @@ export const UPDATE_COURSE = gql`
     $price: Int!
     $title: String!
     $teacher_id: String
+    $status: String
   ) {
     courseUpdate(
       id: $id
@@ -108,6 +86,7 @@ export const UPDATE_COURSE = gql`
       price: $price
       title: $title
       teacher_id: $teacher_id
+      status: $status
     ) {
       message
       success
