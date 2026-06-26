@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with admini
 
 ---
 
-## 1. Mutation: `addTeacher`
+## Mutation: `addTeacher`
 
 ### Description
 An administrator-only mutation that initiates onboarding for a new teacher by reserving their account and generating a unique onboarding invitation URL.
@@ -30,7 +30,7 @@ An administrator-only mutation that initiates onboarding for a new teacher by re
 
 ---
 
-## 2. Mutation: `addedTeacherDetails`
+## Mutation: `addedTeacherDetails`
 
 ### Description
 Allows the newly onboarded teacher to complete their activation by providing their qualifications and establishing an account password.
@@ -50,7 +50,7 @@ Allows the newly onboarded teacher to complete their activation by providing the
 
 ---
 
-## 3. Query: `getTeacherInfo`
+## Query: `getTeacherInfo`
 
 ### Description
 Retrieves registration details and qualification info for a specific teacher.
@@ -79,7 +79,7 @@ Retrieves registration details and qualification info for a specific teacher.
 
 ---
 
-## 4. Query: `getTeachers`
+## Query: `getTeachers`
 
 ### Description
 Admin query to retrieve list details of all teachers registered in the system.
@@ -96,7 +96,7 @@ None.
 
 ---
 
-## 5. Mutation: `updateTeacherByAdmin`
+## Mutation: `updateTeacherByAdmin`
 
 ### Description
 Enables an administrator to modify profile details or toggle the active status of any teacher account.
@@ -119,7 +119,7 @@ Enables an administrator to modify profile details or toggle the active status o
 
 ---
 
-## 6. Mutation: `deleteTeacher`
+## Mutation: `deleteTeacher`
 
 ### Description
 Admin mutation that permanently deletes a teacher and their related qualifications record from the platform.

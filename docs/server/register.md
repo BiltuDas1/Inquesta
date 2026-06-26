@@ -4,7 +4,7 @@ This document describes the GraphQL mutations associated with the user registrat
 
 ---
 
-## 1. Mutation: `register`
+## Mutation: `register`
 
 ### Description
 Registers a new user (student or parent) in the system. The backend:
@@ -95,7 +95,7 @@ mutation RegisterUser($firstname: String!, $lastname: String, $email: String!, $
 
 ---
 
-## 2. Mutation: `verifyEmail`
+## Mutation: `verifyEmail`
 
 ### Description
 Verifies a user's email address using a temporary URL-safe verification token. Upon success, the user account's `isActive` flag is set to `true`, allowing them to log in.

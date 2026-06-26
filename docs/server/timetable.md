@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with studen
 
 ---
 
-## 1. Query: `getTimetable`
+## Query: `getTimetable`
 
 ### Description
 Retrieves all schedule/timetable entries for the currently authenticated user.
@@ -82,7 +82,7 @@ query GetTimetable {
 
 ---
 
-## 2. Mutation: `addTimetableEntry`
+## Mutation: `addTimetableEntry`
 
 ### Description
 Creates a new schedule entry in the user's timetable.
@@ -143,7 +143,7 @@ mutation AddTimetableEntry($subject: String!, $day: String!, $startHour: Int!, $
 
 ---
 
-## 3. Mutation: `deleteTimetableEntry`
+## Mutation: `deleteTimetableEntry`
 
 ### Description
 Deletes a specific timetable entry by its ID.

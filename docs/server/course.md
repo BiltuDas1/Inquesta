@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with managi
 
 ---
 
-## 1. Query: `courseGet`
+## Query: `courseGet`
 
 ### Description
 Fetches a list of courses from the platform. Supports cursor-based pagination, level filtering, price cap filtering, and status filtering.
@@ -27,7 +27,7 @@ Fetches a list of courses from the platform. Supports cursor-based pagination, l
 
 ---
 
-## 2. Query: `getCourseInfo`
+## Query: `getCourseInfo`
 
 ### Description
 Retrieves full details of a course by its unique URL-friendly slug.
@@ -46,7 +46,7 @@ Retrieves full details of a course by its unique URL-friendly slug.
 
 ---
 
-## 3. Query: `searchCourses`
+## Query: `searchCourses`
 
 ### Description
 Fuzzy searches courses by title or description using a search text string with pagination and filter criteria.
@@ -75,7 +75,7 @@ All standard `Course` fields, plus:
 
 ---
 
-## 4. Query: `enrolledCourses`
+## Query: `enrolledCourses`
 
 ### Description
 Retrieves a list of courses in which the currently authenticated student is enrolled.
@@ -88,7 +88,7 @@ Same structure as `courseGet`.
 
 ---
 
-## 5. Query: `getallEnrollments`
+## Query: `getallEnrollments`
 
 ### Description
 Admin query to fetch all course enrollment transactions across the platform.
@@ -108,7 +108,7 @@ Contains student contact/qualification info, course detail details, `transaction
 
 ---
 
-## 6. Query: `getTeacherAllocatedCourses`
+## Query: `getTeacherAllocatedCourses`
 
 ### Description
 Retrieves courses along with their assigned teachers.
@@ -134,7 +134,7 @@ None.
 
 ---
 
-## 7. Mutation: `courseAdd`
+## Mutation: `courseAdd`
 
 ### Description
 Creates/registers a new course in the system.
@@ -157,7 +157,7 @@ True if course creation succeeded.
 
 ---
 
-## 8. Mutation: `courseUpdate`
+## Mutation: `courseUpdate`
 
 ### Description
 Modifies course info properties.
@@ -170,7 +170,7 @@ True if update succeeded.
 
 ---
 
-## 9. Mutation: `courseDelete`
+## Mutation: `courseDelete`
 
 ### Description
 Deletes a course record.
@@ -185,7 +185,7 @@ True if course deletion succeeded.
 
 ---
 
-## 10. Mutation: `enrollCourse`
+## Mutation: `enrollCourse`
 
 ### Description
 Enrolls the logged-in student in a course using a payment transaction identifier.
@@ -201,7 +201,7 @@ True if enrollment succeeds.
 
 ---
 
-## 11. Mutation: `verifyEnrollment`
+## Mutation: `verifyEnrollment`
 
 ### Description
 Admin approval or rejection of student course enrollment transaction.
@@ -217,7 +217,7 @@ True on successfully updating enrollment verification status.
 
 ---
 
-## 12. Query: `getCurriculumUnits`
+## Query: `getCurriculumUnits`
 
 ### Description
 Retrieves learning modules/units representing the curriculum sequence of a course.
@@ -245,7 +245,7 @@ Retrieves learning modules/units representing the curriculum sequence of a cours
 
 ---
 
-## 13. Query: `getCourseTakeaways`
+## Query: `getCourseTakeaways`
 
 ### Description
 Gets learning takeaways (skills gained) listed under a course.
@@ -271,7 +271,7 @@ Gets learning takeaways (skills gained) listed under a course.
 
 ---
 
-## 14. Mutation: `addCurriculumUnit`
+## Mutation: `addCurriculumUnit`
 
 ### Description
 Creates a new curriculum module unit under a course.
@@ -285,7 +285,7 @@ Creates a new curriculum module unit under a course.
 
 ---
 
-## 15. Mutation: `updateCurriculumUnit`
+## Mutation: `updateCurriculumUnit`
 
 ### Description
 Updates title/description details of an existing curriculum unit.
@@ -299,7 +299,7 @@ Updates title/description details of an existing curriculum unit.
 
 ---
 
-## 16. Mutation: `toggleCurriculumUnitComplete`
+## Mutation: `toggleCurriculumUnitComplete`
 
 ### Description
 Toggles the complete/incomplete status of a curriculum unit.
@@ -311,7 +311,7 @@ Toggles the complete/incomplete status of a curriculum unit.
 
 ---
 
-## 17. Mutation: `deleteCurriculumUnit`
+## Mutation: `deleteCurriculumUnit`
 
 ### Description
 Removes a curriculum unit module from the course.
@@ -323,7 +323,7 @@ Removes a curriculum unit module from the course.
 
 ---
 
-## 18. Mutation: `addCourseTakeaway`
+## Mutation: `addCourseTakeaway`
 
 ### Description
 Adds a learning takeaway outcome to a course.
@@ -336,7 +336,7 @@ Adds a learning takeaway outcome to a course.
 
 ---
 
-## 19. Mutation: `deleteCourseTakeaway`
+## Mutation: `deleteCourseTakeaway`
 
 ### Description
 Deletes a course takeaway outcome.

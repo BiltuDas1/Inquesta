@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with the sy
 
 ---
 
-## 1. Query: `getNotifications`
+## Query: `getNotifications`
 
 ### Description
 Retrieves personal system notification alerts targeted to the currently authenticated user.
@@ -61,7 +61,7 @@ query GetNotifications {
 
 ---
 
-## 2. Mutation: `sendNotification`
+## Mutation: `sendNotification`
 
 ### Description
 Sends a broadcast notification targeted to a specific user role (or all users if role is omitted).
