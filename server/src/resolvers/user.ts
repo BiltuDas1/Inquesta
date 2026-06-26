@@ -40,6 +40,32 @@ export async function registerUser(
   is_student: boolean,
   context: FastifyContext,
 ) {
+  if (!data.firstname || data.firstname.trim() === "") {
+    return {
+      success: false,
+      message: "First name is required",
+    };
+  }
+  if (!data.email || data.email.trim() === "") {
+    return {
+      success: false,
+      message: "Email is required",
+    };
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(data.email)) {
+    return {
+      success: false,
+      message: "Invalid email format",
+    };
+  }
+  if (!data.password || data.password.length < 6) {
+    return {
+      success: false,
+      message: "Password must be at least 6 characters long",
+    };
+  }
+
   try {
     data.password = await hash(data.password);
     await db.insert(users).values({
