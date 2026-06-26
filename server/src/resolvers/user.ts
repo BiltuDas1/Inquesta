@@ -108,6 +108,7 @@ export async function loginUser(
       role: users.role,
       firstname: users.firstname,
       lastname: users.lastname,
+      email: users.email,
     })
     .from(users)
     .where(and(eq(users.isActive, true), eq(users.email, email)))
@@ -142,7 +143,7 @@ export async function loginUser(
     role: {
       firstname: userRecord.firstname,
       lastname: userRecord.lastname,
-      email: email,
+      email: userRecord.email,
       role: userRecord.role,
     },
     jwt: jwtObj,
