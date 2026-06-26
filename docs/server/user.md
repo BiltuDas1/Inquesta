@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with managi
 
 ---
 
-## 1. Mutation: `updateUserInfo`
+## Mutation: `updateUserInfo`
 
 ### Description
 Updates the profile information (phone, WhatsApp, qualification) of the currently authenticated user.
@@ -26,7 +26,7 @@ Updates the profile information (phone, WhatsApp, qualification) of the currentl
 
 ---
 
-## 2. Query: `getUserInfo`
+## Query: `getUserInfo`
 
 ### Description
 Retrieves the profile information (phone, WhatsApp, qualification) of the currently authenticated user.
@@ -52,7 +52,7 @@ None.
 
 ---
 
-## 3. Query: `getAdminDashboardStats`
+## Query: `getAdminDashboardStats`
 
 ### Description
 Fetches high-level metrics, pending approvals, recent logs, and breakdown statistics for the admin dashboard panel.

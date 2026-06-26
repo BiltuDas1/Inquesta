@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with the cr
 
 ---
 
-## 1. Query: `getTeacherAssignments`
+## Query: `getTeacherAssignments`
 
 ### Description
 Retrieves all assignments created by the currently authenticated teacher.
@@ -79,7 +79,7 @@ query GetTeacherAssignments {
 
 ---
 
-## 2. Mutation: `addAssignment`
+##  Mutation: `addAssignment`
 
 ### Description
 Creates a new assignment for a specific course.
@@ -136,7 +136,7 @@ mutation AddAssignment($courseId: String!, $title: String!, $description: String
 
 ---
 
-## 3. Mutation: `updateAssignment`
+##  Mutation: `updateAssignment`
 
 ### Description
 Updates an existing assignment's parameters.
@@ -155,7 +155,7 @@ Same structure as `addAssignment`.
 
 ---
 
-## 4. Mutation: `deleteAssignment`
+##  Mutation: `deleteAssignment`
 
 ### Description
 Deletes an assignment by its ID.
@@ -170,7 +170,7 @@ Same structure as `addAssignment`.
 
 ---
 
-## 5. Query: `getAssignmentSubmissions`
+##  Query: `getAssignmentSubmissions`
 
 ### Description
 Retrieves submissions and grading status of all students enrolled in the course for a specific assignment. Used by teachers to grade submissions.
@@ -200,7 +200,7 @@ Retrieves submissions and grading status of all students enrolled in the course 
 
 ---
 
-## 6. Mutation: `updateStudentSubmission`
+##  Mutation: `updateStudentSubmission`
 
 ### Description
 Updates the submission grading status and score for a specific student's assignment.
@@ -218,7 +218,7 @@ Same structure as `addAssignment`.
 
 ---
 
-## 7. Query: `getStudentAssignments`
+##  Query: `getStudentAssignments`
 
 ### Description
 Retrieves all assignments relevant to the currently logged-in student, along with their submission status and score.
@@ -247,7 +247,7 @@ None.
 
 ---
 
-## 8. Mutation: `updateStudentAssignmentStatus`
+## Mutation: `updateStudentAssignmentStatus`
 
 ### Description
 Allows a student to mark/update their assignment status (e.g., set status to `"submitted"`).
@@ -263,7 +263,7 @@ Same structure as `addAssignment`.
 
 ---
 
-## 9. Query: `getResources`
+## Query: `getResources`
 
 ### Description
 Retrieves learning resources for all courses, or filtered by a specific `courseId` if provided.
@@ -292,7 +292,7 @@ Retrieves learning resources for all courses, or filtered by a specific `courseI
 
 ---
 
-## 10. Mutation: `addResource`
+##  Mutation: `addResource`
 
 ### Description
 Adds a new resource to a course.
@@ -311,7 +311,7 @@ Same structure as `addAssignment`.
 
 ---
 
-## 11. Mutation: `updateResource`
+##  Mutation: `updateResource`
 
 ### Description
 Updates parameters of an existing resource.
@@ -331,7 +331,7 @@ Same structure as `addAssignment`.
 
 ---
 
-## 12. Mutation: `deleteResource`
+## Mutation: `deleteResource`
 
 ### Description
 Deletes a resource by its ID.

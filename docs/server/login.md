@@ -8,7 +8,7 @@ All successful login mutations place two Secure, HttpOnly cookies on the client'
 
 ---
 
-## 1. Mutation: `login`
+## Mutation: `login`
 
 ### Description
 Authenticates a user via email and password. Upon successful verification:
@@ -96,7 +96,7 @@ mutation Login($email: String!, $password: String!) {
 
 ---
 
-## 2. Mutation: `loginWithGoogle`
+## Mutation: `loginWithGoogle`
 
 ### Description
 Authenticates a user via Google OAuth2.
@@ -158,7 +158,7 @@ mutation LoginWithGoogle($code: String!) {
 
 ---
 
-## 3. Mutation: `refreshJWT`
+## Mutation: `refreshJWT`
 
 ### Description
 Refreshes the active user session.
@@ -201,7 +201,7 @@ mutation RefreshSession {
 
 ---
 
-## 4. Mutation: `logoutUser`
+## Mutation: `logoutUser`
 
 ### Description
 Logs out the current user by:
@@ -243,7 +243,7 @@ mutation Logout {
 
 ---
 
-## 5. Query: `isLoggedIn`
+## Query: `isLoggedIn`
 
 ### Description
 An authenticated query that checks if the client currently has a valid session. It parses the incoming `access_token` cookie and returns basic information about the user.

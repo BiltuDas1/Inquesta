@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with managi
 
 ---
 
-## 1. Query: `getCartItems`
+## Query: `getCartItems`
 
 ### Description
 Retrieves a list of courses currently present in the authenticated user's shopping cart.
@@ -76,7 +76,7 @@ query GetCartItems {
 
 ---
 
-## 2. Mutation: `addCourseToCart`
+## Mutation: `addCourseToCart`
 
 ### Description
 Adds a course to the student's shopping cart.
@@ -125,7 +125,7 @@ mutation AddToCart($courseId: String!) {
 
 ---
 
-## 3. Mutation: `removeCourseFromCart`
+## Mutation: `removeCourseFromCart`
 
 ### Description
 Removes a course from the student's shopping cart.

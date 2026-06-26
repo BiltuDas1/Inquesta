@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with files/
 
 ---
 
-## 1. Mutation: `request_upload`
+## Mutation: `request_upload`
 
 ### Description
 Requests a pre-signed S3/upload URL to securely send file attachments (e.g. for homework or avatar images) directly from the client.
@@ -29,7 +29,7 @@ Requests a pre-signed S3/upload URL to securely send file attachments (e.g. for 
 
 ---
 
-## 2. Query: `getFilters`
+## Query: `getFilters`
 
 ### Description
 Retrieves dynamic ranges and values for course filters (list of levels, grades, price range min/max).
@@ -57,7 +57,7 @@ None.
 
 ---
 
-## 3. Query: `ping`
+## Query: `ping`
 
 ### Description
 Simple server health diagnostic check.
@@ -70,7 +70,7 @@ None.
 
 ---
 
-## 4. Query: `getHeroSection`
+## Query: `getHeroSection`
 
 ### Description
 Retrieves the landing page hero section text copy, status badge, and background image assets.
@@ -95,7 +95,7 @@ None.
 
 ---
 
-## 5. Mutation: `updateHero`
+## Mutation: `updateHero`
 
 ### Description
 Updates landing page hero text copy content and background graphic layout.

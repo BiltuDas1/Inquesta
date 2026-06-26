@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with the pu
 
 ---
 
-## 1. Query: `getNotices`
+## Query: `getNotices`
 
 ### Description
 Fetches all public bulletin board notices.
@@ -73,7 +73,7 @@ query GetNotices {
 
 ---
 
-## 2. Mutation: `addNotice`
+## Mutation: `addNotice`
 
 ### Description
 Adds a new public bulletin board notice.
@@ -130,7 +130,7 @@ mutation AddNotice($title: String!, $description: String!, $badge: String, $imag
 
 ---
 
-## 3. Mutation: `updateNotice`
+## Mutation: `updateNotice`
 
 ### Description
 Updates an existing bulletin notice.
@@ -143,7 +143,7 @@ Same structure as `addNotice`.
 
 ---
 
-## 4. Mutation: `deleteNotice`
+## Mutation: `deleteNotice`
 
 ### Description
 Removes a notice by ID.

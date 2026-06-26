@@ -4,7 +4,7 @@ This document describes the GraphQL queries and mutations associated with tracki
 
 ---
 
-## 1. Query: `getTeacherCourses`
+## Query: `getTeacherCourses`
 
 ### Description
 Retrieves a list of courses allocated to the currently logged-in teacher for the purpose of taking attendance.
@@ -28,7 +28,7 @@ None. (Requires user session cookies).
 
 ---
 
-## 2. Query: `getCourseStudents`
+## Query: `getCourseStudents`
 
 ### Description
 Retrieves all students enrolled in a specific course, used to display an attendance checklist.
@@ -55,7 +55,7 @@ Retrieves all students enrolled in a specific course, used to display an attenda
 
 ---
 
-## 3. Query: `getAttendanceByDate`
+## Query: `getAttendanceByDate`
 
 ### Description
 Retrieves the attendance records for a specific course on a given date. Useful for viewing or editing historical attendance.
@@ -82,7 +82,7 @@ Retrieves the attendance records for a specific course on a given date. Useful f
 
 ---
 
-## 4. Query: `getAttendanceLogs`
+## Query: `getAttendanceLogs`
 
 ### Description
 Retrieves aggregated attendance metrics for each class date under a course, including count of present students vs total students.
@@ -108,7 +108,7 @@ Retrieves aggregated attendance metrics for each class date under a course, incl
 
 ---
 
-## 5. Mutation: `submitAttendance`
+## Mutation: `submitAttendance`
 
 ### Description
 Submits or updates the attendance status sheet for all students in a course for a given date.
@@ -170,7 +170,7 @@ mutation SubmitAttendance($courseId: String!, $date: String!, $records: [Attenda
 
 ---
 
-## 6. Query: `getStudentAttendance`
+## Query: `getStudentAttendance`
 
 ### Description
 Retrieves a detailed list of attendance records for the currently authenticated student.
