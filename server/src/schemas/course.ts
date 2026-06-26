@@ -12,6 +12,7 @@ import {
   getTeacherAllocatedCourses,
   verifyEnrollmentStatus,
 } from "../resolvers/course.ts";
+import { get_user_role } from "../resolvers/user.ts";
 import {
   CourseEnrolledObject,
   CourseObject,
@@ -41,10 +42,75 @@ builder.mutationField("courseAdd", (t) =>
       status: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
+      if (context.req.headers.cookie === undefined) {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      const cookieObj = cookie.parseCookie(context.req.headers.cookie);
+      if (cookieObj["access_token"] === undefined) {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      const userRole = await get_user_role(cookieObj["access_token"]);
+      if (!userRole.success || !userRole.data || (userRole.data.role !== "admin" && userRole.data.role !== "teacher")) {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      if (!args.title || args.title.trim() === "") {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      if (args.price <= 0) {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      if (args.level !== "Beginner" && args.level !== "Intermediate" && args.level !== "Advanced") {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      const durationRegex = /^\d+\s+(Month|Months|Week|Weeks|Day|Days)$/;
+      if (!args.duration || !durationRegex.test(args.duration)) {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      const nameRegex = /^[a-zA-Z\s]+$/;
+      if (!args.instructor_name || !nameRegex.test(args.instructor_name)) {
+        return {
+          success: false,
+          message: "failed to add course",
+        };
+      }
+
+      const levelLower = args.level.toLowerCase();
+
       try {
         await addCourse({
-          ...args,
-          level: args.level as CourseLevel,
+          title: args.title,
+          description: args.description,
+          price: args.price,
+          level: levelLower as CourseLevel,
+          duration: args.duration,
           instructorName: args.instructor_name,
           iconName: args.icon_name,
           teacherId: args.teacher_id,
@@ -162,12 +228,23 @@ builder.mutationField("courseUpdate", (t) =>
       status: t.arg.string({ required: false }),
     },
     resolve: async (_parent, args, context) => {
+      const levelLower = args.level.toLowerCase();
+      if (levelLower !== "beginner" && levelLower !== "intermediate" && levelLower !== "advanced") {
+        return {
+          success: false,
+          message: "failed to update course details",
+        };
+      }
+
       try {
         await updateCourse(args.id, {
-          ...args,
-          iconName: args.icon_name,
-          level: args.level as CourseLevel,
+          title: args.title,
+          description: args.description,
+          price: args.price,
+          level: levelLower as CourseLevel,
+          duration: args.duration,
           instructorName: args.instructor_name,
+          iconName: args.icon_name,
           teacherId: args.teacher_id,
           status: args.status,
         });

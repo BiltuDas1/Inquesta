@@ -69,7 +69,10 @@ export async function registerUser(
   try {
     data.password = await hash(data.password);
     await db.insert(users).values({
-      ...data,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      email: data.email,
+      password: data.password,
       isActive: isMockTestingEnabled,
       role: is_student ? "student" : "parent",
     });

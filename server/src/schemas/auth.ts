@@ -45,7 +45,7 @@ builder.mutationField("register", (t) =>
     resolve: async (_parent, data, context) => {
       try {
         return await registerUser(data, data.is_student, context);
-      } catch (error: any) {
+      } catch (error) {
         context.logger.error(error, "Registration Failed");
         return {
           success: false,

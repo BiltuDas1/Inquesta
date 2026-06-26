@@ -22,8 +22,15 @@ def api_request_context() -> Generator[APIRequestContext, None, None]:
       "Accept": "application/json",
     }
 
+    base_url = os.getenv("API_URL")
+    if not base_url:
+      if os.getenv("CI_TEST") == "true":
+        base_url = "http://inquesta-server:4000"
+      else:
+        base_url = "http://host.docker.internal:4000"
+
     request_context = p.request.new_context(
-      base_url="http://host.docker.internal:4000", extra_http_headers=headers
+      base_url=base_url, extra_http_headers=headers
     )
 
     yield request_context
