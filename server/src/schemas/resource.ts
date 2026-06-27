@@ -64,7 +64,13 @@ builder.mutationField("addResource", (t) =>
     },
     resolve: async (_parent, args, _context) => {
       try {
-        await addResource(args);
+        await addResource({
+          courseId: args.courseId ?? null,
+          title: args.title,
+          type: args.type,
+          url: args.url,
+          description: args.description ?? null,
+        });
         return {
           success: true,
           message: "Resource added successfully",
@@ -96,7 +102,13 @@ builder.mutationField("updateResource", (t) =>
     },
     resolve: async (_parent, args, _context) => {
       try {
-        await updateResource(args.id, args);
+        await updateResource(args.id, {
+          courseId: args.courseId ?? null,
+          title: args.title,
+          type: args.type,
+          url: args.url,
+          description: args.description ?? null,
+        });
         return {
           success: true,
           message: "Resource updated successfully",

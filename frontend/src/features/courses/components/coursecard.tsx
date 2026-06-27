@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 import { useCart, GET_CART_ITEMS } from "../../auth/context/cartcontext";
 import { useQuery } from "@apollo/client/react";
+import { useAuth } from "../../auth/context/authcontext";
 
 interface CourseCardProps {
   course: Course;
@@ -18,6 +19,7 @@ interface CartQueryResponse {
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Fetch from Apollo Cache instantly (no extra network requests)
@@ -106,55 +108,63 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         </div>
 
         {/* --- MOBILE BUTTONS --- */}
-        <div className="relative z-20 mt-3 md:hidden flex gap-2 w-full">
-          <Link
-            to={`/course/${course.slug}`}
-            className="flex-1 block text-center bg-[#00e5bc] text-[#00382c] text-xs font-semibold py-2 rounded hover:bg-[#6fffd9] transition-colors"
-          >
-            Enroll
-          </Link>
-          {isInCart ? (
-            <button
-              onClick={handleGoToCart}
-              className="flex-1 block text-center bg-[#3b4a44] text-[#dfe2eb] text-xs font-semibold py-2 rounded hover:bg-[#84948e] hover:text-[#10141a] transition-colors"
+        {(!user || user.role === "student" || user.role === "user") && (
+          <div className="relative z-20 mt-3 md:hidden flex gap-2 w-full">
+            <Link
+              to={`/course/${course.slug}`}
+              className="flex-1 block text-center bg-[#00e5bc] text-[#00382c] text-xs font-semibold py-2 rounded hover:bg-[#6fffd9] transition-colors"
             >
-              Go to Cart
-            </button>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              className="flex-1 block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
-            >
-              Add to Cart
-            </button>
-          )}
-        </div>
+              Enroll
+            </Link>
+            {(user?.role === "student" || user?.role === "user") && (
+              isInCart ? (
+                <button
+                  onClick={handleGoToCart}
+                  className="flex-1 block text-center bg-[#3b4a44] text-[#dfe2eb] text-xs font-semibold py-2 rounded hover:bg-[#84948e] hover:text-[#10141a] transition-colors"
+                >
+                  Go to Cart
+                </button>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
+                >
+                  Add to Cart
+                </button>
+              )
+            )}
+          </div>
+        )}
       </div>
 
       {/* --- DESKTOP BUTTONS --- */}
-      <div className="hidden md:flex flex-col gap-2 items-end justify-start flex-shrink-0 w-24 mt-2">
-        <Link
-          to={`/course/${course.slug}`}
-          className="relative z-20 w-full block text-center bg-[#00e5bc] text-[#00382c] text-xs font-semibold py-2 rounded hover:bg-[#6fffd9] transition-colors"
-        >
-          Enroll Now
-        </Link>
-        {isInCart ? (
-          <button
-            onClick={handleGoToCart}
-            className="relative z-20 w-full block text-center bg-[#3b4a44] text-[#dfe2eb] text-xs font-semibold py-2 rounded hover:bg-[#84948e] hover:text-[#10141a] transition-colors"
+      {(!user || user.role === "student" || user.role === "user") && (
+        <div className="hidden md:flex flex-col gap-2 items-end justify-start flex-shrink-0 w-24 mt-2">
+          <Link
+            to={`/course/${course.slug}`}
+            className="relative z-20 w-full block text-center bg-[#00e5bc] text-[#00382c] text-xs font-semibold py-2 rounded hover:bg-[#6fffd9] transition-colors"
           >
-            Go to Cart
-          </button>
-        ) : (
-          <button
-            onClick={handleAddToCart}
-            className="relative z-20 w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
-          >
-            Add to Cart
-          </button>
-        )}
-      </div>
+            Enroll Now
+          </Link>
+          {(user?.role === "student" || user?.role === "user") && (
+            isInCart ? (
+              <button
+                onClick={handleGoToCart}
+                className="relative z-20 w-full block text-center bg-[#3b4a44] text-[#dfe2eb] text-xs font-semibold py-2 rounded hover:bg-[#84948e] hover:text-[#10141a] transition-colors"
+              >
+                Go to Cart
+              </button>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                className="relative z-20 w-full block text-center border border-[#00e5bc] text-[#00e5bc] text-xs font-semibold py-2 rounded hover:bg-[#00e5bc] hover:text-[#00382c] transition-colors"
+              >
+                Add to Cart
+              </button>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 };

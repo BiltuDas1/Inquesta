@@ -1,8 +1,10 @@
 import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 import toast from "react-hot-toast";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { GET_CART_ITEMS } from "../../auth/context/cartcontext";
+import { useEffect } from "react";
+import { useAuth } from "../../auth/context/authcontext";
 
 // --- TypeScript Interfaces ---
 
@@ -44,6 +46,21 @@ const REMOVE_COURSE_FROM_CART = gql`
 // --- Main Component ---
 
 export default function CourseCartPage() {
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        toast.error("Please login to view your cart.");
+        navigate("/login");
+      } else if (user.role !== "student" && user.role !== "user") {
+        toast.error("Access denied. Only students can access the cart.");
+        navigate("/");
+      }
+    }
+  }, [user, authLoading, navigate]);
+
   // 1. Fetch Cart Items using the shared query from Context
   const { data, loading, error } = useQuery<GetCartItemsResponse>(
     GET_CART_ITEMS,

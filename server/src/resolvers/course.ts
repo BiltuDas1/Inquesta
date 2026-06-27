@@ -25,8 +25,10 @@ export async function addCourse(data: Course) {
     slug = `${slug}-${num + 1}`;
   }
 
+  const { status, ...rest } = data;
   await db.insert(courses).values({
-    ...data,
+    ...rest,
+    status: status === "live" ? "live" : "draft",
     slug: slug,
   });
 
@@ -92,7 +94,11 @@ export async function getCourses(
 }
 
 export async function updateCourse(uuid: string, data: Course) {
-  await db.update(courses).set(data).where(eq(courses.id, uuid));
+  const { status, ...rest } = data;
+  await db.update(courses).set({
+    ...rest,
+    status: status === "live" ? "live" : "draft",
+  }).where(eq(courses.id, uuid));
   await redis.del("inquesta:courses:list");
   return true;
 }

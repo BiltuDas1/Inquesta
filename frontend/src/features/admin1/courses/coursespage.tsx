@@ -549,8 +549,9 @@ export default function CoursesPage() {
 
       await refetch();
       setModal(null);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error saving course:", e);
+      toast.error(e.message || "An unexpected error occurred while saving.");
     }
   }
 

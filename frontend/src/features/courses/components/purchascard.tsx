@@ -195,29 +195,31 @@ export const PurchaseCard: React.FC<PurchaseCardProps> = ({ course }) => {
             </div>
           </div>
 
-          {isAlreadyEnrolled ? (
-            <button
-              onClick={() => navigate(`/courses`)}
-              // Changed bg-transparent/border to solid bg-[#6fffd9] and dark text
-              className="w-full bg-[#6fffd9] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(111,255,217,0.3)] text-base font-headline hover:bg-[#5cebc5] hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Go to Dashboard
-            </button>
-          ) : isPendingVerification ? (
-            <button
-              disabled
-              className="w-full bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-black py-3.5 rounded-xl text-base font-headline opacity-60 cursor-not-allowed"
-            >
-              Pending Verification
-            </button>
-          ) : (
-            <button
-              onClick={handleEnroll}
-              disabled={checkingEnrollment}
-              className="w-full bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline active:scale-[0.98] disabled:opacity-50"
-            >
-              {checkingEnrollment ? "Checking..." : "Enroll Now"}
-            </button>
+          {(!user || user.role === "student" || user.role === "user") && (
+            isAlreadyEnrolled ? (
+              <button
+                onClick={() => navigate(`/courses`)}
+                // Changed bg-transparent/border to solid bg-[#6fffd9] and dark text
+                className="w-full bg-[#6fffd9] text-[#00382c] font-black py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(111,255,217,0.3)] text-base font-headline hover:bg-[#5cebc5] hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Go to Dashboard
+              </button>
+            ) : isPendingVerification ? (
+              <button
+                disabled
+                className="w-full bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-black py-3.5 rounded-xl text-base font-headline opacity-60 cursor-not-allowed"
+              >
+                Pending Verification
+              </button>
+            ) : (
+              <button
+                onClick={handleEnroll}
+                disabled={checkingEnrollment}
+                className="w-full bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-black py-3.5 rounded-xl transition-all shadow-lg text-base font-headline active:scale-[0.98] disabled:opacity-50"
+              >
+                {checkingEnrollment ? "Checking..." : "Enroll Now"}
+              </button>
+            )
           )}
         </div>
       </aside>

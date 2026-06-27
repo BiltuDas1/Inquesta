@@ -213,6 +213,7 @@
 
 
 import React, { useState, useRef } from "react";
+import toast from "react-hot-toast";
 import type { Course, Level } from "../../../features/courses/types/courses";
 import {
   formatLevel,
@@ -468,9 +469,45 @@ export default function CourseModal({
           </button>
           <button
             onClick={() => {
+              if (!formData.title || formData.title.trim() === "") {
+                toast.error("Course title is required.");
+                return;
+              }
+
+              if (!formData.instructorName || formData.instructorName.trim() === "") {
+                toast.error("Instructor name is required.");
+                return;
+              }
+              const nameRegex = /^[a-zA-Z\s.,()]+$/;
+              if (!nameRegex.test(formData.instructorName)) {
+                toast.error("Instructor name can only contain letters, spaces, dots, commas, and parentheses.");
+                return;
+              }
+
+              if (!formData.duration || formData.duration.trim() === "") {
+                toast.error("Duration is required.");
+                return;
+              }
+              const durationRegex = /^\d+\s+(Month|Months|Week|Weeks|Day|Days)$/i;
+              if (!durationRegex.test(formData.duration)) {
+                toast.error("Duration must match format, e.g., '3 Months', '12 Weeks', or '5 Days'.");
+                return;
+              }
+
+              const priceNum = Number(formData.price);
+              if (isNaN(priceNum) || priceNum <= 0) {
+                toast.error("Price must be a number greater than 0.");
+                return;
+              }
+
+              if (!formData.level || !["Beginner", "Intermediate", "Advanced"].includes(formData.level)) {
+                toast.error("Please select a valid course level.");
+                return;
+              }
+
               const dataToSave = {
                 ...formData,
-                price: Number(formData.price) || 0,
+                price: priceNum,
               };
               onSave(dataToSave, selectedFile);
             }}
