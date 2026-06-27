@@ -337,6 +337,7 @@ export default function Navbar() {
   const { cartCount } = useCart();
 
   const { user, logout } = useAuth();
+  console.log("CoursesNavbar user role:", user?.role, "user:", user);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -490,25 +491,27 @@ export default function Navbar() {
                 </button>
 
                 {/* Mobile Cart Icon */}
-                <button
-                  onClick={() => navigate("/cart")}
-                  className={iconBtnClass}
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{
-                      fontSize: "25px",
-                      fontVariationSettings: "'wght' 300",
-                    }}
+                {(user?.role === "student" || user?.role === "user") && (
+                  <button
+                    onClick={() => navigate("/cart")}
+                    className={iconBtnClass}
                   >
-                    shopping_cart
-                  </span>
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-[#10141a] bg-[#6fffd9] rounded-full shadow-sm">
-                      {cartCount > 99 ? "99+" : cartCount}
+                    <span
+                      className="material-symbols-outlined"
+                      style={{
+                        fontSize: "25px",
+                        fontVariationSettings: "'wght' 300",
+                      }}
+                    >
+                      shopping_cart
                     </span>
-                  )}
-                </button>
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-[#10141a] bg-[#6fffd9] rounded-full shadow-sm">
+                        {cartCount > 99 ? "99+" : cartCount}
+                      </span>
+                    )}
+                  </button>
+                )}
 
                 {user && (
                   <Link
@@ -622,22 +625,24 @@ export default function Navbar() {
             )}
 
             {/* Desktop Cart Icon */}
-            <button onClick={() => navigate("/cart")} className={iconBtnClass}>
-              <span
-                className="material-symbols-outlined"
-                style={{
-                  fontSize: "25px",
-                  fontVariationSettings: "'wght' 300",
-                }}
-              >
-                shopping_cart
-              </span>
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-[#10141a] bg-[#6fffd9] rounded-full shadow-sm">
-                  {cartCount > 99 ? "99+" : cartCount}
+            {(user?.role === "student" || user?.role === "user") && (
+              <button onClick={() => navigate("/cart")} className={iconBtnClass}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{
+                    fontSize: "25px",
+                    fontVariationSettings: "'wght' 300",
+                  }}
+                >
+                  shopping_cart
                 </span>
-              )}
-            </button>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-[#10141a] bg-[#6fffd9] rounded-full shadow-sm">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {user ? (
               <div className="relative" ref={desktopRef}>

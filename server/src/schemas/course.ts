@@ -68,37 +68,37 @@ builder.mutationField("courseAdd", (t) =>
       if (!args.title || args.title.trim() === "") {
         return {
           success: false,
-          message: "failed to add course",
+          message: "Course title is required",
         };
       }
 
       if (args.price <= 0) {
         return {
           success: false,
-          message: "failed to add course",
+          message: "Price must be greater than 0",
         };
       }
 
       if (args.level !== "Beginner" && args.level !== "Intermediate" && args.level !== "Advanced") {
         return {
           success: false,
-          message: "failed to add course",
+          message: "Level must be Beginner, Intermediate, or Advanced",
         };
       }
 
-      const durationRegex = /^\d+\s+(Month|Months|Week|Weeks|Day|Days)$/;
+      const durationRegex = /^\d+\s+(Month|Months|Week|Weeks|Day|Days)$/i;
       if (!args.duration || !durationRegex.test(args.duration)) {
         return {
           success: false,
-          message: "failed to add course",
+          message: "Duration must be in a format like '3 Months', '12 Weeks', or '5 Days' (capitalized units)",
         };
       }
 
-      const nameRegex = /^[a-zA-Z\s]+$/;
+      const nameRegex = /^[a-zA-Z\s.,()]+$/;
       if (!args.instructor_name || !nameRegex.test(args.instructor_name)) {
         return {
           success: false,
-          message: "failed to add course",
+          message: "Instructor name can only contain letters, spaces, dots, commas, and parentheses",
         };
       }
 

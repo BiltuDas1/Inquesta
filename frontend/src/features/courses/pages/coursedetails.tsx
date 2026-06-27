@@ -146,7 +146,7 @@ export default function CourseDetails() {
   const location = useLocation();
   const { user } = useAuth();
 
-  const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
+  const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
@@ -627,40 +627,42 @@ export default function CourseDetails() {
                 <h2 className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-[#dfe2eb] pb-6 border-b border-[#3b4a44] mb-6">
                   Secure Your Spot
                 </h2>
-                {isAlreadyEnrolled ? (
-                  <button
-                    onClick={() => navigate(`/courses`)}
-                    className="w-full flex items-center justify-center gap-2 bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(111,255,217,0.15)] hover:shadow-[0_0_25px_rgba(111,255,217,0.3)] cursor-pointer"
-                  >
-                    Go to Dashboard
-                    <span className="material-symbols-outlined text-sm">arrow_outward</span>
-                  </button>
-                ) : isPendingVerification ? (
-                  <>
+                {(!user || user.role === "student" || user.role === "user") && (
+                  isAlreadyEnrolled ? (
                     <button
-                      disabled
-                      className="w-full flex items-center justify-center gap-2 bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl opacity-60"
+                      onClick={() => navigate(`/courses`)}
+                      className="w-full flex items-center justify-center gap-2 bg-[#6fffd9] hover:bg-[#5cebc5] text-[#00382c] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(111,255,217,0.15)] hover:shadow-[0_0_25px_rgba(111,255,217,0.3)] cursor-pointer"
                     >
-                      Pending Verification
+                      Go to Dashboard
+                      <span className="material-symbols-outlined text-sm">arrow_outward</span>
                     </button>
-                    <div className="mt-3 p-3 bg-[#ffb4ab]/10 border border-[#ffb4ab]/30 rounded-xl flex items-start gap-2">
-                      <span className="material-symbols-outlined text-base text-[#ffb4ab] shrink-0 mt-0.5">
-                        info
-                      </span>
-                      <p className="text-xs text-[#b9cac3] leading-relaxed font-medium">
-                        Payment verification will be done within 2 - 5 hours.
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <button
-                    onClick={handleEnroll}
-                    disabled={checkingEnrollment}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg cursor-pointer disabled:opacity-50"
-                  >
-                    {checkingEnrollment ? "Checking..." : "Enroll Now"}
-                    <span className="material-symbols-outlined text-sm">arrow_outward</span>
-                  </button>
+                  ) : isPendingVerification ? (
+                    <>
+                      <button
+                        disabled
+                        className="w-full flex items-center justify-center gap-2 bg-[#1c2026] text-[#84948e] border border-[#3b4a44] font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl opacity-60"
+                      >
+                        Pending Verification
+                      </button>
+                      <div className="mt-3 p-3 bg-[#ffb4ab]/10 border border-[#ffb4ab]/30 rounded-xl flex items-start gap-2">
+                        <span className="material-symbols-outlined text-base text-[#ffb4ab] shrink-0 mt-0.5">
+                          info
+                        </span>
+                        <p className="text-xs text-[#b9cac3] leading-relaxed font-medium">
+                          Payment verification will be done within 2 - 5 hours.
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <button
+                      onClick={handleEnroll}
+                      disabled={checkingEnrollment}
+                      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#343d96] to-[#4a55c2] hover:from-[#4a55c2] hover:to-[#5c68d6] text-white font-['Plus_Jakarta_Sans',_sans-serif] font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg cursor-pointer disabled:opacity-50"
+                    >
+                      {checkingEnrollment ? "Checking..." : "Enroll Now"}
+                      <span className="material-symbols-outlined text-sm">arrow_outward</span>
+                    </button>
+                  )
                 )}
                 <button
                   onClick={handleDownloadBrochure}
