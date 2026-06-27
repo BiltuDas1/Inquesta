@@ -8,7 +8,7 @@
 | `FRONTEND_FQDN`                  | The [FQDN](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of the frontend            | :white_check_mark: |
 | `RESEND_API_KEY`                 | Resend.com API Key for sending email                                                             | :white_check_mark: |
 | `REDIS_URI`                      | The Connection URI of the Redis Database                                                         | :white_check_mark: |
-| `EDDSA_PRIVATE_KEY`              | Private key used to sign Access Tokens (JWT)                                                     | :white_check_mark: |
+| `EDDSA_PRIVATE_KEY`              | Base64 Encoded EdDSA Private key used to sign Access Tokens (JWT)                                | :white_check_mark: |
 | `GOOGLE_CLIENT_ID`               | The client ID of the Google OAuth 2.0 Application                                                | :white_check_mark: |
 | `GOOGLE_CLIENT_SECRET`           | The client secret of the Google OAuth 2.0 Application                                            | :white_check_mark: |
 | `GOOGLE_REDIRECT_URI`            | The URL where Google will redirect after authentication                                          | :white_check_mark: |
