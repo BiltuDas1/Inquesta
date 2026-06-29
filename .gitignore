@@ -29,3 +29,6 @@ node_modules/
 
 # Python cache 
 __pycache__/
+
+# Zip files
+*.zip
