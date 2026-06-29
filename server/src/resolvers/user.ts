@@ -143,14 +143,11 @@ export async function loginUser(
     .where(and(eq(users.isActive, true), eq(users.email, email)))
     .limit(1);
 
-  console.log(userRecord)
   if (!userRecord) {
     return false;
   }
 
   const isCorrect = await verify(userRecord.password, password);
-
-  console.log(isCorrect)
   if (!isCorrect) {
     return false;
   }
